@@ -135,7 +135,7 @@ export function DashboardPage() {
             onClick={handleNavigateToDecks}
             className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left"
           >
-            <div className="text-3xl mb-2">📦</div>
+            <div className="text-3xl mb-2">📚</div>
             <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
               Manage Decks
             </h3>
@@ -153,7 +153,7 @@ export function DashboardPage() {
               Import Decks
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Get N4 vocabulary
+              Start with importing starter decks
             </p>
           </button>
         </div>

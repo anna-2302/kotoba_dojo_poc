@@ -204,7 +204,7 @@ export const CardsPage: React.FC = () => {
           onClick={() => setShowCreateForm(!showCreateForm)}
           className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200"
         >
-          {showCreateForm ? 'Hide Form' : '➕ Create Card'}
+          {showCreateForm ? 'Hide Form' : '+ Create Card'}
         </button>
       </div>
 

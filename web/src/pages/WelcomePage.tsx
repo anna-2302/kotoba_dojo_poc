@@ -67,7 +67,7 @@ export function WelcomePage() {
           <div className="space-y-6">
             <div className="text-center">
               <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-                Get started with curated JLPT N4 study materials
+                Get started with curated beginner study materials
               </p>
             </div>
 
@@ -76,20 +76,20 @@ export function WelcomePage() {
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border-2 border-blue-200 dark:border-blue-700">
                 <div className="text-3xl mb-2">📚</div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  N4 Vocabulary
+                  Vocabulary
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  30 essential words covering nouns, verbs, and adjectives
+                  Study essential words covering nouns, verbs, and adjectives
                 </p>
               </div>
 
               <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-6 border-2 border-purple-200 dark:border-purple-700">
                 <div className="text-3xl mb-2">🈁</div>
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                  N4 Kanji
+                   Kanji
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  20 fundamental kanji with readings and usage
+                  Learn fundamental kanji with readings and usage
                 </p>
               </div>
             </div>
@@ -103,7 +103,7 @@ export function WelcomePage() {
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
                   <span className="text-green-600 dark:text-green-400 mr-2">✓</span>
-                  <span>50 ready-to-study flashcards</span>
+                  <span>100+ ready-to-study flashcards</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-600 dark:text-green-400 mr-2">✓</span>

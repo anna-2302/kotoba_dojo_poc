@@ -176,7 +176,7 @@ export const BrowsePage: React.FC = () => {
                 onClick={() => navigate('/cards?create=true')}
                 className="px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-md transition-colors flex items-center gap-2"
               >
-                <span>➕</span>
+                <span>+</span>
                 Create Card
               </button>
               {cardsData && (
