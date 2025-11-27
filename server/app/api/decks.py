@@ -65,10 +65,14 @@ def list_decks(
             user_id=user.id,
             date=today,
             introduced_new=0,
-            reviews_done=0
+            reviews_done=0,
+            again_count=0,
+            good_count=0,
+            easy_count=0
         )
         db.add(counter)
         db.commit()
+        db.refresh(counter)
     
     # Get decks with card counts
     decks = db.query(Deck).filter(Deck.user_id == user.id).all()
@@ -107,19 +111,10 @@ def list_decks(
             SchedState.due_at <= now
         ).scalar() or 0
         
-        # Apply daily limits to calculate actual due count
-        # Get deck limits
-        deck_limits = get_daily_limits(db, user.id, [deck.id])
-        
-        # Calculate remaining slots for today
-        new_remaining = max(0, deck_limits["new_per_day"] - counter.introduced_new)
-        review_remaining = max(0, deck_limits["review_per_day"] - counter.reviews_done)
-        
-        # Learning cards count against review limit but are always shown
-        review_remaining = max(0, review_remaining - learning_due)
-        
-        # Final due count: learning (unlimited) + capped reviews + capped new
-        due_count = learning_due + min(review_due, review_remaining) + min(new_count, new_remaining)
+        # For deck listing, show the total cards that are technically "due"
+        # (learning + review + new), without applying global daily limits
+        # The actual queue will respect limits, but users should see all pending work
+        due_count = learning_due + review_due + new_count
         
         # Create response
         deck_dict = {
