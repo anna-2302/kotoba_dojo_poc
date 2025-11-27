@@ -251,9 +251,11 @@ class UserSettings(Base):
     review_per_day = Column(Integer, default=200, nullable=True)  # NULL means use global default
     
     # UI settings
-    dark_mode = Column(Boolean, default=False, nullable=False)
+    dark_mode = Column(Boolean, default=False, nullable=False)  # Deprecated: use theme_mode instead
     music_enabled = Column(Boolean, default=False, nullable=False)
     music_volume = Column(Float, default=0.5, nullable=False)
+    visual_theme = Column(String(50), default='mizuiro', nullable=False)  # 'mizuiro' or 'sakura'
+    theme_mode = Column(String(10), default='day', nullable=False)  # 'day' or 'night' (Phase 3)
     
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

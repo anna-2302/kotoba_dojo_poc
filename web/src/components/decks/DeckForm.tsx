@@ -67,7 +67,7 @@ export const DeckForm: React.FC<DeckFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label htmlFor="name" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
           Deck Name *
         </label>
         <input
@@ -75,24 +75,46 @@ export const DeckForm: React.FC<DeckFormProps> = ({
           id="name"
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white ${
-            errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-          }`}
+          className="w-full px-3 py-2 rounded-md focus:outline-none transition-colors"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: `1px solid ${errors.name ? 'var(--kd-danger)' : 'var(--kd-border)'}`,
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
           placeholder="e.g., JLPT N4 Vocabulary"
           disabled={isLoading}
         />
-        {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+        {errors.name && <p className="mt-1 text-sm" style={{ color: 'var(--kd-danger)' }}>{errors.name}</p>}
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label htmlFor="description" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
           Description
         </label>
         <textarea
           id="description"
           value={formData.description}
           onChange={(e) => handleChange('description', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white"
+          className="w-full px-3 py-2 rounded-md focus:outline-none transition-colors"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
           placeholder="Optional description for this deck"
           rows={3}
           disabled={isLoading}
@@ -101,7 +123,7 @@ export const DeckForm: React.FC<DeckFormProps> = ({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label htmlFor="new_per_day" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="new_per_day" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
             Daily New Cards
           </label>
           <input
@@ -111,20 +133,30 @@ export const DeckForm: React.FC<DeckFormProps> = ({
             onChange={(e) =>
               handleChange('new_per_day', e.target.value ? parseInt(e.target.value) : undefined)
             }
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white ${
-              errors.new_per_day ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            }`}
+            className="w-full px-3 py-2 rounded-md focus:outline-none transition-colors"
+            style={{
+              backgroundColor: 'var(--kd-surface-2)',
+              color: 'var(--kd-text-primary)',
+              border: `1px solid ${errors.new_per_day ? 'var(--kd-danger)' : 'var(--kd-border)'}`,
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
             placeholder="Default: 15"
             min="0"
             disabled={isLoading}
           />
           {errors.new_per_day && (
-            <p className="mt-1 text-sm text-red-500">{errors.new_per_day}</p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--kd-danger)' }}>{errors.new_per_day}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="review_per_day" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label htmlFor="review_per_day" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
             Daily Review Cards
           </label>
           <input
@@ -134,15 +166,25 @@ export const DeckForm: React.FC<DeckFormProps> = ({
             onChange={(e) =>
               handleChange('review_per_day', e.target.value ? parseInt(e.target.value) : undefined)
             }
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 dark:bg-gray-700 dark:text-white ${
-              errors.review_per_day ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-            }`}
+            className="w-full px-3 py-2 rounded-md focus:outline-none transition-colors"
+            style={{
+              backgroundColor: 'var(--kd-surface-2)',
+              color: 'var(--kd-text-primary)',
+              border: `1px solid ${errors.review_per_day ? 'var(--kd-danger)' : 'var(--kd-border)'}`,
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
             placeholder="Default: 200"
             min="0"
             disabled={isLoading}
           />
           {errors.review_per_day && (
-            <p className="mt-1 text-sm text-red-500">{errors.review_per_day}</p>
+            <p className="mt-1 text-sm" style={{ color: 'var(--kd-danger)' }}>{errors.review_per_day}</p>
           )}
         </div>
       </div>
@@ -152,14 +194,43 @@ export const DeckForm: React.FC<DeckFormProps> = ({
           type="button"
           onClick={onCancel}
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
+          className="px-4 py-2 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+            opacity: isLoading ? 0.5 : 1,
+          }}
+          onMouseEnter={(e) => !isLoading && (e.currentTarget.style.backgroundColor = 'var(--kd-hover)')}
+          onMouseLeave={(e) => !isLoading && (e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)')}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-pink-500 rounded-md hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 disabled:opacity-50"
+          className="px-4 py-2 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: 'var(--kd-primary)',
+            color: 'var(--kd-text-inverse)',
+            opacity: isLoading ? 0.5 : 1,
+          }}
+          onMouseEnter={(e) => !isLoading && (e.currentTarget.style.opacity = '0.9')}
+          onMouseLeave={(e) => !isLoading && (e.currentTarget.style.opacity = '1')}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         >
           {isLoading ? 'Saving...' : deck ? 'Update Deck' : 'Create Deck'}
         </button>

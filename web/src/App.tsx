@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from './components/ThemeProvider'
+import { SettingsSync } from './components/SettingsSync'
+import { AriaAnnouncer } from './components/AriaAnnouncer'
 import { DashboardPage } from './pages/DashboardPage'
 import { ReviewPage } from './pages/ReviewPage'
 import { BrowsePage } from './pages/BrowsePage'
@@ -25,6 +27,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
+        <SettingsSync />
+        <AriaAnnouncer />
         <Router>
           <Routes>
             <Route path="/" element={<DashboardPage />} />

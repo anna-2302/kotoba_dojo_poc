@@ -2,9 +2,45 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>web</title>
+    <title>Kotoba Dojo - Your Cozy Japanese Learning Companion</title>
+    
+    <!-- Noto Sans JP font for Japanese glyph coverage -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Theme hydration script to prevent FOUC -->
+    <script>
+      (function() {
+        // New unified theme system (Phase 3)
+        const STORAGE_KEY_THEME = 'kd.theme';
+        const STORAGE_KEY_MODE = 'kd.mode';
+        
+        // Read theme from localStorage (default: mizuiro)
+        let theme = localStorage.getItem(STORAGE_KEY_THEME);
+        if (theme !== 'mizuiro' && theme !== 'sakura') {
+          theme = 'mizuiro';
+        }
+        
+        // Read mode from localStorage or detect from system preference
+        let mode = localStorage.getItem(STORAGE_KEY_MODE);
+        if (mode !== 'day' && mode !== 'night') {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          mode = prefersDark ? 'night' : 'day';
+        }
+        
+        // Apply theme and mode attributes atomically
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-mode', mode);
+        
+        // Set .dark class for Tailwind dark: variants
+        if (mode === 'night') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -178,16 +178,6 @@ export function MusicPlayer({
               </div>
             </div>
           </div>
-
-          {/* Info Note */}
-          <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-            <p className="text-xs text-yellow-800 dark:text-yellow-200">
-              💡 <strong>Note:</strong> Audio file not included in POC. 
-              Add royalty-free music to <code className="px-1 py-0.5 bg-yellow-100 dark:bg-yellow-900/40 rounded">
-                /public/audio/chill-background.mp3
-              </code>
-            </p>
-          </div>
         </div>
       )}
     </div>

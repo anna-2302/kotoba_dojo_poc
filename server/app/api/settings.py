@@ -77,6 +77,14 @@ async def update_settings(
     # Update only provided fields
     update_data = settings_update.model_dump(exclude_unset=True)
     
+    # Handle backward compatibility: sync dark_mode <-> theme_mode
+    if 'dark_mode' in update_data and 'theme_mode' not in update_data:
+        # If dark_mode is set, update theme_mode accordingly
+        update_data['theme_mode'] = 'night' if update_data['dark_mode'] else 'day'
+    elif 'theme_mode' in update_data and 'dark_mode' not in update_data:
+        # If theme_mode is set, update dark_mode accordingly
+        update_data['dark_mode'] = (update_data['theme_mode'] == 'night')
+    
     for field, value in update_data.items():
         setattr(user.settings, field, value)
     

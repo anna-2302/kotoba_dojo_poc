@@ -93,16 +93,20 @@ export interface Tag {
 
 export interface UserSettings {
   learning_steps: string;
-  dark_mode: boolean;
+  dark_mode: boolean; // Deprecated: use theme_mode
   music_enabled: boolean;
   music_volume: number;
+  visual_theme: string;
+  theme_mode?: 'day' | 'night'; // New unified theme mode
 }
 
 export interface UserSettingsUpdate {
   learning_steps?: string;
-  dark_mode?: boolean;
+  dark_mode?: boolean; // Deprecated: use theme_mode
   music_enabled?: boolean;
   music_volume?: number;
+  visual_theme?: string;
+  theme_mode?: 'day' | 'night'; // New unified theme mode
 }
 
 // ============================================================================

@@ -1,0 +1,367 @@
+/**
+ * Kotoba Dojo - Component Utilities
+ * Cozy Japan design patterns using design tokens
+ */
+
+/* === Button Styles === */
+.kd-btn {
+  font-family: var(--kd-font-family);
+  font-weight: 500;
+  border-radius: var(--kd-radius-md);
+  transition: all var(--kd-transition-base);
+  cursor: pointer;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kd-space-sm);
+  line-height: 1;
+}
+
+.kd-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--kd-focus-ring-offset), var(--kd-focus-ring);
+}
+
+.kd-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button variants */
+.kd-btn-primary {
+  background-color: var(--kd-primary);
+  color: var(--kd-text-inverse);
+  box-shadow: var(--kd-shadow-sm);
+}
+
+.kd-btn-primary:hover:not(:disabled) {
+  background-color: var(--kd-primary-hover);
+  box-shadow: var(--kd-shadow-md);
+  transform: translateY(-1px);
+}
+
+.kd-btn-primary:active:not(:disabled) {
+  background-color: var(--kd-primary-active);
+  box-shadow: var(--kd-shadow-xs);
+  transform: translateY(0);
+}
+
+.kd-btn-secondary {
+  background-color: var(--kd-secondary);
+  color: var(--kd-text-inverse);
+  box-shadow: var(--kd-shadow-sm);
+}
+
+.kd-btn-secondary:hover:not(:disabled) {
+  background-color: var(--kd-secondary-hover);
+  box-shadow: var(--kd-shadow-md);
+  transform: translateY(-1px);
+}
+
+.kd-btn-secondary:active:not(:disabled) {
+  background-color: var(--kd-secondary-active);
+  box-shadow: var(--kd-shadow-xs);
+  transform: translateY(0);
+}
+
+.kd-btn-ghost {
+  background-color: transparent;
+  color: var(--kd-text-primary);
+  border: 1px solid var(--kd-border-default);
+}
+
+.kd-btn-ghost:hover:not(:disabled) {
+  background-color: var(--kd-bg-subtle);
+  border-color: var(--kd-border-strong);
+}
+
+.kd-btn-ghost:active:not(:disabled) {
+  background-color: var(--kd-bg-base);
+}
+
+/* Button sizes */
+.kd-btn-sm {
+  padding: var(--kd-space-sm) var(--kd-space-md);
+  font-size: var(--kd-font-size-sm);
+}
+
+.kd-btn-md {
+  padding: var(--kd-space-md) var(--kd-space-lg);
+  font-size: var(--kd-font-size-base);
+}
+
+.kd-btn-lg {
+  padding: var(--kd-space-lg) var(--kd-space-xl);
+  font-size: var(--kd-font-size-lg);
+}
+
+/* === Card Styles === */
+.kd-card {
+  background-color: var(--kd-bg-surface);
+  border-radius: var(--kd-radius-lg);
+  box-shadow: var(--kd-shadow-sm);
+  transition: box-shadow var(--kd-transition-base), transform var(--kd-transition-base);
+}
+
+.kd-card-elevated {
+  box-shadow: var(--kd-shadow-md);
+}
+
+.kd-card-hover:hover {
+  box-shadow: var(--kd-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.kd-card-clickable {
+  cursor: pointer;
+}
+
+.kd-card-clickable:active {
+  transform: translateY(0);
+  box-shadow: var(--kd-shadow-sm);
+}
+
+/* === Tag/Chip Styles === */
+.kd-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kd-space-xs);
+  padding: var(--kd-space-xs) var(--kd-space-md);
+  border-radius: var(--kd-radius-pill);
+  font-size: var(--kd-font-size-sm);
+  font-weight: 500;
+  transition: all var(--kd-transition-fast);
+  white-space: nowrap;
+}
+
+.kd-chip-matcha {
+  background-color: var(--kd-secondary-subtle);
+  color: var(--kd-secondary);
+  border: 1px solid var(--kd-secondary);
+}
+
+.kd-chip-sakura {
+  background-color: var(--kd-primary-subtle);
+  color: var(--kd-primary);
+  border: 1px solid var(--kd-primary);
+}
+
+.kd-chip-neutral {
+  background-color: var(--kd-bg-subtle);
+  color: var(--kd-text-secondary);
+  border: 1px solid var(--kd-border-default);
+}
+
+.kd-chip-clickable {
+  cursor: pointer;
+}
+
+.kd-chip-clickable:hover {
+  transform: scale(1.05);
+  box-shadow: var(--kd-shadow-sm);
+}
+
+.kd-chip-selected {
+  background-color: var(--kd-primary);
+  color: var(--kd-text-inverse);
+  border-color: var(--kd-primary);
+}
+
+/* === Surface Styles === */
+.kd-surface {
+  background-color: var(--kd-bg-surface);
+  border-radius: var(--kd-radius-md);
+}
+
+.kd-surface-elevated {
+  background-color: var(--kd-bg-elevated);
+  box-shadow: var(--kd-shadow-md);
+}
+
+.kd-surface-subtle {
+  background-color: var(--kd-bg-subtle);
+}
+
+/* === Divider === */
+.kd-divider {
+  height: 1px;
+  background-color: var(--kd-border-subtle);
+  border: none;
+  margin: var(--kd-space-lg) 0;
+}
+
+/* === List Styles === */
+.kd-list-item {
+  padding: var(--kd-space-md) var(--kd-space-lg);
+  border-radius: var(--kd-radius-sm);
+  transition: background-color var(--kd-transition-fast);
+}
+
+.kd-list-item:hover {
+  background-color: var(--kd-bg-subtle);
+}
+
+.kd-list-item:focus-visible {
+  outline: none;
+  background-color: var(--kd-bg-subtle);
+  box-shadow: var(--kd-focus-ring);
+}
+
+.kd-list-item-selected {
+  background-color: var(--kd-primary-subtle);
+  border-left: 3px solid var(--kd-primary);
+}
+
+/* === Input Styles === */
+.kd-input {
+  font-family: var(--kd-font-family);
+  font-size: var(--kd-font-size-base);
+  padding: var(--kd-space-md) var(--kd-space-lg);
+  border: 1px solid var(--kd-border-default);
+  border-radius: var(--kd-radius-md);
+  background-color: var(--kd-bg-surface);
+  color: var(--kd-text-primary);
+  transition: border-color var(--kd-transition-fast), box-shadow var(--kd-transition-fast);
+}
+
+.kd-input:hover:not(:disabled) {
+  border-color: var(--kd-border-strong);
+}
+
+.kd-input:focus {
+  outline: none;
+  border-color: var(--kd-primary);
+  box-shadow: var(--kd-focus-ring);
+}
+
+.kd-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Text Styles === */
+.kd-text-primary {
+  color: var(--kd-text-primary);
+}
+
+.kd-text-secondary {
+  color: var(--kd-text-secondary);
+}
+
+.kd-text-subtle {
+  color: var(--kd-text-subtle);
+}
+
+/* === Accent Decorations === */
+.kd-accent-bar {
+  position: relative;
+}
+
+.kd-accent-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--kd-primary) 0%, var(--kd-secondary) 100%);
+  border-radius: var(--kd-radius-pill);
+}
+
+/* === Loading States === */
+@keyframes kd-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.kd-loading {
+  animation: kd-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* === Toast/Snackbar === */
+.kd-toast {
+  background-color: var(--kd-bg-elevated);
+  color: var(--kd-text-primary);
+  border-radius: var(--kd-radius-lg);
+  box-shadow: var(--kd-shadow-xl);
+  padding: var(--kd-space-lg) var(--kd-space-xl);
+  display: flex;
+  align-items: center;
+  gap: var(--kd-space-md);
+  animation: kd-slide-up 0.3s ease-out;
+}
+
+@keyframes kd-slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* === Utility Classes === */
+.kd-shadow-sm {
+  box-shadow: var(--kd-shadow-sm);
+}
+
+.kd-shadow-md {
+  box-shadow: var(--kd-shadow-md);
+}
+
+.kd-shadow-lg {
+  box-shadow: var(--kd-shadow-lg);
+}
+
+.kd-rounded {
+  border-radius: var(--kd-radius-md);
+}
+
+.kd-rounded-lg {
+  border-radius: var(--kd-radius-lg);
+}
+
+.kd-rounded-pill {
+  border-radius: var(--kd-radius-pill);
+}
+
+/* Background utilities using theme tokens */
+.kd-bg-base {
+  background-color: var(--kd-bg-base);
+}
+
+.kd-bg-surface {
+  background-color: var(--kd-bg-surface);
+}
+
+.kd-bg-elevated {
+  background-color: var(--kd-bg-elevated);
+}
+
+.kd-bg-subtle {
+  background-color: var(--kd-bg-subtle);
+}
+
+/* Text color utilities using theme tokens */
+.kd-text-primary {
+  color: var(--kd-text-primary);
+}
+
+.kd-text-secondary {
+  color: var(--kd-text-secondary);
+}
+
+.kd-text-subtle {
+  color: var(--kd-text-subtle);
+}
+
+.kd-text-inverse {
+  color: var(--kd-text-inverse);
+}

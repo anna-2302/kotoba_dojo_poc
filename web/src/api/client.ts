@@ -15,6 +15,7 @@ import type {
   ImportResponse,
   ImportStatus,
   DeckInfo,
+  TodayStats,
 } from './types';
 
 // Re-export all types for convenience

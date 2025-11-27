@@ -181,43 +181,52 @@ export function CompactMusicPlayer() {
   const isMuted = settings.music_volume === 0;
 
   return (
-    <div className="relative">
+    <div 
+      className="relative"
+      onMouseEnter={() => setShowControls(true)}
+      onMouseLeave={() => setShowControls(false)}
+    >
       {/* Main Button */}
       <button
-        onClick={() => setShowControls(!showControls)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors"
+        style={{
+          backgroundColor: 'var(--kd-bg-subtle)',
+          color: 'var(--kd-text-primary)'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--kd-bg-elevated)'}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--kd-bg-subtle)'}
         aria-label="Music player"
         title="Music player (Shift+P: play/pause, Shift+N: next track)"
       >
         <span className="text-lg">
           {isPlaying ? '🎵' : '🎶'}
         </span>
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:inline">
-          {isPlaying ? 'Playing' : 'Music'}
-        </span>
       </button>
 
       {/* Dropdown Controls */}
       {showControls && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowControls(false)}
-          />
-          
+        <>          
           {/* Controls Panel */}
-          <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-50">
+          <div className="absolute right-0 mt-0 w-64 rounded-lg shadow-xl p-4 z-50" style={{
+            backgroundColor: 'var(--kd-bg-surface)',
+            border: '1px solid var(--kd-border)'
+          }}>
             <div className="space-y-4">
               {/* Title */}
-              <div className="text-sm font-semibold text-gray-900 dark:text-white">
+              <div className="text-sm font-semibold" style={{ color: 'var(--kd-text-primary)' }}>
                 🎵 Background Music
               </div>
 
               {/* Play/Pause Button */}
               <button
                 onClick={handlePlayPause}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--kd-primary)',
+                  color: 'var(--kd-primary-contrast)'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--kd-primary-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--kd-primary)'}
               >
                 <span className="text-xl">
                   {isPlaying ? '⏸️' : '▶️'}
@@ -230,7 +239,13 @@ export function CompactMusicPlayer() {
               {/* Next Track Button */}
               <button
                 onClick={handleNextTrack}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium rounded-lg transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-2 font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: 'var(--kd-bg-subtle)',
+                  color: 'var(--kd-text-primary)'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--kd-bg-elevated)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'var(--kd-bg-subtle)'}
                 title="Shift+N to skip"
               >
                 <span className="text-xl">
@@ -243,7 +258,7 @@ export function CompactMusicPlayer() {
 
               {/* Volume Controls */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between text-xs" style={{ color: 'var(--kd-text-secondary)' }}>
                   <span>Volume</span>
                   <span>{Math.round(settings.music_volume * 100)}%</span>
                 </div>
@@ -251,7 +266,10 @@ export function CompactMusicPlayer() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={handleMuteToggle}
-                    className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    className="transition-colors"
+                    style={{ color: 'var(--kd-text-secondary)' }}
+                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--kd-text-primary)'}
+                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--kd-text-secondary)'}
                     aria-label={isMuted ? 'Unmute' : 'Mute'}
                     title="Shift+M to mute/unmute"
                   >
@@ -267,19 +285,25 @@ export function CompactMusicPlayer() {
                     step="0.01"
                     value={settings.music_volume}
                     onChange={handleVolumeChange}
-                    className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer
+                    className="flex-1 h-2 rounded-lg appearance-none cursor-pointer
                              [&::-webkit-slider-thumb]:appearance-none
                              [&::-webkit-slider-thumb]:w-4
                              [&::-webkit-slider-thumb]:h-4
                              [&::-webkit-slider-thumb]:rounded-full
-                             [&::-webkit-slider-thumb]:bg-blue-600
                              [&::-webkit-slider-thumb]:cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--kd-bg-subtle)',
+                      accentColor: 'var(--kd-primary)'
+                    }}
                   />
                 </div>
               </div>
 
               {/* Info */}
-              <div className="text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="text-xs pt-2" style={{
+                color: 'var(--kd-text-subtle)',
+                borderTop: '1px solid var(--kd-border-subtle)'
+              }}>
                 <p>Keyboard shortcuts:</p>
                 <p>• Shift+P: Play/Pause</p>
                 <p>• Shift+M: Mute/Unmute</p>

@@ -1,20 +1,77 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    color-scheme: light;
-  }
+/* Import design tokens first */
+@import "./styles/tokens.css";
+
+/* Tailwind v4 theme configuration */
+@theme {
+  /* Override Tailwind's default colors to use our theme-aware variables */
+  /* These classes automatically adapt to the current theme (Mizuiro/Sakura) and mode (Day/Night) */
   
-  .dark {
-    color-scheme: dark;
-  }
+  /* Primary color mappings (adapts based on theme) */
+  --color-blue-50: var(--kd-primary-subtle);
+  --color-blue-100: var(--kd-primary-subtle);
+  --color-blue-400: var(--kd-primary-hover);
+  --color-blue-500: var(--kd-primary);
+  --color-blue-600: var(--kd-primary);
+  --color-blue-700: var(--kd-primary-active);
+  --color-blue-900: var(--kd-primary-active);
+  
+  /* Accent color mappings (adapts based on theme) */
+  --color-pink-50: var(--kd-primary-subtle);
+  --color-pink-400: var(--kd-primary-hover);
+  --color-pink-500: var(--kd-primary);
+  --color-pink-600: var(--kd-primary);
+  --color-pink-700: var(--kd-primary-active);
+  --color-pink-900: var(--kd-primary-active);
+  
+  --color-purple-50: var(--kd-primary-subtle);
+  --color-purple-900: var(--kd-primary-active);
+  
+  --color-cyan-400: var(--kd-accent-hover);
+  
+  /* Extend Tailwind with Kotoba Dojo design tokens */
+  /* Use these custom classes for explicit theme-aware styling */
+  --color-kd-bg: var(--kd-bg);
+  --color-kd-surface: var(--kd-surface);
+  --color-kd-surface-2: var(--kd-surface-2);
+  --color-kd-surface-3: var(--kd-surface-3);
+  --color-kd-primary: var(--kd-primary);
+  --color-kd-accent: var(--kd-accent);
+  --color-kd-text-primary: var(--kd-text-primary);
+  --color-kd-text-secondary: var(--kd-text-secondary);
+  --color-kd-text-muted: var(--kd-text-muted);
+  --color-kd-border: var(--kd-border);
+  --color-kd-divider: var(--kd-divider);
+  --color-kd-link: var(--kd-link);
+  --color-kd-hover: var(--kd-hover);
+  --color-kd-disabled: var(--kd-disabled);
+  
+  /* State colors */
+  --color-kd-success: var(--kd-success);
+  --color-kd-warning: var(--kd-warning);
+  --color-kd-danger: var(--kd-danger);
+  --color-kd-info: var(--kd-info);
+  
+  /* Shadow mappings */
+  --shadow-kd-sm: var(--kd-shadow-elevation-1);
+  --shadow-kd-md: var(--kd-shadow-elevation-2);
+  --shadow-kd-lg: var(--kd-shadow-lg);
+  
+  /* Radius mappings */
+  --radius-kd-md: var(--kd-radius-md);
+  --radius-kd-lg: var(--kd-radius-lg);
+  --radius-kd-pill: var(--kd-radius-pill);
+  
+  /* Legacy compatibility mappings */
+  --color-kd-bg-base: var(--kd-bg-base);
+  --color-kd-bg-surface: var(--kd-bg-surface);
+  --color-kd-matcha: var(--kd-accent-matcha, var(--kd-accent));
+  --color-kd-sakura: var(--kd-accent-sakura, var(--kd-primary));
+  --color-kd-secondary: var(--kd-accent);
+  --shadow-kd-xs: var(--kd-shadow-xs);
+  --shadow-kd-xl: var(--kd-shadow-xl);
 }
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans',
-    'Helvetica Neue', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+/* Import component styles */
+@import "./styles/components.css";

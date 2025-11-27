@@ -72,20 +72,20 @@ export const CardForm: React.FC<CardFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Error Messages */}
       {error && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+        <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--kd-danger)', color: 'var(--kd-text-inverse)', border: '1px solid var(--kd-danger)' }}>
+          <p className="text-sm">{error}</p>
         </div>
       )}
       {validationError && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
-          <p className="text-sm text-red-700 dark:text-red-300">{validationError}</p>
+        <div className="p-4 rounded-md" style={{ backgroundColor: 'var(--kd-danger)', color: 'var(--kd-text-inverse)', border: '1px solid var(--kd-danger)' }}>
+          <p className="text-sm">{validationError}</p>
         </div>
       )}
 
       {/* Deck Selection */}
       <div>
-        <label htmlFor="deck_id" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Deck <span className="text-red-500">*</span>
+        <label htmlFor="deck_id" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
+          Deck <span style={{ color: 'var(--kd-danger)' }}>*</span>
         </label>
         <select
           id="deck_id"
@@ -94,7 +94,20 @@ export const CardForm: React.FC<CardFormProps> = ({
             setFormData({ ...formData, deck_id: parseInt(e.target.value) })
           }
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+          className="w-full px-4 py-2 rounded-lg"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+            boxShadow: 'var(--kd-shadow-sm)'
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '0px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         >
           <option value="">Select a deck</option>
           {decks.map(deck => (
@@ -107,10 +120,10 @@ export const CardForm: React.FC<CardFormProps> = ({
 
       {/* Front Side */}
       <div>
-        <label htmlFor="front" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Front <span className="text-red-500">*</span>
+        <label htmlFor="front" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
+          Front <span style={{ color: 'var(--kd-danger)' }}>*</span>
         </label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+        <p className="text-xs mb-2" style={{ color: 'var(--kd-text-secondary)' }}>
           This will be shown first when reviewing
         </p>
         <textarea
@@ -120,16 +133,29 @@ export const CardForm: React.FC<CardFormProps> = ({
           placeholder="e.g., 覚える (oboeru)"
           rows={3}
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+          className="w-full px-4 py-2 rounded-lg"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+            boxShadow: 'var(--kd-shadow-sm)'
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '0px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         />
       </div>
 
       {/* Back Side */}
       <div>
-        <label htmlFor="back" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Back <span className="text-red-500">*</span>
+        <label htmlFor="back" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
+          Back <span style={{ color: 'var(--kd-danger)' }}>*</span>
         </label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+        <p className="text-xs mb-2" style={{ color: 'var(--kd-text-secondary)' }}>
           This will be shown after flipping the card
         </p>
         <textarea
@@ -139,16 +165,29 @@ export const CardForm: React.FC<CardFormProps> = ({
           placeholder="e.g., to remember, to memorize"
           rows={3}
           required
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+          className="w-full px-4 py-2 rounded-lg"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+            boxShadow: 'var(--kd-shadow-sm)'
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '0px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         />
       </div>
 
       {/* Notes */}
       <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label htmlFor="notes" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
           Notes (Optional)
         </label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+        <p className="text-xs mb-2" style={{ color: 'var(--kd-text-secondary)' }}>
           Add context or hints for this card
         </p>
         <textarea
@@ -157,37 +196,65 @@ export const CardForm: React.FC<CardFormProps> = ({
           onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
           placeholder="e.g., Verb, used in casual conversation"
           rows={2}
-          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+          className="w-full px-4 py-2 rounded-lg"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+            boxShadow: 'var(--kd-shadow-sm)'
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '0px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         />
       </div>
 
       {/* Tags */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
           Tags (Optional)
         </label>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+        <p className="text-xs mb-3" style={{ color: 'var(--kd-text-secondary)' }}>
           Select tags to categorize this card for easy filtering
         </p>
         {availableTags.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {availableTags.map(tag => (
-              <button
-                key={tag.id}
-                type="button"
-                onClick={() => handleTagToggle(tag.id)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  (formData.tag_ids || []).includes(tag.id)
-                    ? 'bg-pink-500 text-white shadow-md'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                }`}
-              >
-                {tag.name}
-              </button>
-            ))}
+            {availableTags.map(tag => {
+              const isSelected = (formData.tag_ids || []).includes(tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => handleTagToggle(tag.id)}
+                  className="px-4 py-2 rounded-lg font-medium transition-all"
+                  style={{
+                    backgroundColor: isSelected ? 'var(--kd-primary)' : 'var(--kd-surface-2)',
+                    color: isSelected ? 'var(--kd-text-inverse)' : 'var(--kd-text-primary)',
+                    border: isSelected ? '1px solid var(--kd-primary)' : '1px solid var(--kd-border)',
+                    boxShadow: isSelected ? 'var(--kd-shadow-md)' : 'none'
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.backgroundColor = 'var(--kd-hover)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isSelected) {
+                      e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)';
+                    }
+                  }}
+                >
+                  {tag.name}
+                </button>
+              );
+            })}
           </div>
         ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+          <p className="text-sm italic" style={{ color: 'var(--kd-text-secondary)' }}>
             No tags created yet. Create tags while editing a card.
           </p>
         )}
@@ -197,7 +264,25 @@ export const CardForm: React.FC<CardFormProps> = ({
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full px-6 py-3 bg-pink-500 hover:bg-pink-600 disabled:bg-gray-400 text-white font-semibold rounded-lg shadow-md transition-all duration-200 disabled:cursor-not-allowed"
+        className="w-full px-6 py-3 font-semibold rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
+        style={{
+          backgroundColor: isLoading ? 'var(--kd-disabled)' : 'var(--kd-primary)',
+          color: 'var(--kd-text-inverse)',
+          boxShadow: 'var(--kd-shadow-md)',
+          opacity: isLoading ? 0.6 : 1
+        }}
+        onMouseEnter={(e) => {
+          if (!isLoading) {
+            e.currentTarget.style.opacity = '0.9';
+            e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isLoading) {
+            e.currentTarget.style.opacity = '1';
+            e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)';
+          }
+        }}
       >
         {isLoading ? 'Creating Card...' : 'Create Card'}
       </button>

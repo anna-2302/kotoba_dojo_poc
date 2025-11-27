@@ -243,9 +243,11 @@ class UserSettingsResponse(BaseModel):
     learning_steps: str
     new_per_day: Optional[int] = None
     review_per_day: Optional[int] = None
-    dark_mode: bool
+    dark_mode: bool  # Deprecated: use theme_mode instead (kept for backward compatibility)
     music_enabled: bool
     music_volume: float
+    visual_theme: str = 'mizuiro'
+    theme_mode: str = 'day'  # Phase 3: 'day' or 'night'
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -255,9 +257,11 @@ class UserSettingsUpdate(BaseModel):
     learning_steps: Optional[str] = None
     new_per_day: Optional[int] = Field(None, ge=1, le=1000)
     review_per_day: Optional[int] = Field(None, ge=1, le=1000)
-    dark_mode: Optional[bool] = None
+    dark_mode: Optional[bool] = None  # Deprecated: use theme_mode instead
     music_enabled: Optional[bool] = None
     music_volume: Optional[float] = Field(None, ge=0.0, le=1.0)
+    visual_theme: Optional[str] = None
+    theme_mode: Optional[str] = Field(None, pattern='^(day|night)$', description="Theme mode: 'day' or 'night'")
 
 
 # ============================================================================

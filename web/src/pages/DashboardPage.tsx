@@ -54,10 +54,10 @@ export function DashboardPage() {
   // Loading state
   if (isLoading || todayLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading your stats...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--kd-primary)' }}></div>
+          <p style={{ color: 'var(--kd-text-secondary)' }}>Loading your stats...</p>
         </div>
       </div>
     );
@@ -66,18 +66,31 @@ export function DashboardPage() {
   // Error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="text-center max-w-md">
-          <div className="text-red-500 text-5xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          <div className="text-5xl mb-4" style={{ color: 'var(--kd-danger)' }}>⚠️</div>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--kd-text-primary)' }}>
             Connection Error
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="mb-6" style={{ color: 'var(--kd-text-secondary)' }}>
             Could not connect to the server. Make sure the backend is running.
           </p>
           <button
             onClick={() => refetch()}
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+            className="px-6 py-3 rounded-lg transition-all focus:outline-none"
+            style={{
+              backgroundColor: 'var(--kd-primary)',
+              color: 'var(--kd-text-inverse)',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
           >
             Try Again
           </button>
@@ -89,7 +102,7 @@ export function DashboardPage() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--kd-bg)' }}>
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -120,47 +133,116 @@ export function DashboardPage() {
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           <button 
             onClick={handleNavigateToCards}
-            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left"
+            className="p-6 rounded-lg transition-all text-left focus:outline-none"
+            style={{ 
+              backgroundColor: 'var(--kd-accent-ocean, var(--kd-accent-sakura, var(--kd-primary)))', 
+              boxShadow: 'var(--kd-shadow-md)' 
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.opacity = '0.95';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.opacity = '1';
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
           >
-            <div className="text-3xl mb-2">➕</div>
-            <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-              Add Cards
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Create new flashcards
+            <div className="flex items-center gap-3 mb-3">
+              <div className="text-3xl px-3 py-2 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'var(--kd-text-inverse)' }}>➕</div>
+              <h3 className="font-semibold text-lg" style={{ color: 'var(--kd-text-inverse)' }}>
+                Add Cards
+              </h3>
+            </div>
+            <p className="text-sm" style={{ color: 'var(--kd-text-inverse)', opacity: 0.9 }}>
+              Create new flashcards to expand your study collection
             </p>
           </button>
 
           <button 
             onClick={handleNavigateToDecks}
-            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left"
+            className="p-6 rounded-lg transition-all text-left focus:outline-none"
+            style={{ 
+              backgroundColor: 'var(--kd-accent-sky, var(--kd-accent-matcha, var(--kd-accent)))', 
+              boxShadow: 'var(--kd-shadow-md)' 
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.opacity = '0.95';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.opacity = '1';
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
           >
-            <div className="text-3xl mb-2">📚</div>
-            <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-              Manage Decks
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Organize your decks
+            <div className="flex items-center gap-3 mb-3">
+              <div className="text-3xl px-3 py-2 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'var(--kd-text-inverse)' }}>📚</div>
+              <h3 className="font-semibold text-lg" style={{ color: 'var(--kd-text-inverse)' }}>
+                Manage Decks
+              </h3>
+            </div>
+            <p className="text-sm" style={{ color: 'var(--kd-text-inverse)', opacity: 0.9 }}>
+              Organize and configure your study decks
             </p>
           </button>
 
           <button 
             onClick={handleNavigateToWelcome}
-            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow text-left"
+            className="p-6 rounded-lg transition-all text-left focus:outline-none"
+            style={{ 
+              backgroundColor: 'var(--kd-accent-lagoon, var(--kd-primary))', 
+              boxShadow: 'var(--kd-shadow-md)' 
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.opacity = '0.95';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.opacity = '1';
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
           >
-            <div className="text-3xl mb-2">📥</div>
-            <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">
-              Import Decks
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Start with importing starter decks
+            <div className="flex items-center gap-3 mb-3">
+              <div className="text-3xl px-3 py-2 rounded-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', color: 'var(--kd-text-inverse)' }}>📥</div>
+              <h3 className="font-semibold text-lg" style={{ color: 'var(--kd-text-inverse)' }}>
+                Import Decks
+              </h3>
+            </div>
+            <p className="text-sm" style={{ color: 'var(--kd-text-inverse)', opacity: 0.9 }}>
+              Get started with prebuilt JLPT N4 decks
             </p>
           </button>
         </div>
         </main>
 
         {/* Footer */}
-        <footer className="mt-12 py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+        <footer className="mt-12 py-6 text-center text-sm" style={{ color: 'var(--kd-text-muted)' }}>
           <p>Made with ❤️ for Japanese language learners</p>
         </footer>
       </div>

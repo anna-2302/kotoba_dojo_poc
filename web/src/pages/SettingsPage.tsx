@@ -1,19 +1,47 @@
 /**
  * Settings Page - User Preferences
- * Implements REQ-10 (Dark Mode) and REQ-11 (Music)
+ * Implements REQ-10 (Theme System) and REQ-11 (Music)
  */
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { settingsApi } from '../api';
 import type { UserSettingsUpdate } from '../api';
 import { useTheme } from '../components/ThemeProvider';
-import DarkModeToggle from '../components/DarkModeToggle';
-import MusicPlayer from '../components/MusicPlayer';
 import { AppHeader } from '../components/AppHeader';
+import type { VisualTheme, ThemeMode } from '../theme/themeTypes';
+
+interface ThemeCombination {
+  theme: VisualTheme;
+  mode: ThemeMode;
+  label: string;
+  emoji: string;
+  description: string;
+  colors: string[];
+}
+
+
+const THEME_COMBINATIONS: ThemeCombination[] = [
+  {
+    theme: 'mizuiro',
+    mode: 'day',
+    label: 'Mizuiro',
+    emoji: '🌊',
+    description: 'Cool blues and crisp neutrals for focused clarity',
+    colors: ['#2563a8', '#5a9fd8', '#e8f0f7'],
+  },
+  {
+    theme: 'sakura',
+    mode: 'day',
+    label: 'Sakura',
+    emoji: '🌸',
+    description: 'Soft pink and warm neutrals with gentle accents',
+    colors: ['#b8527d', '#e89bb0', '#faf9f7'],
+  },
+];
 
 export function SettingsPage() {
   const queryClient = useQueryClient();
-  const { darkMode, setDarkMode } = useTheme();
+  const { theme, mode, setTheme } = useTheme();
 
   // Fetch settings
   const { data: settings, isLoading, error } = useQuery({
@@ -27,41 +55,49 @@ export function SettingsPage() {
     mutationFn: (data: UserSettingsUpdate) => settingsApi.update(data),
     onSuccess: (data) => {
       queryClient.setQueryData(['settings'], data);
-      // Sync dark mode with theme context
-      if (data.dark_mode !== undefined && data.dark_mode !== darkMode) {
-        setDarkMode(data.dark_mode);
-      }
     },
   });
 
-  const handleDarkModeToggle = (enabled: boolean) => {
-    setDarkMode(enabled); // Update local state immediately
-    updateMutation.mutate({ dark_mode: enabled }); // Persist to server
+  const handleThemeChange = (newTheme: VisualTheme) => {
+    // Update local state immediately
+    if (newTheme !== theme) {
+      setTheme(newTheme);
+      // Keep the current mode when changing themes
+    }
+    
+    // Persist to server (backend sync is already handled by ThemeProvider)
+    // This is redundant but ensures immediate backend update on explicit Settings page change
+    updateMutation.mutate({ 
+      visual_theme: newTheme,
+      theme_mode: mode  // Use current mode, not the combo's mode
+    });
   };
 
-  const handleMusicToggle = (enabled: boolean) => {
-    updateMutation.mutate({ music_enabled: enabled });
-  };
-
-  const handleVolumeChange = (volume: number) => {
-    updateMutation.mutate({ music_volume: volume });
+  const isCurrentTheme = (themeOption: VisualTheme) => {
+    return theme === themeOption;  // Only check theme, not mode
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-gray-600 dark:text-gray-300">Loading settings...</div>
-      </div>
+      <>
+        <AppHeader />
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-bg)' }}>
+          <div style={{ color: 'var(--kd-text-secondary)' }}>Loading settings...</div>
+        </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <div className="text-red-600 dark:text-red-400">
-          Failed to load settings. Please try again.
+      <>
+        <AppHeader />
+        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-bg)' }}>
+          <div style={{ color: 'var(--kd-danger)' }}>
+            Failed to load settings. Please try again.
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -72,70 +108,159 @@ export function SettingsPage() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            ⚙️ Settings
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
+          Settings
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="mt-2" style={{ color: 'var(--kd-text-secondary)' }}>
             Customize your learning experience
           </p>
         </div>
 
         {/* Settings Sections */}
         <div className="space-y-6">
-          {/* Appearance Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              🎨 Appearance
+          {/* Theme Selection Section */}
+          <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
+              🎨 Visual Theme & Mode
             </h2>
             
             <div className="space-y-4">
-              {/* Dark Mode Toggle */}
-              <DarkModeToggle
-                enabled={darkMode}
-                onChange={handleDarkModeToggle}
-              />
+              <p className="text-sm mb-4" style={{ color: 'var(--kd-text-secondary)' }}>
+                Choose your visual theme - use the header dropdown to switch between day/night modes
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {THEME_COMBINATIONS.map((combo) => {
+                  const isCurrent = isCurrentTheme(combo.theme);
+                  
+                  return (
+                    <button
+                      key={`${combo.theme}-${combo.mode}`}
+                      onClick={() => handleThemeChange(combo.theme)}
+                      className="relative group p-6 rounded-lg hover:shadow-lg transition-all duration-200 text-left"
+                      style={{
+                        backgroundColor: isCurrent ? 'var(--kd-surface-2)' : 'var(--kd-surface)',
+                        border: isCurrent ? '2px solid var(--kd-primary)' : '2px solid var(--kd-border)',
+                        boxShadow: isCurrent ? 'var(--kd-shadow-md)' : 'none',
+                        paddingTop: isCurrent ? '2.5rem' : '1.5rem'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isCurrent) {
+                          e.currentTarget.style.borderColor = 'var(--kd-primary)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isCurrent) {
+                          e.currentTarget.style.borderColor = 'var(--kd-border)';
+                        }
+                      }}
+                    >
+                      {isCurrent && (
+                        <span className="absolute top-2 left-3 text-xs font-medium px-2 py-1 rounded-full" style={{ backgroundColor: 'var(--kd-primary)', color: 'var(--kd-text-inverse)', opacity: 0.9 }}>
+                          Current
+                        </span>
+                      )}
+                      
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl" role="img" aria-hidden="true">
+                            {combo.emoji}
+                          </span>
+                          <h3 className="font-semibold" style={{ color: 'var(--kd-text-primary)' }}>
+                            {combo.label}
+                          </h3>
+                        </div>
+                        {isCurrent && (
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--kd-primary)', border: '2px solid var(--kd-primary)' }}>
+                            <span className="text-xs" style={{ color: 'var(--kd-text-inverse)' }}>✓</span>
+                          </div>
+                        )}
+                        {!isCurrent && (
+                          <div className="w-5 h-5 rounded-full" style={{ border: '2px solid var(--kd-border)' }}></div>
+                        )}
+                      </div>
+                      
+                      <p className="text-sm mb-4" style={{ color: 'var(--kd-text-secondary)' }}>
+                        {combo.description}
+                      </p>
+                      
+                      {/* Color palette preview */}
+                      <div className="flex gap-2">
+                        {combo.colors.map((color, idx) => (
+                          <div
+                            key={idx}
+                            className="w-10 h-10 rounded-full shadow-sm"
+                            style={{ backgroundColor: color, border: '2px solid var(--kd-surface)' }}
+                            title={color}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Sample component preview */}
+                      <div className="mt-4 pt-4" style={{ borderTop: '1px solid var(--kd-divider)' }}>
+                        <div className="flex gap-2">
+                          <div
+                            className="px-3 py-1 rounded-md text-xs font-medium"
+                            style={{
+                              backgroundColor: combo.colors[0],
+                              color: '#ffffff',
+                            }}
+                          >
+                            Primary
+                          </div>
+                          <div
+                            className="px-3 py-1 rounded-md text-xs font-medium"
+                            style={{
+                              border: `1px solid ${combo.colors[0]}`,
+                              color: combo.colors[0],
+                            }}
+                          >
+                            Secondary
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
-          {/* Audio Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              🎵 Background Music
-            </h2>
-            
-            <MusicPlayer
-              enabled={settings.music_enabled}
-              volume={settings.music_volume}
-              onToggle={handleMusicToggle}
-              onVolumeChange={handleVolumeChange}
-            />
-          </div>
-
           {/* Learning Settings Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
               📚 Learning Settings
             </h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
                   Learning Steps (minutes)
                 </label>
                 <input
                   type="text"
                   value={settings.learning_steps}
                   onChange={(e) => updateMutation.mutate({ learning_steps: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg
-                           bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                           focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 rounded-lg"
+                  style={{
+                    backgroundColor: 'var(--kd-surface-2)',
+                    color: 'var(--kd-text-primary)',
+                    border: '1px solid var(--kd-border)'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                    e.currentTarget.style.outlineOffset = '0px';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
                   placeholder="10,1440"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
                   Comma-separated learning intervals in minutes (e.g., "10,1440" = 10 min, 1 day)
                 </p>
               </div>
@@ -143,19 +268,22 @@ export function SettingsPage() {
           </div>
 
           {/* About Section */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+          <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
               ℹ️ About
             </h2>
             
-            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+            <div className="space-y-3 text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
               <p>
-                <strong className="text-gray-900 dark:text-white">Kotoba Dojo</strong> - 
-                A cozy spaced-repetition flashcard app for Japanese language learning
+                <strong style={{ color: 'var(--kd-text-primary)' }}>Kotoba Dojo</strong> - 
+                Hi! And welcome to a cozy spaced-repetition flashcard app for Japanese language learning.
+              </p>
+              <p>
+                This lovely app has been built during my late night vibe coding sessions instead of actually learning Japanese. Don't be like me, when you study Japanese, focus on Japanese, not on a million unrelated side projects. 
               </p>
               
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <div className="pt-4" style={{ borderTop: '1px solid var(--kd-divider)' }}>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--kd-text-primary)' }}>
                   Data Attribution
                 </h3>
                 <p className="leading-relaxed">
@@ -165,7 +293,9 @@ export function SettingsPage() {
                     href="http://www.edrdg.org/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                    style={{ color: 'var(--kd-link)' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-link-hover)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-link)')}
                   >
                     Electronic Dictionary Research and Development Group
                   </a>
@@ -178,7 +308,9 @@ export function SettingsPage() {
                     href="http://www.edrdg.org/edrdg/licence.html"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                    style={{ color: 'var(--kd-link)' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-link-hover)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-link)')}
                   >
                     licence
                   </a>
@@ -186,8 +318,8 @@ export function SettingsPage() {
                 </p>
               </div>
 
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <div className="pt-4" style={{ borderTop: '1px solid var(--kd-divider)' }}>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--kd-text-primary)' }}>
                   Version
                 </h3>
                 <p>Kotoba Dojo POC v0.1.0</p>
@@ -199,7 +331,10 @@ export function SettingsPage() {
           <div className="flex justify-center pt-4">
             <a
               href="/"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              className="font-medium"
+              style={{ color: 'var(--kd-link)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-link-hover)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-link)')}
             >
               ← Back to Dashboard
             </a>

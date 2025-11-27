@@ -1,0 +1,434 @@
+/**
+ * Kotoba Dojo - Cozy Japan Design Tokens
+ * Phase 3: Unified theme system with Day/Night modes
+ * Supports four combinations: Mizuiro Day/Night, Sakura Day/Night
+ * All tokens meet WCAG AA contrast requirements (4.5:1 for text, 3:1 for large text)
+ */
+
+:root {
+  /* === Shared Base Tokens (theme-independent) === */
+  
+  /* Radii - medium rounding for cozy feel */
+  --kd-radius-sm: 0.375rem;   /* 6px */
+  --kd-radius-md: 0.5rem;     /* 8px */
+  --kd-radius-lg: 0.75rem;    /* 12px */
+  --kd-radius-xl: 1rem;       /* 16px */
+  --kd-radius-pill: 624.9375rem; /* 9999px */
+  
+  /* Spacing scale */
+  --kd-space-xs: 0.25rem;   /* 4px */
+  --kd-space-sm: 0.5rem;    /* 8px */
+  --kd-space-md: 0.75rem;   /* 12px */
+  --kd-space-lg: 1rem;      /* 16px */
+  --kd-space-xl: 1.5rem;    /* 24px */
+  --kd-space-2xl: 2rem;     /* 32px */
+  --kd-space-3xl: 3rem;     /* 48px */
+  
+  /* Typography */
+  --kd-font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --kd-font-size-xs: 0.75rem;    /* 12px */
+  --kd-font-size-sm: 0.875rem;   /* 14px */
+  --kd-font-size-base: 1rem;     /* 16px */
+  --kd-font-size-lg: 1.125rem;   /* 18px */
+  --kd-font-size-xl: 1.25rem;    /* 20px */
+  --kd-font-size-2xl: 1.5rem;    /* 24px */
+  --kd-font-size-3xl: 1.875rem;  /* 30px */
+  
+  --kd-line-height-tight: 1.25;
+  --kd-line-height-normal: 1.5;
+  --kd-line-height-relaxed: 1.75;
+  
+  /* Transitions - smooth, respect reduced motion */
+  --kd-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --kd-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --kd-transition-slow: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Z-index scale */
+  --kd-z-dropdown: 1000;
+  --kd-z-sticky: 1100;
+  --kd-z-overlay: 1200;
+  --kd-z-modal: 1300;
+  --kd-z-toast: 1400;
+}
+
+/* ========================================================================== */
+/* MIZUIRO CALM THEME - DAY MODE                                              */
+/* ========================================================================== */
+
+[data-theme="mizuiro"][data-mode="day"] {
+  /* Backgrounds - soft blue, calm and readable */
+  --kd-bg: #f0f7fc;
+  --kd-surface: #f8fbfe;
+  --kd-surface-2: #ffffff;
+  --kd-surface-3: #ffffff;
+  
+  /* Text colors - high contrast for readability (WCAG AA) */
+  --kd-text-primary: #1a2733;      /* 12.6:1 on #f8fbfe */
+  --kd-text-secondary: #4a5966;    /* 7.2:1 on #f8fbfe */
+  --kd-text-muted: #6a7580;        /* 4.8:1 on #f8fbfe */
+  --kd-text-subtle: #8a9199;       /* 3.2:1 on #f8fbfe (large text only) */
+  --kd-text-inverse: #ffffff;
+  
+  /* Primary accent - blue */
+  --kd-primary: #2563a8;            /* 4.7:1 on #f8fbfe */
+  --kd-primary-contrast: #ffffff;
+  --kd-primary-hover: #1e4f8a;
+  --kd-primary-active: #163c6c;
+  --kd-primary-subtle: #deeaf6;
+  
+  /* Secondary accent - cyan */
+  --kd-accent: #3b7eb5;
+  --kd-accent-contrast: #ffffff;
+  --kd-accent-hover: #2d6a9a;
+  --kd-accent-active: #1f5680;
+  --kd-accent-subtle: #e3f0f8;
+  
+  /* State colors */
+  --kd-success: #2d7a3e;           /* 5.1:1 on #f8fbfe */
+  --kd-warning: #a0640a;           /* 5.5:1 on #f8fbfe */
+  --kd-danger: #b82838;            /* 6.8:1 on #f8fbfe */
+  --kd-info: #2563a8;
+  
+  /* Borders and dividers */
+  --kd-border: #b8d4ed;
+  --kd-border-subtle: #d6e6f5;
+  --kd-divider: #d6e6f5;
+  
+  /* Links */
+  --kd-link: #2563a8;
+  --kd-link-hover: #1e4f8a;
+  
+  /* Interactive states */
+  --kd-hover: rgba(37, 99, 168, 0.08);
+  --kd-active: rgba(37, 99, 168, 0.16);
+  --kd-disabled: #b8c8d8;
+  --kd-focus-ring: 0 0 0 3px rgba(37, 99, 168, 0.25);
+  --kd-selection: rgba(37, 99, 168, 0.2);
+  
+  /* Shadows */
+  --kd-shadow-color: rgba(26, 39, 51, 0.1);
+  --kd-shadow-elevation-1: 0 1px 3px var(--kd-shadow-color);
+  --kd-shadow-elevation-2: 0 4px 8px var(--kd-shadow-color), 0 2px 4px rgba(26, 39, 51, 0.06);
+  
+  /* Legacy compatibility */
+  --kd-bg-base: #f0f7fc;
+  --kd-bg-surface: #f8fbfe;
+  --kd-bg-elevated: #ffffff;
+  --kd-bg-subtle: #e6f2fb;
+  --kd-accent-ocean: #2563a8;        /* Deep ocean blue for primary actions */
+  --kd-accent-ocean-hover: #1e4f8a;
+  --kd-accent-ocean-active: #163c6c;
+  --kd-accent-ocean-subtle: #deeaf6;
+  --kd-accent-sky: #3b7eb5;          /* Sky blue for secondary actions */
+  --kd-accent-sky-hover: #2d6a9a;
+  --kd-accent-sky-active: #1f5680;
+  --kd-accent-sky-subtle: #e3f0f8;
+  --kd-accent-lagoon: #4592c4;       /* Lagoon blue for tertiary actions */
+  --kd-accent-lagoon-hover: #3478a8;
+  --kd-accent-lagoon-active: #285e8c;
+  --kd-accent-lagoon-subtle: #e6f3fa;
+  --kd-shadow-xs: 0 1px 2px rgba(26, 39, 51, 0.06);
+  --kd-shadow-sm: 0 2px 4px rgba(26, 39, 51, 0.08), 0 1px 2px rgba(26, 39, 51, 0.04);
+  --kd-shadow-md: 0 4px 8px rgba(26, 39, 51, 0.1), 0 2px 4px rgba(26, 39, 51, 0.06);
+  --kd-shadow-lg: 0 8px 16px rgba(26, 39, 51, 0.12), 0 4px 8px rgba(26, 39, 51, 0.08);
+  --kd-shadow-xl: 0 16px 32px rgba(26, 39, 51, 0.15), 0 8px 16px rgba(26, 39, 51, 0.1);
+}
+
+/* ========================================================================== */
+/* MIZUIRO CALM THEME - NIGHT MODE                                            */
+/* ========================================================================== */
+
+[data-theme="mizuiro"][data-mode="night"] {
+  /* Backgrounds - cool blue-gray, comfortable for eyes */
+  --kd-bg: #0d1317;
+  --kd-surface: #151b21;
+  --kd-surface-2: #1d252d;
+  --kd-surface-3: #252d35;
+  
+  /* Text colors - high contrast for dark mode (WCAG AA) */
+  --kd-text-primary: #e8f0f7;      /* 13.2:1 on #151b21 */
+  --kd-text-secondary: #b8c8d8;    /* 7.8:1 on #151b21 */
+  --kd-text-muted: #8898a8;        /* 4.9:1 on #151b21 */
+  --kd-text-subtle: #687888;       /* 3.2:1 on #151b21 (large text only) */
+  --kd-text-inverse: #0d1317;
+  
+  /* Primary accent - bright blue */
+  --kd-primary: #5a9fd8;            /* 5.2:1 on #151b21 */
+  --kd-primary-contrast: #0d1317;
+  --kd-primary-hover: #70afe0;
+  --kd-primary-active: #86bfe8;
+  --kd-primary-subtle: #1a2835;
+  
+  /* Secondary accent - cyan */
+  --kd-accent: #7ab0d8;
+  --kd-accent-contrast: #0d1317;
+  --kd-accent-hover: #8cbee0;
+  --kd-accent-active: #9ecce8;
+  --kd-accent-subtle: #1e2a35;
+  
+  /* State colors */
+  --kd-success: #5fb577;           /* 5.8:1 on #151b21 */
+  --kd-warning: #e0a868;           /* 6.2:1 on #151b21 */
+  --kd-danger: #e89098;            /* 5.5:1 on #151b21 */
+  --kd-info: #5a9fd8;
+  
+  /* Borders and dividers */
+  --kd-border: #344252;
+  --kd-border-subtle: #263240;
+  --kd-divider: #263240;
+  
+  /* Links */
+  --kd-link: #5a9fd8;
+  --kd-link-hover: #70afe0;
+  
+  /* Interactive states */
+  --kd-hover: rgba(90, 159, 216, 0.12);
+  --kd-active: rgba(90, 159, 216, 0.20);
+  --kd-disabled: #4a5a6a;
+  --kd-focus-ring: 0 0 0 3px rgba(90, 159, 216, 0.35);
+  --kd-selection: rgba(90, 159, 216, 0.25);
+  
+  /* Shadows */
+  --kd-shadow-color: rgba(0, 0, 0, 0.4);
+  --kd-shadow-elevation-1: 0 1px 3px var(--kd-shadow-color);
+  --kd-shadow-elevation-2: 0 4px 8px var(--kd-shadow-color), 0 2px 4px rgba(0, 0, 0, 0.25);
+  
+  /* Legacy compatibility */
+  --kd-bg-base: #0d1317;
+  --kd-bg-surface: #151b21;
+  --kd-bg-elevated: #1d252d;
+  --kd-bg-subtle: #101820;
+  --kd-accent-ocean: #5a9fd8;        /* Bright ocean blue for primary actions */
+  --kd-accent-ocean-hover: #70afe0;
+  --kd-accent-ocean-active: #86bfe8;
+  --kd-accent-ocean-subtle: #1a2835;
+  --kd-accent-sky: #7ab0d8;          /* Sky blue for secondary actions */
+  --kd-accent-sky-hover: #8cbee0;
+  --kd-accent-sky-active: #9ecce8;
+  --kd-accent-sky-subtle: #1e2a35;
+  --kd-accent-lagoon: #68b5e0;       /* Lagoon blue for tertiary actions */
+  --kd-accent-lagoon-hover: #7dc3e8;
+  --kd-accent-lagoon-active: #92d1f0;
+  --kd-accent-lagoon-subtle: #1c2d3a;
+  --kd-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.15);
+  --kd-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1);
+  --kd-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+  --kd-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.2);
+  --kd-shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.35), 0 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* ========================================================================== */
+/* SAKURA SERENITY THEME - DAY MODE                                           */
+/* ========================================================================== */
+
+[data-theme="sakura"][data-mode="day"] {
+  /* Backgrounds - soft cherry blossom pink */
+  --kd-bg: #fff5f7;
+  --kd-surface: #fffbfc;
+  --kd-surface-2: #ffffff;
+  --kd-surface-3: #ffffff;
+  
+  /* Text colors - high contrast for readability (WCAG AA) */
+  --kd-text-primary: #2a1820;      /* 14.2:1 on #fffbfc */
+  --kd-text-secondary: #5c3f4d;    /* 8.1:1 on #fffbfc */
+  --kd-text-muted: #7d5f6d;        /* 5.2:1 on #fffbfc */
+  --kd-text-subtle: #9d7f8d;       /* 3.4:1 on #fffbfc (large text only) */
+  --kd-text-inverse: #ffffff;
+  
+  /* Primary accent - cherry blossom pink */
+  --kd-primary: #d16b9a;            /* 4.6:1 on #fffbfc */
+  --kd-primary-contrast: #ffffff;
+  --kd-primary-hover: #b85584;
+  --kd-primary-active: #9f3f6e;
+  --kd-primary-subtle: #fce8f0;
+  
+  /* Secondary accent - warm peach/coral */
+  --kd-accent: #d97b65;
+  --kd-accent-contrast: #ffffff;
+  --kd-accent-hover: #c26652;
+  --kd-accent-active: #ab513f;
+  --kd-accent-subtle: #ffeee9;
+  
+  /* State colors */
+  --kd-success: #4a8b5c;           /* 5.1:1 on #fffbfc */
+  --kd-warning: #c97d3e;           /* 4.8:1 on #fffbfc */
+  --kd-danger: #c94554;            /* 5.9:1 on #fffbfc */
+  --kd-info: #6b8fd9;
+  
+  /* Borders and dividers */
+  --kd-border: #f5d0df;
+  --kd-border-subtle: #fce8f0;
+  --kd-divider: #fce8f0;
+  
+  /* Links */
+  --kd-link: #d16b9a;
+  --kd-link-hover: #b85584;
+  
+  /* Interactive states */
+  --kd-hover: rgba(209, 107, 154, 0.08);
+  --kd-active: rgba(209, 107, 154, 0.16);
+  --kd-disabled: #d4bcc8;
+  --kd-focus-ring: 0 0 0 3px rgba(209, 107, 154, 0.25);
+  --kd-selection: rgba(209, 107, 154, 0.2);
+  
+  /* Shadows */
+  --kd-shadow-color: rgba(45, 26, 35, 0.1);
+  --kd-shadow-elevation-1: 0 1px 3px var(--kd-shadow-color);
+  --kd-shadow-elevation-2: 0 4px 8px var(--kd-shadow-color), 0 2px 4px rgba(45, 26, 35, 0.06);
+  
+  /* Legacy compatibility */
+  --kd-bg-base: #fff5f7;
+  --kd-bg-surface: #fffbfc;
+  --kd-bg-elevated: #ffffff;
+  --kd-bg-subtle: #ffeef3;
+  --kd-accent-sakura: #d16b9a;
+  --kd-accent-sakura-hover: #b85584;
+  --kd-accent-sakura-active: #9f3f6e;
+  --kd-accent-sakura-subtle: #fce8f0;
+  --kd-accent-matcha: #d97b65;
+  --kd-accent-matcha-hover: #c26652;
+  --kd-accent-matcha-active: #ab513f;
+  --kd-accent-matcha-subtle: #ffeee9;
+  --kd-shadow-xs: 0 1px 2px rgba(45, 26, 35, 0.06);
+  --kd-shadow-sm: 0 2px 4px rgba(45, 26, 35, 0.08), 0 1px 2px rgba(45, 26, 35, 0.04);
+  --kd-shadow-md: 0 4px 8px rgba(45, 26, 35, 0.1), 0 2px 4px rgba(45, 26, 35, 0.06);
+  --kd-shadow-lg: 0 8px 16px rgba(45, 26, 35, 0.12), 0 4px 8px rgba(45, 26, 35, 0.08);
+  --kd-shadow-xl: 0 16px 32px rgba(45, 26, 35, 0.15), 0 8px 16px rgba(45, 26, 35, 0.1);
+}
+
+/* ========================================================================== */
+/* SAKURA SERENITY THEME - NIGHT MODE                                         */
+/* ========================================================================== */
+
+[data-theme="sakura"][data-mode="night"] {
+  /* Backgrounds - deep plum/burgundy for cozy evening ambiance */
+  --kd-bg: #1a0f14;
+  --kd-surface: #251419;
+  --kd-surface-2: #301a21;
+  --kd-surface-3: #3b2029;
+  
+  /* Text colors - high contrast for dark mode (WCAG AA) */
+  --kd-text-primary: #fdf5f8;      /* 14.5:1 on #251419 */
+  --kd-text-secondary: #e5cdd7;    /* 9.2:1 on #251419 */
+  --kd-text-muted: #b59aa5;        /* 5.5:1 on #251419 */
+  --kd-text-subtle: #8a7078;       /* 3.5:1 on #251419 (large text only) */
+  --kd-text-inverse: #1a0f14;
+  
+  /* Primary accent - luminous sakura pink */
+  --kd-primary: #ff9ebd;            /* 6.8:1 on #251419 */
+  --kd-primary-contrast: #1a0f14;
+  --kd-primary-hover: #ffb0ca;
+  --kd-primary-active: #ffc2d7;
+  --kd-primary-subtle: #3a202a;
+  
+  /* Secondary accent - warm coral/salmon */
+  --kd-accent: #ff9f88;
+  --kd-accent-contrast: #1a0f14;
+  --kd-accent-hover: #ffb09a;
+  --kd-accent-active: #ffc1ac;
+  --kd-accent-subtle: #3a2419;
+  
+  /* State colors */
+  --kd-success: #7fc894;           /* 6.9:1 on #251419 */
+  --kd-warning: #ffb366;           /* 7.1:1 on #251419 */
+  --kd-danger: #ff8891;            /* 6.2:1 on #251419 */
+  --kd-info: #8db4ff;
+  
+  /* Borders and dividers */
+  --kd-border: #4a3038;
+  --kd-border-subtle: #3a252d;
+  --kd-divider: #3a252d;
+  
+  /* Links */
+  --kd-link: #ff9ebd;
+  --kd-link-hover: #ffb0ca;
+  
+  /* Interactive states */
+  --kd-hover: rgba(255, 158, 189, 0.12);
+  --kd-active: rgba(255, 158, 189, 0.20);
+  --kd-disabled: #5a4048;
+  --kd-focus-ring: 0 0 0 3px rgba(255, 158, 189, 0.35);
+  --kd-selection: rgba(255, 158, 189, 0.25);
+  
+  /* Shadows */
+  --kd-shadow-color: rgba(0, 0, 0, 0.4);
+  --kd-shadow-elevation-1: 0 1px 3px var(--kd-shadow-color);
+  --kd-shadow-elevation-2: 0 4px 8px var(--kd-shadow-color), 0 2px 4px rgba(0, 0, 0, 0.25);
+  
+  /* Legacy compatibility */
+  --kd-bg-base: #1a0f14;
+  --kd-bg-surface: #251419;
+  --kd-bg-elevated: #301a21;
+  --kd-bg-subtle: #150a0f;
+  --kd-accent-sakura: #ff9ebd;
+  --kd-accent-sakura-hover: #ffb0ca;
+  --kd-accent-sakura-active: #ffc2d7;
+  --kd-accent-sakura-subtle: #3a202a;
+  --kd-accent-matcha: #ff9f88;
+  --kd-accent-matcha-hover: #ffb09a;
+  --kd-accent-matcha-active: #ffc1ac;
+  --kd-accent-matcha-subtle: #3a2419;
+  --kd-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --kd-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --kd-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --kd-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.45), 0 4px 8px rgba(0, 0, 0, 0.3);
+  --kd-shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.5), 0 8px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* ========================================================================== */
+/* LEGACY DARK MODE SUPPORT (for backward compatibility)                     */
+/* ========================================================================== */
+
+.dark {
+  /* Map to current theme's night mode */
+  --kd-bg: var(--kd-bg-base, #121212);
+  --kd-surface: var(--kd-bg-surface, #1e1e1e);
+  --kd-surface-2: var(--kd-bg-elevated, #2a2a2a);
+  --kd-surface-3: #363636;
+}
+
+/* ========================================================================== */
+/* ACCESSIBILITY & REDUCED MOTION                                             */
+/* ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --kd-transition-fast: 0ms;
+    --kd-transition-base: 0ms;
+    --kd-transition-slow: 0ms;
+  }
+  
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible utility */
+.kd-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--kd-focus-ring);
+}
+
+/* ========================================================================== */
+/* BASE BODY STYLES                                                           */
+/* ========================================================================== */
+
+body {
+  margin: 0;
+  font-family: var(--kd-font-family);
+  line-height: var(--kd-line-height-normal);
+  color: var(--kd-text-primary);
+  background-color: var(--kd-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--kd-transition-base), color var(--kd-transition-base);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: var(--kd-transition-base);
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}

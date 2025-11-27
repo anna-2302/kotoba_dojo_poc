@@ -33,8 +33,12 @@ client = TestClient(app)
 @pytest.fixture(scope="function")
 def setup_database():
     """Create test database before each test."""
+    # Drop all tables first to ensure clean state
+    Base.metadata.drop_all(bind=engine)
+    # Then create all tables
     Base.metadata.create_all(bind=engine)
     yield
+    # Clean up after test
     Base.metadata.drop_all(bind=engine)
 
 
@@ -195,6 +199,196 @@ def test_settings_persistence_across_requests(setup_database):
     assert data["dark_mode"] is True
     assert data["music_enabled"] is True
     assert data["music_volume"] == 0.8
+
+
+def test_theme_mode_default(setup_database):
+    """Test that GET /api/settings returns default theme_mode value."""
+    response = client.get("/api/settings")
+    
+    assert response.status_code == 200
+    data = response.json()
+    
+    # Check default theme_mode value (Phase 3)
+    assert "theme_mode" in data
+    assert data["theme_mode"] == "day"
+    assert data["visual_theme"] == "mizuiro"
+
+
+def test_update_theme_mode(setup_database):
+    """Test updating theme_mode setting."""
+    # First get default settings
+    client.get("/api/settings")
+    
+    # Update theme mode to night
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "night"}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["theme_mode"] == "night"
+    
+    # Verify persistence
+    response = client.get("/api/settings")
+    assert response.status_code == 200
+    assert response.json()["theme_mode"] == "night"
+
+
+def test_theme_mode_validation(setup_database):
+    """Test that theme_mode only accepts 'day' or 'night' values."""
+    client.get("/api/settings")
+    
+    # Test invalid theme_mode
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "invalid"}
+    )
+    assert response.status_code == 422  # Validation error
+    
+    # Test valid values
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "day"}
+    )
+    assert response.status_code == 200
+    assert response.json()["theme_mode"] == "day"
+    
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "night"}
+    )
+    assert response.status_code == 200
+    assert response.json()["theme_mode"] == "night"
+
+
+def test_backward_compatibility_dark_mode_to_theme_mode(setup_database):
+    """Test that setting dark_mode updates theme_mode (backward compatibility)."""
+    client.get("/api/settings")
+    
+    # Set dark_mode to True
+    response = client.put(
+        "/api/settings",
+        json={"dark_mode": True}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["dark_mode"] is True
+    assert data["theme_mode"] == "night"  # Should be synced
+    
+    # Set dark_mode to False
+    response = client.put(
+        "/api/settings",
+        json={"dark_mode": False}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["dark_mode"] is False
+    assert data["theme_mode"] == "day"  # Should be synced
+
+
+def test_backward_compatibility_theme_mode_to_dark_mode(setup_database):
+    """Test that setting theme_mode updates dark_mode (backward compatibility)."""
+    client.get("/api/settings")
+    
+    # Set theme_mode to night
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "night"}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["theme_mode"] == "night"
+    assert data["dark_mode"] is True  # Should be synced
+    
+    # Set theme_mode to day
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "day"}
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["theme_mode"] == "day"
+    assert data["dark_mode"] is False  # Should be synced
+
+
+def test_theme_and_visual_theme_update(setup_database):
+    """Test updating both visual_theme and theme_mode together."""
+    client.get("/api/settings")
+    
+    # Update both theme settings
+    response = client.put(
+        "/api/settings",
+        json={
+            "visual_theme": "sakura",
+            "theme_mode": "night"
+        }
+    )
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["visual_theme"] == "sakura"
+    assert data["theme_mode"] == "night"
+    
+    # Verify persistence
+    response = client.get("/api/settings")
+    data = response.json()
+    assert data["visual_theme"] == "sakura"
+    assert data["theme_mode"] == "night"
+
+
+def test_theme_mode_doesnt_affect_other_settings(setup_database):
+    """Test that updating theme_mode doesn't affect other settings."""
+    # Get default settings
+    client.get("/api/settings")
+    
+    # Set music settings
+    client.put("/api/settings", json={
+        "music_enabled": True,
+        "music_volume": 0.7
+    })
+    
+    # Update theme_mode
+    response = client.put(
+        "/api/settings",
+        json={"theme_mode": "night"}
+    )
+    
+    assert response.status_code == 200
+    
+    # Verify music settings unchanged
+    response = client.get("/api/settings")
+    data = response.json()
+    assert data["theme_mode"] == "night"
+    assert data["music_enabled"] is True
+    assert data["music_volume"] == 0.7
+
+
+def test_complete_theme_settings_roundtrip(setup_database):
+    """Test GET/PUT roundtrip with all theme-related fields."""
+    client.get("/api/settings")
+    
+    # Update all theme-related settings
+    update_payload = {
+        "visual_theme": "sakura",
+        "theme_mode": "night",
+        "dark_mode": True  # Should match theme_mode
+    }
+    
+    response = client.put("/api/settings", json=update_payload)
+    assert response.status_code == 200
+    
+    # Get and verify all fields persisted correctly
+    response = client.get("/api/settings")
+    data = response.json()
+    
+    assert data["visual_theme"] == "sakura"
+    assert data["theme_mode"] == "night"
+    assert data["dark_mode"] is True
 
 
 if __name__ == "__main__":

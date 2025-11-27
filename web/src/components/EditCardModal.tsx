@@ -80,22 +80,27 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 flex items-center justify-center z-50 p-4"
+      style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-xl)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            <h2 className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
               Edit Card
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
+              className="text-2xl"
+              style={{ color: 'var(--kd-text-muted)' }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-text-secondary)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-text-muted)')}
             >
               ×
             </button>
@@ -105,8 +110,8 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Front */}
             <div>
-              <label htmlFor="front" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Front <span className="text-red-500">*</span>
+              <label htmlFor="front" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
+                Front <span style={{ color: 'var(--kd-danger)' }}>*</span>
               </label>
               <textarea
                 id="front"
@@ -114,14 +119,26 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 onChange={(e) => setFront(e.target.value)}
                 required
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 rounded-md shadow-sm"
+                style={{
+                  backgroundColor: 'var(--kd-surface-2)',
+                  color: 'var(--kd-text-primary)',
+                  border: '1px solid var(--kd-border)',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                  e.currentTarget.style.outlineOffset = '0px';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                }}
               />
             </div>
 
             {/* Back */}
             <div>
-              <label htmlFor="back" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Back <span className="text-red-500">*</span>
+              <label htmlFor="back" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
+                Back <span style={{ color: 'var(--kd-danger)' }}>*</span>
               </label>
               <textarea
                 id="back"
@@ -129,13 +146,25 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 onChange={(e) => setBack(e.target.value)}
                 required
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 rounded-md shadow-sm"
+                style={{
+                  backgroundColor: 'var(--kd-surface-2)',
+                  color: 'var(--kd-text-primary)',
+                  border: '1px solid var(--kd-border)',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                  e.currentTarget.style.outlineOffset = '0px';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                }}
               />
             </div>
 
             {/* Notes */}
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label htmlFor="notes" className="block text-sm font-medium mb-1" style={{ color: 'var(--kd-text-primary)' }}>
                 Notes
               </label>
               <textarea
@@ -144,13 +173,25 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 placeholder="Optional notes..."
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 rounded-md shadow-sm"
+                style={{
+                  backgroundColor: 'var(--kd-surface-2)',
+                  color: 'var(--kd-text-primary)',
+                  border: '1px solid var(--kd-border)',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                  e.currentTarget.style.outlineOffset = '0px';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                }}
               />
             </div>
 
             {/* Tags */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
                 Tags
               </label>
               
@@ -159,13 +200,15 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                 {selectedTags.map(tag => (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm"
+                    style={{ backgroundColor: 'var(--kd-primary)', color: 'var(--kd-text-inverse)', opacity: 0.9 }}
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleTagToggle(tag)}
-                      className="hover:text-blue-600 dark:hover:text-blue-400"
+                      onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}
+                      onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
                     >
                       ×
                     </button>
@@ -176,7 +219,7 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
               {/* Available Tags */}
               {availableTags.length > 0 && (
                 <div className="mb-3">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">Available tags:</p>
+                  <p className="text-xs mb-2" style={{ color: 'var(--kd-text-secondary)' }}>Available tags:</p>
                   <div className="flex flex-wrap gap-2">
                     {availableTags
                       .filter(tag => !selectedTags.includes(tag))
@@ -185,7 +228,10 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                           key={tag}
                           type="button"
                           onClick={() => handleTagToggle(tag)}
-                          className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                          className="px-2 py-1 text-xs rounded transition-colors"
+                          style={{ backgroundColor: 'var(--kd-surface-2)', color: 'var(--kd-text-primary)' }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-hover)')}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)')}
                         >
                           + {tag}
                         </button>
@@ -207,12 +253,27 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
                       handleAddNewTag();
                     }
                   }}
-                  className="flex-1 px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="flex-1 px-3 py-1 text-sm rounded-md shadow-sm"
+                  style={{
+                    backgroundColor: 'var(--kd-surface-2)',
+                    color: 'var(--kd-text-primary)',
+                    border: '1px solid var(--kd-border)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                    e.currentTarget.style.outlineOffset = '0px';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                  }}
                 />
                 <button
                   type="button"
                   onClick={handleAddNewTag}
-                  className="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                  className="px-3 py-1 text-sm rounded transition-colors"
+                  style={{ backgroundColor: 'var(--kd-surface-2)', color: 'var(--kd-text-primary)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-hover)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)')}
                 >
                   Add
                 </button>
@@ -223,14 +284,34 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
             <div className="flex gap-3 pt-4">
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow-sm transition-colors"
+                className="flex-1 px-4 py-2 font-medium rounded-md shadow-sm transition-all"
+                style={{ backgroundColor: 'var(--kd-primary)', color: 'var(--kd-text-inverse)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+                onFocus={(e) => {
+                  e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                  e.currentTarget.style.outlineOffset = '2px';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                }}
               >
                 Save Changes
               </button>
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-md shadow-sm transition-colors"
+                className="px-4 py-2 font-medium rounded-md shadow-sm transition-colors"
+                style={{ backgroundColor: 'var(--kd-surface-2)', color: 'var(--kd-text-primary)' }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-hover)')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)')}
+                onFocus={(e) => {
+                  e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                  e.currentTarget.style.outlineOffset = '2px';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.outline = 'none';
+                }}
               >
                 Cancel
               </button>

@@ -189,7 +189,7 @@ export function ReviewPage() {
             )}
             
             <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-              <p>Keyboard shortcuts: Space (flip) • 1/Numpad1 (Again) • 2/Numpad2 (Good) • 3/Numpad3 (Easy) • Esc (exit)</p>
+              <p>Keyboard shortcuts: Space (flip) • 1 (Again) • 2 (Good) • 3 (Easy) • Esc (exit)</p>
             </div>
           </>
         )}

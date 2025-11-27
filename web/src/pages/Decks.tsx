@@ -6,6 +6,7 @@ import type { Deck, CreateDeckRequest } from '../types/deck';
 import { DeckCard } from '../components/decks/DeckCard';
 import { DeckForm } from '../components/decks/DeckForm';
 import { DeckStatsModal } from '../components/decks/DeckStatsModal';
+import { DeleteDeckModal } from '../components/decks/DeleteDeckModal';
 import { AppHeader } from '../components/AppHeader';
 
 export const Decks: React.FC = () => {
@@ -15,8 +16,10 @@ export const Decks: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDeck, setSelectedDeck] = useState<Deck | null>(null);
   const [selectedDeckId, setSelectedDeckId] = useState<number | null>(null);
+  const [deckToDelete, setDeckToDelete] = useState<{ id: number; name: string } | null>(null);
 
   // Handle Escape key for modals
   useEffect(() => {
@@ -81,6 +84,8 @@ export const Decks: React.FC = () => {
     mutationFn: deckApi.deleteDeck,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['decks'] });
+      setIsDeleteModalOpen(false);
+      setDeckToDelete(null);
     },
   });
 
@@ -95,8 +100,16 @@ export const Decks: React.FC = () => {
   };
 
   const handleDeleteDeck = (deckId: number) => {
-    if (window.confirm('Are you sure you want to delete this deck? All cards will be deleted.')) {
-      deleteMutation.mutate(deckId);
+    const deck = deckList.find(d => d.id === deckId);
+    if (deck) {
+      setDeckToDelete({ id: deckId, name: deck.name });
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const confirmDeleteDeck = () => {
+    if (deckToDelete) {
+      deleteMutation.mutate(deckToDelete.id);
     }
   };
 
@@ -118,8 +131,8 @@ export const Decks: React.FC = () => {
     return (
       <>
         <AppHeader />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-xl text-gray-600 dark:text-gray-400">Loading decks...</div>
+        <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--kd-bg)' }}>
+          <div className="text-xl" style={{ color: 'var(--kd-text-secondary)' }}>Loading decks...</div>
         </div>
       </>
     );
@@ -128,13 +141,27 @@ export const Decks: React.FC = () => {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="container mx-auto px-4">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Decks</h1>
+        <h1 className="text-3xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>My Decks</h1>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="px-6 py-3 text-sm font-medium text-white bg-pink-500 rounded-md hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-md"
+          className="px-6 py-3 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: 'var(--kd-accent)',
+            color: 'var(--kd-text-inverse)',
+            boxShadow: 'var(--kd-shadow-md)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         >
           + Create New Deck
         </button>
@@ -143,15 +170,28 @@ export const Decks: React.FC = () => {
       {deckList.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">📚</div>
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-semibold mb-2" style={{ color: 'var(--kd-text-primary)' }}>
             No decks yet
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="mb-6" style={{ color: 'var(--kd-text-secondary)' }}>
             Create your first deck to start studying!
           </p>
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="px-6 py-3 text-sm font-medium text-white bg-pink-500 rounded-md hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-pink-500"
+            className="px-6 py-3 text-sm font-medium rounded-md focus:outline-none transition-all"
+            style={{
+              backgroundColor: 'var(--kd-accent)',
+              color: 'var(--kd-text-inverse)',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+              e.currentTarget.style.outlineOffset = '2px';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.outline = 'none';
+            }}
           >
             Create Deck
           </button>
@@ -173,16 +213,27 @@ export const Decks: React.FC = () => {
 
       {/* Create Deck Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full m-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+          onClick={() => setIsCreateModalOpen(false)}
+        >
+          <div 
+            className="rounded-lg max-w-lg w-full m-4" 
+            style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-xl)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
                   Create New Deck
                 </h2>
                 <button
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
+                  className="text-2xl transition-colors"
+                  style={{ color: 'var(--kd-text-muted)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-text-secondary)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-text-muted)')}
                 >
                   ×
                 </button>
@@ -199,11 +250,22 @@ export const Decks: React.FC = () => {
 
       {/* Edit Deck Modal */}
       {isEditModalOpen && selectedDeck && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full m-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+          onClick={() => {
+            setIsEditModalOpen(false);
+            setSelectedDeck(null);
+          }}
+        >
+          <div 
+            className="rounded-lg max-w-lg w-full m-4" 
+            style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-xl)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
                   Edit Deck
                 </h2>
                 <button
@@ -211,7 +273,10 @@ export const Decks: React.FC = () => {
                     setIsEditModalOpen(false);
                     setSelectedDeck(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
+                  className="text-2xl transition-colors"
+                  style={{ color: 'var(--kd-text-muted)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-text-secondary)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-text-muted)')}
                 >
                   ×
                 </button>
@@ -238,6 +303,17 @@ export const Decks: React.FC = () => {
           setIsStatsModalOpen(false);
           setSelectedDeckId(null);
         }}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteDeckModal
+        deckName={deckToDelete?.name || ''}
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setDeckToDelete(null);
+        }}
+        onConfirm={confirmDeleteDeck}
       />
         </div>
       </div>

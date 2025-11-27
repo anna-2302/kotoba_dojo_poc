@@ -19,14 +19,14 @@ export const DeckCard: React.FC<DeckCardProps> = ({
   const hasDueCards = deck.due_count > 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+    <div className="rounded-lg p-6 transition-shadow" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }} onMouseEnter={(e) => (e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)')} onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)')}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+          <h3 className="text-lg font-semibold mb-1" style={{ color: 'var(--kd-text-primary)' }}>
             {deck.name}
           </h3>
           {deck.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+            <p className="text-sm line-clamp-2" style={{ color: 'var(--kd-text-secondary)' }}>
               {deck.description}
             </p>
           )}
@@ -35,23 +35,23 @@ export const DeckCard: React.FC<DeckCardProps> = ({
 
       <div className="grid grid-cols-3 gap-4 mb-4">
         <div className="text-center">
-          <div className="text-2xl font-bold text-pink-500">{deck.due_count || 0}</div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">Due</div>
+          <div className="text-2xl font-bold" style={{ color: 'var(--kd-primary)' }}>{deck.due_count || 0}</div>
+          <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>Due</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-blue-500">{deck.new_count || 0}</div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">New</div>
+          <div className="text-2xl font-bold" style={{ color: 'var(--kd-info)' }}>{deck.new_count || 0}</div>
+          <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>New</div>
         </div>
         <div className="text-center">
-          <div className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+          <div className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
             {deck.card_count || 0}
           </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">Total</div>
+          <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>Total</div>
         </div>
       </div>
 
       {(deck.new_per_day || deck.review_per_day) && (
-        <div className="text-xs text-gray-600 dark:text-gray-400 mb-4 space-y-1">
+        <div className="text-xs mb-4 space-y-1" style={{ color: 'var(--kd-text-secondary)' }}>
           {deck.new_per_day && (
             <div>Daily new limit: {deck.new_per_day}</div>
           )}
@@ -65,18 +65,43 @@ export const DeckCard: React.FC<DeckCardProps> = ({
         <button
           onClick={() => onStudy(deck.id)}
           disabled={!hasDueCards}
-          className={`flex-1 px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 transition-colors ${
-            hasDueCards
-              ? 'bg-pink-500 hover:bg-pink-600'
-              : 'bg-gray-400 cursor-not-allowed'
-          }`}
+          className="flex-1 px-4 py-2 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: hasDueCards ? 'var(--kd-primary)' : 'var(--kd-disabled)',
+            color: 'var(--kd-text-inverse)',
+            cursor: hasDueCards ? 'pointer' : 'not-allowed',
+            opacity: hasDueCards ? 1 : 0.6,
+          }}
+          onMouseEnter={(e) => hasDueCards && (e.currentTarget.style.opacity = '0.9')}
+          onMouseLeave={(e) => hasDueCards && (e.currentTarget.style.opacity = '1')}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         >
           {hasDueCards ? 'Study Now' : 'No Cards Due'}
         </button>
 
         <button
           onClick={() => onViewStats(deck.id)}
-          className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500"
+          className="px-3 py-2 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-hover)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)')}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
           title="View Statistics"
         >
           📊
@@ -84,7 +109,21 @@ export const DeckCard: React.FC<DeckCardProps> = ({
 
         <button
           onClick={() => onEdit(deck)}
-          className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-pink-500"
+          className="px-3 py-2 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-text-primary)',
+            border: '1px solid var(--kd-border)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-hover)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)')}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
           title="Edit Deck"
         >
           ✏️
@@ -92,7 +131,25 @@ export const DeckCard: React.FC<DeckCardProps> = ({
 
         <button
           onClick={() => onDelete(deck.id)}
-          className="px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="px-3 py-2 text-sm font-medium rounded-md focus:outline-none transition-all"
+          style={{
+            backgroundColor: 'var(--kd-surface-2)',
+            color: 'var(--kd-danger)',
+            border: '1px solid var(--kd-border)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(184, 40, 56, 0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)';
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
           title="Delete Deck"
         >
           🗑️

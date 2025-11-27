@@ -189,6 +189,7 @@ def upgrade() -> None:
         sa.Column('dark_mode', sa.Boolean(), nullable=False, server_default='false'),
         sa.Column('music_enabled', sa.Boolean(), nullable=False, server_default='false'),
         sa.Column('music_volume', sa.Float(), nullable=False, server_default='0.5'),
+        sa.Column('visual_theme', sa.String(length=50), nullable=False, server_default='mizuiro'),
         sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
         sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),

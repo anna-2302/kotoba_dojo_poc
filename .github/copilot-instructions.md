@@ -24,12 +24,22 @@ Spaced-repetition flashcard app (SRS) for Japanese learning. FastAPI backend + R
 
 ### Frontend Structure (React + TypeScript)
 - **API Client** (`web/src/api/`): Axios-based, typed with `types.ts`, organized by resource
-  - `client.ts`: Base axios instance + exports (reviewApi, decksApi, cardsApi, tagsApi)
+  - `client.ts`: Base axios instance + API function exports (reviewApi, decksApi, cardsApi, tagsApi, statsApi, importApi)
+  - `types.ts`: All TypeScript type definitions
+  - `index.ts`: Barrel export re-exporting all APIs and types
   - Each API function is strongly typed with request/response types
-- **Pages** (`web/src/pages/`): One component per route (DashboardPage, ReviewPage, BrowsePage, CardsPage, StatsPage)
-- **State**: TanStack Query (React Query) for server state, Zustand for UI state (theme)
-- **Routing**: React Router v7 in `App.tsx`, routes: `/`, `/review`, `/browse`, `/cards`, `/stats`
-- **Styling**: Tailwind CSS v4 with dark mode support
+- **Pages** (`web/src/pages/`): One component per route (DashboardPage, ReviewPage, BrowsePage, CardsPage, StatsPage, SettingsPage, WelcomePage)
+- **Components** (`web/src/components/`):
+  - `ThemeProvider.tsx`: Dark mode context (localStorage + system preference)
+  - `AmbientAudioPlayer.tsx`: Background music player (global, controlled by settings)
+  - `AppHeader.tsx`: Navigation header (used across pages)
+  - `DarkModeToggle.tsx`, `MusicPlayer.tsx`: Settings controls
+- **State Management**:
+  - TanStack Query v5 for server state (queries have 5min staleTime by default)
+  - ThemeProvider context for dark mode (syncs with UserSettings)
+  - No Zustand currently (was in original plan)
+- **Routing**: React Router v7 in `App.tsx`, routes: `/`, `/welcome`, `/review`, `/browse`, `/cards`, `/decks`, `/stats`, `/settings`
+- **Styling**: Tailwind CSS v4 with dark mode support (all components MUST support `dark:` variants)
 
 ## Critical Patterns
 
@@ -93,9 +103,13 @@ pytest tests/test_api_*.py    # Specific API tests
 
 ### Frontend API Integration
 1. Define types in `web/src/api/types.ts`
-2. Add API function in `web/src/api/client.ts` or resource file
-3. Use TanStack Query (`useQuery`/`useMutation`) in components - set staleTime: 5 min (already configured)
-4. Import from `web/src/api` barrel export (`index.ts`)
+2. Add API function in `web/src/api/client.ts` (export from relevant API object: reviewApi, cardsApi, etc.)
+3. Update `web/src/api/index.ts` barrel export if needed (already exports all APIs + types)
+4. Use TanStack Query (`useQuery`/`useMutation`) in page components
+   - Queries have default `staleTime: 5 * 60 * 1000` (5 minutes) configured in queryClient
+   - Use `queryClient.invalidateQueries()` in mutations to refresh data
+   - Example: `useQuery({ queryKey: ['cards', filters], queryFn: () => cardsApi.list(filters) })`
+5. Import APIs and types correctly - see "Type imports" pitfall below
 
 ## Common Pitfalls
 
@@ -110,8 +124,12 @@ pytest tests/test_api_*.py    # Specific API tests
    - **ALWAYS** use `import type { ... }` for type-only imports
    - **NEVER** mix types and values in same import: `import { api, Type }` ❌
    - **CORRECT**: `import { api } from './api'; import type { Type } from './api';` ✅
+   - **Alternative**: `import { reviewApi, type ReviewCard } from '../api';` (inline type modifier)
    - Violating this causes: "does not provide an export named 'X'" errors in Vite
    - **Troubleshooting**: Run `.\check-imports.ps1` in `web/` directory or see `web/IMPORT_TROUBLESHOOTING.md`
+9. **Component structure** - Pages use `AppHeader` for navigation (already styled with dark mode)
+10. **Music player** - `AmbientAudioPlayer` is global component in App.tsx, controlled by UserSettings
+11. **TanStack Query keys** - Use consistent patterns: `['cards', filters]`, `['decks']`, `['settings']`, `['queue-stats']`
 
 ## Key Files Reference
 
@@ -126,19 +144,28 @@ pytest tests/test_api_*.py    # Specific API tests
 ### Frontend
 - `web/src/App.tsx` - Router setup
 - `web/src/api/client.ts` - Axios base + typed API functions
+- `web/src/api/types.ts` - All TypeScript interfaces and types
+- `web/src/api/index.ts` - Barrel export for easy imports
 - `web/src/pages/ReviewPage.tsx` - Review session UI with keyboard shortcuts (Space, 1/2/3, Esc)
 - `web/src/pages/DashboardPage.tsx` - Home page, auto-refreshes every 60s
+- `web/src/pages/StatsPage.tsx` - Statistics display (today's reviews, retention, streaks)
+- `web/src/pages/WelcomePage.tsx` - First-run onboarding with deck import
+- `web/src/components/ThemeProvider.tsx` - Dark mode context (localStorage + system preference detection)
+- `web/src/components/AmbientAudioPlayer.tsx` - Global background music (controlled by settings)
 
 ### Config & Setup
 - `docker-compose.yml` - PostgreSQL service (user: kotoba_user, db: kotoba_dojo)
 - `requirements.txt` - Backend dependencies
 - `alembic.ini` + `alembic/versions/001_initial.py` - Database schema
 - `web/package.json` - Frontend dependencies (React 19, TanStack Query 5, React Router 7)
+- `server/app/db/seed_data.py` - Prebuilt N4 decks (30 vocab + 20 kanji cards)
+- `.env` - Environment variables (DB URL, CORS origins, daily limits)
 
 ## Documentation References
 - **PRD.MD**: Requirements document (lines 58-73 for SM-2, lines 91-96 for daily limits)
-- **QUICK_REFERENCE.md**: Commands cheatsheet
-- **PHASE*_SUMMARY.md**: Implementation summaries for each completed phase
+- **README.md**: Project overview, features checklist, tech stack
+- **SETUP_INSTRUCTIONS.md**: Initial setup and database migration instructions
+- **IMPORT_TROUBLESHOOTING.md** (`web/`): Guide to fixing TypeScript import errors with `verbatimModuleSyntax`
 - **Swagger UI**: http://localhost:8000/docs (explore API interactively)
 
 ## When Stuck
@@ -147,3 +174,4 @@ pytest tests/test_api_*.py    # Specific API tests
 3. Run tests early: `pytest tests/test_<feature>.py -v`
 4. Check browser console + network tab (frontend), `pytest --pdb` (backend)
 5. Review PRD.MD lines for business logic requirements
+6. For import errors, run `.\check-imports.ps1` (frontend)

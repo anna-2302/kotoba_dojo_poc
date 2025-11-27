@@ -159,68 +159,45 @@ export const BrowsePage: React.FC = () => {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="min-h-screen" style={{ backgroundColor: 'var(--kd-bg)' }}>
         {/* Content */}
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              <h1 className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
                 Browse Cards
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
                 Search, filter, and manage your flashcards
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/cards?create=true')}
-                className="px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-md transition-colors flex items-center gap-2"
-              >
-                <span>+</span>
-                Create Card
-              </button>
-              {cardsData && (
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  {cardsData.total} card{cardsData.total !== 1 ? 's' : ''}
-                </span>
-              )}
-            </div>
+            <button
+              onClick={() => navigate('/cards?create=true')}
+              className="px-4 py-2 font-medium rounded-md transition-all flex items-center gap-2"
+              style={{
+                backgroundColor: 'var(--kd-accent)',
+                color: 'var(--kd-text-inverse)',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.9')}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+            >
+              <span>+</span>
+              Create Card
+            </button>
           </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
           {/* Sidebar - Filters */}
-          <div className="lg:col-span-1">
-            <CardFiltersComponent
+          <div className="lg:col-span-1 space-y-4">
+            <div className="sticky top-24">
+              <CardFiltersComponent
               filters={filters}
               decks={decks}
               tags={tags}
               onChange={handleFiltersChange}
               onReset={handleFiltersReset}
+              totalCards={cardsData?.total}
             />
-
-            {/* Keyboard shortcuts help */}
-            <div className="mt-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                Keyboard Shortcuts
-              </h3>
-              <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                <div className="flex justify-between">
-                  <span>Next card</span>
-                  <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">J</kbd>
-                </div>
-                <div className="flex justify-between">
-                  <span>Previous card</span>
-                  <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">K</kbd>
-                </div>
-                <div className="flex justify-between">
-                  <span>Edit</span>
-                  <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">Enter</kbd>
-                </div>
-                <div className="flex justify-between">
-                  <span>Suspend</span>
-                  <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">S</kbd>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -228,20 +205,22 @@ export const BrowsePage: React.FC = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Loading State */}
             {cardsLoading && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
-                <div className="text-blue-500 text-4xl mb-4">⏳</div>
-                <p className="text-gray-600 dark:text-gray-400">Loading cards...</p>
+              <div className="rounded-lg p-12 text-center" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+                <div className="text-4xl mb-4" style={{ color: 'var(--kd-primary)' }}>⏳</div>
+                <p style={{ color: 'var(--kd-text-secondary)' }}>Loading cards...</p>
               </div>
             )}
 
             {/* Error State */}
             {cardsError && (
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
-                <div className="text-red-500 text-4xl mb-4">⚠️</div>
-                <p className="text-red-600 dark:text-red-400 mb-2">Failed to load cards</p>
+              <div className="rounded-lg p-12 text-center" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+                <div className="text-4xl mb-4" style={{ color: 'var(--kd-danger)' }}>⚠️</div>
+                <p className="mb-2" style={{ color: 'var(--kd-danger)' }}>Failed to load cards</p>
                 <button
                   onClick={() => queryClient.invalidateQueries({ queryKey: ['cards'] })}
-                  className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  style={{ color: 'var(--kd-link)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--kd-link-hover)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--kd-link)')}
                 >
                   Try again
                 </button>
@@ -261,23 +240,61 @@ export const BrowsePage: React.FC = () => {
 
                 {/* Pagination */}
                 {cardsData.total_pages > 1 && (
-                  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                  <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
                     <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
                         Page {cardsData.page} of {cardsData.total_pages}
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={handlePreviousPage}
                           disabled={cardsData.page === 1}
-                          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 font-medium rounded-md transition-colors"
+                          className="px-4 py-2 font-medium rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          style={{
+                            backgroundColor: 'var(--kd-surface-2)',
+                            color: 'var(--kd-text-primary)',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (cardsData.page !== 1) {
+                              e.currentTarget.style.backgroundColor = 'var(--kd-hover)';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)';
+                          }}
+                          onFocus={(e) => {
+                            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                            e.currentTarget.style.outlineOffset = '2px';
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.outline = 'none';
+                          }}
                         >
                           Previous
                         </button>
                         <button
                           onClick={handleNextPage}
                           disabled={cardsData.page >= cardsData.total_pages}
-                          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 font-medium rounded-md transition-colors"
+                          className="px-4 py-2 font-medium rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                          style={{
+                            backgroundColor: 'var(--kd-surface-2)',
+                            color: 'var(--kd-text-primary)',
+                          }}
+                          onMouseEnter={(e) => {
+                            if (cardsData.page < cardsData.total_pages) {
+                              e.currentTarget.style.backgroundColor = 'var(--kd-hover)';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = 'var(--kd-surface-2)';
+                          }}
+                          onFocus={(e) => {
+                            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                            e.currentTarget.style.outlineOffset = '2px';
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.outline = 'none';
+                          }}
                         >
                           Next
                         </button>

@@ -3,10 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { cardsApi, decksApi, tagsApi } from '../api';
 import type { CardCreateRequest, Card } from '../api';
-import { CardForm } from '../components/CardForm';
+import { CreateCardModal } from '../components/CreateCardModal';
 import { CardList } from '../components/CardList';
 import { CardFilters as CardFiltersComponent } from '../components/CardFilters';
 import { EditCardModal } from '../components/EditCardModal';
+import { SuspendModal } from '../components/SuspendModal';
+import { DeleteCardModal } from '../components/DeleteCardModal';
 import { AppHeader } from '../components/AppHeader';
 
 interface CardFilters {
@@ -23,9 +25,11 @@ export const CardsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // UI State
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState<number | null>(null);
   const [editingCard, setEditingCard] = useState<Card | null>(null);
+  const [showSuspendModal, setShowSuspendModal] = useState(false);
+  const [cardToDelete, setCardToDelete] = useState<Card | null>(null);
   const [filters, setFilters] = useState<CardFilters>({
     page: 1,
     page_size: 50,
@@ -34,7 +38,7 @@ export const CardsPage: React.FC = () => {
   // Check for create param on mount
   useEffect(() => {
     if (searchParams.get('create') === 'true') {
-      setShowCreateForm(true);
+      setShowCreateModal(true);
       // Clean up URL parameter
       searchParams.delete('create');
       setSearchParams(searchParams, { replace: true });
@@ -78,7 +82,7 @@ export const CardsPage: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cards'] });
       queryClient.invalidateQueries({ queryKey: ['decks'] });
-      setShowCreateForm(false);
+      setShowCreateModal(false);
       showSuccessNotification('Card created successfully');
     },
     onError: (error: any) => {
@@ -155,13 +159,19 @@ export const CardsPage: React.FC = () => {
   };
 
   const handleDeleteCard = (card: Card) => {
-    if (confirm(`Delete card "${card.front}"? This cannot be undone.`)) {
-      deleteMutation.mutate(card.id);
+    setCardToDelete(card);
+  };
+
+  const confirmDeleteCard = () => {
+    if (cardToDelete) {
+      deleteMutation.mutate(cardToDelete.id);
+      setCardToDelete(null);
     }
   };
 
   const handleSuspendToggle = (card: Card) => {
-    suspendMutation.mutate({ id: card.id, suspended: !card.suspended });
+    // Show sensei modal instead of suspending
+    setShowSuspendModal(true);
   };
 
   const handleMoveCard = (card: Card, deckId: number) => {
@@ -188,47 +198,52 @@ export const CardsPage: React.FC = () => {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
+      <div className="min-h-screen py-6" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
             Card Management
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <p className="mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
             Create, edit, and organize your flashcards
           </p>
         </div>
         <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="px-6 py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-lg shadow-md transition-all duration-200"
+          onClick={() => setShowCreateModal(true)}
+          className="px-6 py-3 font-semibold rounded-lg transition-all duration-200"
+          style={{
+            backgroundColor: 'var(--kd-primary)',
+            color: 'var(--kd-text-inverse)',
+            boxShadow: 'var(--kd-shadow-md)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = '0.9';
+            e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = '1';
+            e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)';
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+            e.currentTarget.style.outlineOffset = '2px';
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.outline = 'none';
+          }}
         >
-          {showCreateForm ? 'Hide Form' : '+ Create Card'}
+          + Create Card
         </button>
       </div>
-
-      {/* Create Form Section */}
-      {showCreateForm && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Create New Card
-          </h2>
-          <CardForm
-            decks={deckList}
-            availableTags={tagList}
-            onSubmit={handleCreateCard}
-            isLoading={createMutation.isPending}
-            error={createMutation.isError ? 'Failed to create card' : undefined}
-          />
-        </div>
-      )}
 
       {/* Filters and Content */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Sidebar Filters */}
         <div className="lg:col-span-1">
-          <CardFiltersComponent
+          <div className="sticky top-24">
+            <CardFiltersComponent
             filters={{
               deck_id: filters.deck_id,
               state: filters.state,
@@ -256,14 +271,15 @@ export const CardsPage: React.FC = () => {
             }}
             onReset={handleResetFilters}
           />
+          </div>
         </div>
 
         {/* Main Content */}
         <div className="lg:col-span-3 space-y-4">
           {/* Loading State */}
           {cardsLoading && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-              <p className="text-gray-600 dark:text-gray-400">Loading cards...</p>
+            <div className="rounded-lg p-8 text-center" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+              <p style={{ color: 'var(--kd-text-secondary)' }}>Loading cards...</p>
             </div>
           )}
 
@@ -285,17 +301,43 @@ export const CardsPage: React.FC = () => {
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600"
+                    className="px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    style={{
+                      backgroundColor: 'var(--kd-surface)',
+                      color: 'var(--kd-text-primary)',
+                      border: '1px solid var(--kd-border)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.currentTarget.disabled) {
+                        e.currentTarget.style.backgroundColor = 'var(--kd-hover)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--kd-surface)';
+                    }}
                   >
                     Previous
                   </button>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span style={{ color: 'var(--kd-text-secondary)' }}>
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600"
+                    className="px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    style={{
+                      backgroundColor: 'var(--kd-surface)',
+                      color: 'var(--kd-text-primary)',
+                      border: '1px solid var(--kd-border)'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!e.currentTarget.disabled) {
+                        e.currentTarget.style.backgroundColor = 'var(--kd-hover)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--kd-surface)';
+                    }}
                   >
                     Next
                   </button>
@@ -313,6 +355,31 @@ export const CardsPage: React.FC = () => {
         onClose={() => setEditingCard(null)}
         onSave={handleSaveCard}
         availableTags={tagList.map(t => t.name)}
+      />
+
+      {/* Create Modal */}
+      <CreateCardModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateCard}
+        decks={deckList}
+        availableTags={tagList}
+        isLoading={createMutation.isPending}
+        error={createMutation.isError ? 'Failed to create card' : undefined}
+      />
+
+      {/* Suspend Modal */}
+      <SuspendModal
+        isOpen={showSuspendModal}
+        onClose={() => setShowSuspendModal(false)}
+      />
+
+      {/* Delete Modal */}
+      <DeleteCardModal
+        card={cardToDelete}
+        isOpen={!!cardToDelete}
+        onClose={() => setCardToDelete(null)}
+        onConfirm={confirmDeleteCard}
       />
 
       {/* Notifications */}
@@ -362,11 +429,12 @@ const Notifications: React.FC = () => {
       {items.map(item => (
         <div
           key={item.id}
-          className={`p-4 rounded-lg shadow-lg text-white font-medium ${
-            item.type === 'success'
-              ? 'bg-green-500'
-              : 'bg-red-500'
-          }`}
+          className="p-4 rounded-lg font-medium"
+          style={{
+            backgroundColor: item.type === 'success' ? 'var(--kd-success)' : 'var(--kd-danger)',
+            color: 'var(--kd-text-inverse)',
+            boxShadow: 'var(--kd-shadow-lg)'
+          }}
         >
           {item.message}
         </div>
