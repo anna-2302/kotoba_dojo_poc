@@ -78,34 +78,39 @@ kotoba_dojo_poc/
 │   │   └── main.py                  # FastAPI application
 │   ├── tests/                       # Comprehensive test suite
 │   └── requirements.txt             # Python dependencies
-├── web/                             # React frontend
+├── web/                             # React TypeScript frontend
 │   ├── src/
-│   │   ├── pages/                   # Page components
-│   │   │   ├── DashboardPage.tsx   # Main dashboard
-│   │   │   ├── ReviewPage.tsx      # Review session
-│   │   │   ├── BrowsePage.tsx      # Browse/search
-│   │   │   ├── CardsPage.tsx       # Card list
-│   │   │   ├── StatsPage.tsx       # Statistics
-│   │   │   ├── SettingsPage.tsx    # Settings/preferences
-│   │   │   └── WelcomePage.tsx     # First-run onboarding
-│   │   ├── components/              # Reusable components
-│   │   │   ├── ThemeProvider.tsx   # Dark mode context
-│   │   │   ├── DarkModeToggle.tsx  # Theme switcher
-│   │   │   ├── MusicPlayer.tsx     # Audio player
-│   │   │   └── ImportBanner.tsx    # Import prompt
-│   │   ├── api/                     # API client
-│   │   │   ├── client.ts           # Axios instance
-│   │   │   ├── types.ts            # TypeScript types
-│   │   │   └── index.ts            # API exports
-│   │   ├── App.tsx                  # Root component
-│   │   └── main.tsx                 # Entry point
-│   ├── package.json                 # Node dependencies
-│   └── vite.config.ts              # Vite configuration
-├── api_review.py                    # Review API (root level)
-├── queue_builder.py                 # Queue logic
-├── scheduler.py                     # SM-2 scheduler
-├── start_backend.bat                # Backend startup script
-└── docker-compose.yml               # PostgreSQL container
+│   │   ├── pages/                   # Route components (7 pages)
+│   │   │   ├── DashboardPage.tsx   # Session-based dashboard
+│   │   │   ├── EnhancedReviewPage.tsx  # Phase 4 structured review
+│   │   │   ├── BrowsePage.tsx      # Advanced card browser
+│   │   │   ├── CardsPage.tsx       # Card management interface
+│   │   │   ├── StatsPage.tsx       # Progress analytics
+│   │   │   ├── SettingsPage.tsx    # User preferences
+│   │   │   └── WelcomePage.tsx     # Onboarding flow
+│   │   ├── components/              # 25+ reusable components
+│   │   │   ├── ThemeProvider.tsx   # Dark/light/system theme
+│   │   │   ├── SessionControls.tsx # Enhanced review interface
+│   │   │   ├── SessionProgressIndicator.tsx # Progress visualization
+│   │   │   ├── AmbientAudioPlayer.tsx # Background music
+│   │   │   └── AppHeader.tsx       # Navigation header
+│   │   ├── api/                     # Typed API client
+│   │   │   ├── client.ts           # Axios with interceptors
+│   │   │   ├── types.ts            # Full TypeScript definitions
+│   │   │   └── index.ts            # Barrel exports
+│   │   ├── App.tsx                  # Router and providers
+│   │   └── main.tsx                 # React 18 entry point
+│   ├── package.json                 # Modern dependencies
+│   └── vite.config.ts              # Vite 7 configuration
+├── api_review.py                    # Enhanced review session API
+├── queue_builder.py                 # Smart queue building logic
+├── scheduler.py                     # SM-2 algorithm implementation
+├── docker-compose.yml               # PostgreSQL service
+├── alembic.ini                      # Database migration config
+└── alembic/versions/                # Schema evolution history
+    ├── 001_initial.py               # Base schema
+    ├── 002_add_theme_mode.py        # Theme system
+    └── 003_add_session_config.py    # Session configuration
 ```
 
 ## 🚀 Quick Start (5 Minutes)
@@ -281,30 +286,45 @@ Once the backend is running:
 
 ### Key Endpoints
 
+**Enhanced Review Sessions (Phase 4):**
 ```
-GET  /api/review/stats        - Queue statistics
-POST /api/review/start        - Start review session
-POST /api/review/answer       - Submit card rating
+POST /api/review/build-session    - Build structured session
+POST /api/review/answer           - Submit answer with section management
+GET  /api/review/stats/{mode}     - Session statistics (all/new/due/learning)
+POST /api/review/end-session      - Complete session with analytics
+```
 
-GET  /api/decks               - List all decks
-POST /api/decks               - Create deck
-GET  /api/decks/{id}          - Get deck details
-PUT  /api/decks/{id}          - Update deck
-DELETE /api/decks/{id}        - Delete deck
+**Deck Management:**
+```
+GET    /api/decks                - List all decks with card counts
+POST   /api/decks                - Create deck with validation
+GET    /api/decks/{id}           - Get deck with full details
+PUT    /api/decks/{id}           - Update deck settings
+DELETE /api/decks/{id}           - Delete deck (cascades to cards)
+```
 
-GET  /api/cards               - Browse/search cards
-POST /api/cards               - Create card
-PUT  /api/cards/{id}          - Update card
-POST /api/cards/{id}/suspend  - Suspend card
+**Card Management:**
+```
+GET    /api/cards                - Browse/search with advanced filters
+POST   /api/cards                - Create card with tags
+GET    /api/cards/{id}           - Get card with scheduling state
+PUT    /api/cards/{id}           - Update card content
+POST   /api/cards/{id}/suspend   - Suspend/resume card
+DELETE /api/cards/{id}           - Delete card
+```
 
-GET  /api/tags                - List all tags
-POST /api/tags                - Create tag
+**Settings & Preferences:**
+```
+GET    /api/settings             - Get user settings (theme, music, limits)
+PUT    /api/settings             - Update preferences with validation
+```
 
-GET  /api/settings            - Get user settings
-PUT  /api/settings            - Update settings
-
-POST /api/import/prebuilt     - Import N4 decks
-GET  /api/import/status       - Check import status
+**Content & Analytics:**
+```
+POST   /api/import/prebuilt      - Import JLPT N4 decks
+GET    /api/import/status        - Check import status
+GET    /api/stats/overview       - Learning analytics and progress
+GET    /api/tags                 - List tags with usage counts
 ```
 
 ## 🎓 Usage Guide
@@ -382,26 +402,44 @@ VITE_API_URL=http://localhost:8000
 
 ### Backend Won't Start
 
-**Issue**: "Default user not found" error
+**Issue**: "Default user not found" or "Database connection failed"
 
 **Solution**:
 ```bash
+# Ensure PostgreSQL is running
+docker-compose up -d
+
+# Initialize database
 cd server
 python init_db.py
+
+# Run migrations
+alembic upgrade head
+```
+
+### Frontend Build Errors
+
+**Issue**: TypeScript import errors or "does not provide an export"
+
+**Solution**: Run import checker
+```bash
+cd web
+.\check-imports.ps1
+# Or manually fix type imports with 'import type { ... }'
 ```
 
 ### CORS Errors
 
 **Issue**: "Access blocked by CORS policy"
 
-**Solution**: Backend not running or wrong port
+**Solution**:
 ```bash
-# Check backend is running
-curl http://localhost:8000/health
+# Verify backend is running
+Invoke-RestMethod http://localhost:8000/health
 
-# Restart backend
+# Restart backend with correct CORS settings
 cd server
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --host 0.0.0.0
 ```
 
 ### Database Errors
@@ -453,21 +491,29 @@ npm install
 
 See `FIX_CORS_ERROR.md` for detailed troubleshooting.
 
-## 📊 Development Status
+## 📏 Development Status
 
-### Completed Phases ✅
+### Completed Implementation ✅
 
-- ✅ **Phase 1**: Database & Models (Backend foundation)
-- ✅ **Phase 2**: SM-2 Scheduler (Spaced repetition algorithm)
-- ✅ **Phase 3**: Review Session (API endpoints, queue logic)
-- ✅ **Phase 4**: Cards & Decks CRUD (Full management)
-- ✅ **Phase 5.1**: Dashboard (Today's queue, stats)
-- ✅ **Phase 5.2**: Browse/Search (Filtering, text search)
-- ✅ **Phase 5.3**: Deck Management (UI for decks)
-- ✅ **Phase 5.4**: Card Management (UI for cards)
-- ✅ **Phase 5.5**: Statistics (Progress tracking)
-- ✅ **Phase 5.6**: Settings & Preferences (Dark mode, music)
-- ✅ **Phase 5.7**: Prebuilt Decks Import (N4 starter decks)
+- ✅ **Foundation**: Complete database schema with 9 tables
+- ✅ **Backend API**: 6 API modules with full CRUD operations
+- ✅ **SM-2 Scheduling**: Advanced spaced repetition algorithm
+- ✅ **Enhanced Review Sessions**: Structured New → Learning → Review progression
+- ✅ **Session Management**: Smart queue building with daily limits
+- ✅ **Frontend Application**: React TypeScript with 7 pages, 25+ components
+- ✅ **Advanced Theming**: Dark/light/system modes with visual customization
+- ✅ **Session Configuration**: Configurable learning steps and review settings
+- ✅ **Analytics & Statistics**: Progress tracking with retention analysis
+- ✅ **Content Management**: Full CRUD for decks, cards, and tags
+- ✅ **Prebuilt Content**: JLPT N4 vocabulary and kanji decks
+- ✅ **User Experience**: Keyboard shortcuts, mobile-responsive, accessibility
+
+### Latest Updates (November 2025)
+
+- ✅ **Unified Review Experience**: Removed classic/enhanced toggle, Phase 4 sessions only
+- ✅ **Session-Based Dashboard**: Smart queue visualization with section progress
+- ✅ **Enhanced Navigation**: Streamlined routing with single review experience
+- ✅ **Code Consolidation**: Removed legacy components, cleaner codebase
 
 ### Requirements Fulfilled
 
@@ -485,7 +531,33 @@ See `FIX_CORS_ERROR.md` for detailed troubleshooting.
 - ✅ REQ-11: Background music controls
 - ✅ REQ-12: Prebuilt N4 decks (50 sample cards)
 
-**POC Status**: 🎉 **FEATURE-COMPLETE** - Ready for user testing!
+**Current Status**: 🎉 **PHASE 4+ COMPLETE** - Advanced session-based spaced repetition system ready for use!
+
+## 🎯 Usage Guide
+
+### Getting Started
+
+1. **Visit the Dashboard** at http://localhost:5173
+   - View session-ready cards organized by New/Learning/Review
+   - See daily progress and queue statistics
+
+2. **Start a Review Session**
+   - Click "Start Review Session" or press `R`
+   - Experience structured progression: New → Learning → Review
+   - Use keyboard shortcuts: `Space` (flip), `1/2/3` (rate), `Esc` (exit)
+
+3. **Manage Your Content**
+   - **Cards Page**: Add, edit, suspend cards with full search/filter
+   - **Decks Page**: Organize cards into themed collections
+   - **Browse Page**: Advanced filtering by deck, tag, state, or search
+
+4. **Track Your Progress**
+   - **Stats Page**: View retention rates, streaks, and learning analytics
+   - **Dashboard**: Monitor daily progress and session completion
+
+5. **Customize Your Experience**
+   - **Settings**: Configure learning steps, daily limits, theme, music
+   - Import JLPT N4 starter decks for immediate practice
 
 ## 📦 Deployment
 
@@ -545,8 +617,8 @@ For issues, questions, or feedback:
 
 **Made with ❤️ for Japanese language learners**
 
-**Version**: 0.1.0 (POC)
+**Version**: 0.2.0 (Phase 4+ Enhanced)
 
-**Last Updated**: 2024-11-27
+**Last Updated**: 2025-11-28
 
-**Status**: ✅ Feature-Complete and Production-Ready!
+**Status**: ✅ Advanced Session-Based Review System Complete!
