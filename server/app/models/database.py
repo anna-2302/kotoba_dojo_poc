@@ -88,7 +88,7 @@ class Card(Base):
     notes = Column(Text, nullable=True)
     
     # Card state (REQ-2, line 45)
-    suspended = Column(Boolean, default=False, nullable=False, index=True)
+    suspended = Column(Boolean, default=False, nullable=False)
     
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

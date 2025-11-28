@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     )
     
     # Database
-    database_url: str = "postgresql://kotoba_user:kotoba_pass@localhost:5432/kotoba_dojo"
+    # Using SQLite for quick setup (switch to PostgreSQL in production)
+    database_url: str = "sqlite:///./kotoba_dojo.db"
+    # database_url: str = "postgresql://kotoba_user:kotoba_pass@localhost:5432/kotoba_dojo"
     
     # API
     secret_key: str = "dev-secret-key-change-in-production"
