@@ -291,15 +291,18 @@ def get_today_counter(db: Session, user_id: int, today: date = None) -> DailyCou
     if today is None:
         today = datetime.utcnow().date()
     
+    # Convert date to datetime at midnight for database query
+    today_dt = datetime.combine(today, datetime.min.time())
+    
     counter = db.query(DailyCounter).filter(
         DailyCounter.user_id == user_id,
-        DailyCounter.date == today
+        DailyCounter.date == today_dt
     ).first()
     
     if not counter:
         counter = DailyCounter(
             user_id=user_id,
-            date=today,
+            date=today_dt,
             reviews_done=0,
             introduced_new=0,
             again_count=0,
@@ -309,8 +312,7 @@ def get_today_counter(db: Session, user_id: int, today: date = None) -> DailyCou
             reviews_done_per_deck={}
         )
         db.add(counter)
-        db.commit()
-        db.refresh(counter)
+        db.flush()  # Use flush instead of commit to keep transaction open
     
     return counter
 

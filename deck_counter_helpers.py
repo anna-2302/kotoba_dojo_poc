@@ -12,23 +12,25 @@ def get_today_deck_counter(db: Session, user_id: int, deck_id: int, today: date 
     if today is None:
         today = datetime.utcnow().date()
     
+    # Convert date to datetime at midnight
+    today_dt = datetime.combine(today, datetime.min.time())
+    
     counter = db.query(DailyDeckCounter).filter(
         DailyDeckCounter.user_id == user_id,
         DailyDeckCounter.deck_id == deck_id,
-        DailyDeckCounter.date == today
+        DailyDeckCounter.date == today_dt
     ).first()
     
     if not counter:
         counter = DailyDeckCounter(
             user_id=user_id,
             deck_id=deck_id,
-            date=today,
+            date=today_dt,
             introduced_new=0,
             reviews_done=0
         )
         db.add(counter)
-        db.commit()
-        db.refresh(counter)
+        db.flush()  # Use flush instead of commit to keep transaction open
     
     return counter
 
@@ -41,8 +43,7 @@ def update_deck_counters(db: Session, user_id: int, deck_id: int, introduced_new
     counter = get_today_deck_counter(db, user_id, deck_id, today)
     counter.introduced_new += introduced_new
     counter.reviews_done += reviews_done
-    db.commit()
-    db.refresh(counter)
+    # No commit here - let the caller handle transaction
 
 
 def get_deck_usage_today(db: Session, user_id: int, deck_ids: list, today: date = None) -> dict:
@@ -52,10 +53,13 @@ def get_deck_usage_today(db: Session, user_id: int, deck_ids: list, today: date 
     if today is None:
         today = datetime.utcnow().date()
     
+    # Convert date to datetime at midnight
+    today_dt = datetime.combine(today, datetime.min.time())
+    
     counters = db.query(DailyDeckCounter).filter(
         DailyDeckCounter.user_id == user_id,
         DailyDeckCounter.deck_id.in_(deck_ids),
-        DailyDeckCounter.date == today
+        DailyDeckCounter.date == today_dt
     ).all()
     
     usage = {}
