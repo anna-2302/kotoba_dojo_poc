@@ -24,7 +24,7 @@ from app.schemas.schemas import (
     DeckListResponse,
     DeckStats
 )
-from queue_builder import get_daily_limits
+from queue_builder import get_global_limits
 
 router = APIRouter()
 

@@ -5,7 +5,7 @@ Schema based on PRD lines 400-461.
 from datetime import datetime
 from sqlalchemy import (
     Column, Integer, String, Text, Boolean, DateTime, 
-    Float, ForeignKey, Table, Index, CheckConstraint
+    Float, ForeignKey, Table, Index, CheckConstraint, JSON
 )
 from sqlalchemy.orm import relationship
 from app.db.session import Base
@@ -38,6 +38,7 @@ class User(Base):
     decks = relationship("Deck", back_populates="user", cascade="all, delete-orphan")
     settings = relationship("UserSettings", back_populates="user", uselist=False, cascade="all, delete-orphan")
     daily_counters = relationship("DailyCounter", back_populates="user", cascade="all, delete-orphan")
+    daily_deck_counters = relationship("DailyDeckCounter", back_populates="user", cascade="all, delete-orphan")
 
 
 class Deck(Base):
@@ -62,6 +63,7 @@ class Deck(Base):
     # Relationships
     user = relationship("User", back_populates="decks")
     cards = relationship("Card", back_populates="deck", cascade="all, delete-orphan")
+    daily_deck_counters = relationship("DailyDeckCounter", back_populates="deck", cascade="all, delete-orphan")
     
     # Indexes
     __table_args__ = (
@@ -229,9 +231,42 @@ class DailyCounter(Base):
     # Relationships
     user = relationship("User", back_populates="daily_counters")
     
+    # Phase 4: Per-deck tracking as JSON (for All Decks sessions)
+    introduced_new_per_deck = Column(JSON, default=dict, nullable=False)  # {deck_id: count}
+    reviews_done_per_deck = Column(JSON, default=dict, nullable=False)    # {deck_id: count}
+    
     # Indexes
     __table_args__ = (
         Index('ix_daily_counters_user_date', 'user_id', 'date', unique=True),
+    )
+
+
+class DailyDeckCounter(Base):
+    """
+    Phase 4: Per-deck daily counters for fine-grained limit enforcement.
+    Tracks introduced_new and reviews_done per deck per day.
+    """
+    __tablename__ = 'daily_deck_counters'
+    
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    deck_id = Column(Integer, ForeignKey('decks.id', ondelete='CASCADE'), nullable=False, index=True)
+    date = Column(DateTime, nullable=False)  # Date at 00:00 in user's timezone
+    
+    # Per-deck counters
+    introduced_new = Column(Integer, default=0, nullable=False)
+    reviews_done = Column(Integer, default=0, nullable=False)
+    
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    user = relationship("User", back_populates="daily_deck_counters")
+    deck = relationship("Deck", back_populates="daily_deck_counters")
+    
+    # Indexes
+    __table_args__ = (
+        Index('ix_daily_deck_counters_user_deck_date', 'user_id', 'deck_id', 'date', unique=True),
     )
 
 
@@ -256,6 +291,15 @@ class UserSettings(Base):
     music_volume = Column(Float, default=0.5, nullable=False)
     visual_theme = Column(String(50), default='mizuiro', nullable=False)  # 'mizuiro' or 'sakura'
     theme_mode = Column(String(10), default='day', nullable=False)  # 'day' or 'night' (Phase 3)
+    
+    # Session configuration (Phase 4)
+    max_session_size = Column(Integer, default=50, nullable=False)  # Maximum cards per session
+    preferred_session_scope = Column(String(20), default='all', nullable=False)  # 'all' or 'deck'
+    preferred_deck_ids = Column(JSON, default=list, nullable=False)  # List of preferred deck IDs for deck sessions
+    new_section_limit = Column(Integer, default=15, nullable=False)  # Max new cards per session
+    learning_section_limit = Column(Integer, default=20, nullable=False)  # Max learning cards per session
+    review_section_limit = Column(Integer, default=30, nullable=False)  # Max review cards per session
+    auto_start_sessions = Column(Boolean, default=False, nullable=False)  # Auto-start next session after completion
     
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

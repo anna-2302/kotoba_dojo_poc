@@ -5,7 +5,6 @@
  * 
  * Legacy wrapper around new unified theme system
  */
-import React from 'react';
 import { useTheme } from './ThemeProvider';
 
 interface DarkModeToggleProps {

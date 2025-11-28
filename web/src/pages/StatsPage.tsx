@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { reviewApi } from '../api';
+import { reviewApi, statsApi } from '../api';
+import type { SessionStatsAnalytics } from '../api';
 import { StatsCard } from '../components/StatsCard';
 import { AppHeader } from '../components/AppHeader';
 
@@ -28,6 +29,13 @@ export const StatsPage: React.FC = () => {
       const response = await reviewApi.getStats();
       return response as unknown as ReviewStats;
     },
+    staleTime: 60000, // 1 minute
+  });
+
+  // Fetch session analytics
+  const { data: sessionStats, isLoading: sessionLoading } = useQuery<SessionStatsAnalytics>({
+    queryKey: ['session-stats'],
+    queryFn: () => statsApi.getSessions(),
     staleTime: 60000, // 1 minute
   });
 
@@ -78,7 +86,7 @@ export const StatsPage: React.FC = () => {
     };
   }, [stats]);
 
-  if (isLoading) {
+  if (isLoading || sessionLoading) {
     return (
       <>
         <AppHeader />
@@ -112,32 +120,57 @@ export const StatsPage: React.FC = () => {
       <div className="min-h-screen" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Sensei's Wisdom Banner */}
+        {/* Session Analytics Banner */}
         <div className="mb-6 rounded-lg p-6" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-xl)' }}>
           <div className="text-center mb-4">
-            <div className="text-6xl mb-2">🥋</div>
+            <div className="text-6xl mb-2">📊</div>
             <h2 className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
-              Sensei's Wisdom
+              Session Analytics
             </h2>
+            <p style={{ color: 'var(--kd-text-secondary)' }}>
+              Detailed insights from your review sessions
+            </p>
           </div>
           
-          <div className="space-y-4" style={{ color: 'var(--kd-text-secondary)' }}>
-            <p className="text-center italic">
-              "Young learner, why do you seek numbers when the journey itself is the treasure?"
-            </p>
-            
-            <p>
-              The true measure of progress is not found in charts and graphs, but in the knowledge growing within you. Every card you master, every review you complete—these are victories that no statistic can fully capture.
-            </p>
-            
-            <p>
-              Remember: <span className="font-semibold" style={{ color: 'var(--kd-primary)' }}>The wise student trusts the path, not the map.</span> Focus on your practice, and the results will follow naturally.
-            </p>
-            
-            <p className="text-sm text-center" style={{ color: 'var(--kd-text-muted)' }}>
-              💫 The advanced statistics are being forged in the dojo... but between us, you don't need them yet. Trust your journey.
-            </p>
-          </div>
+          {sessionStats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold" style={{ color: 'var(--kd-primary)' }}>
+                  {sessionStats.total_sessions}
+                </div>
+                <div className="text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
+                  Total Sessions
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-2xl font-bold" style={{ color: 'var(--kd-success)' }}>
+                  {Math.round(sessionStats.average_completion_rate)}%
+                </div>
+                <div className="text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
+                  Avg Completion
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-2xl font-bold" style={{ color: 'var(--kd-warning)' }}>
+                  {sessionStats.section_completions.new_section_completions}
+                </div>
+                <div className="text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
+                  New Sections Done
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <div className="text-2xl font-bold" style={{ color: 'var(--kd-info)' }}>
+                  {sessionStats.section_completions.review_section_completions}
+                </div>
+                <div className="text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
+                  Review Sections Done
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Header */}
@@ -177,6 +210,103 @@ export const StatsPage: React.FC = () => {
             subtext="SM-2 difficulty"
           />
         </div>
+
+        {/* Session Performance Trends */}
+        {sessionStats && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
+              Session Performance
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--kd-text-primary)' }}>Performance Breakdown</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span style={{ color: 'var(--kd-text-secondary)' }}>Again:</span>
+                    <span style={{ color: 'var(--kd-danger)' }}>{Math.round(sessionStats.performance_trends.again_percentage)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: 'var(--kd-text-secondary)' }}>Good:</span>
+                    <span style={{ color: 'var(--kd-primary)' }}>{Math.round(sessionStats.performance_trends.good_percentage)}%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: 'var(--kd-text-secondary)' }}>Easy:</span>
+                    <span style={{ color: 'var(--kd-success)' }}>{Math.round(sessionStats.performance_trends.easy_percentage)}%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--kd-text-primary)' }}>Section Completions</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span style={{ color: 'var(--kd-text-secondary)' }}>New:</span>
+                    <span style={{ color: 'var(--kd-warning)' }}>{sessionStats.section_completions.new_section_completions}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: 'var(--kd-text-secondary)' }}>Learning:</span>
+                    <span style={{ color: 'var(--kd-info)' }}>{sessionStats.section_completions.learning_section_completions}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: 'var(--kd-text-secondary)' }}>Review:</span>
+                    <span style={{ color: 'var(--kd-success)' }}>{sessionStats.section_completions.review_section_completions}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+                <h3 className="font-semibold mb-2" style={{ color: 'var(--kd-text-primary)' }}>Trend Analysis</h3>
+                <div className="text-center">
+                  <div className="text-2xl mb-2">
+                    {sessionStats.performance_trends.improvement_trend === 'improving' ? '📈' : 
+                     sessionStats.performance_trends.improvement_trend === 'declining' ? '📉' : '📊'}
+                  </div>
+                  <div className="text-sm font-medium" style={{ 
+                    color: sessionStats.performance_trends.improvement_trend === 'improving' ? 'var(--kd-success)' :
+                           sessionStats.performance_trends.improvement_trend === 'declining' ? 'var(--kd-danger)' :
+                           'var(--kd-info)'
+                  }}>
+                    {sessionStats.performance_trends.improvement_trend === 'improving' ? 'Improving' :
+                     sessionStats.performance_trends.improvement_trend === 'declining' ? 'Needs Focus' : 'Stable'}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Daily Session History */}
+            <div className="rounded-lg p-4" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+              <h3 className="font-semibold mb-4" style={{ color: 'var(--kd-text-primary)' }}>Recent Session Activity</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {sessionStats.daily_sessions.slice(0, 6).map((day, index) => (
+                  <div key={index} className="p-3 rounded" style={{ backgroundColor: 'var(--kd-surface-2)' }}>
+                    <div className="text-xs font-medium mb-1" style={{ color: 'var(--kd-text-secondary)' }}>
+                      {new Date(day.date).toLocaleDateString()}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="text-sm font-semibold" style={{ color: 'var(--kd-text-primary)' }}>
+                          {day.session_count} sessions
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>
+                          {day.cards_reviewed} cards
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold" style={{ color: 'var(--kd-success)' }}>
+                          {Math.round(day.completion_rate)}%
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>
+                          completed
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Rating Distribution */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+// Card component for displaying front/back content
 
 interface ReviewCardProps {
   front: string;

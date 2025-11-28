@@ -24,7 +24,17 @@ from schemas_review import (
     ReviewSessionResponse,
     ReviewAnswerRequest,
     ReviewAnswerResponse,
-    QueueStatsResponse
+    QueueStatsResponse,
+    # Phase 4 schemas
+    SessionBuildRequest,
+    SessionBuildResponse,
+    SessionSectionsResponse,
+    SessionStatsResponse,
+    SessionMetaResponse,
+    CardStubResponse,
+    DeckLimitsResponse,
+    ReviewAnswerEnhancedRequest,
+    ReviewAnswerEnhancedResponse
 )
 
 # Import scheduler and queue_builder from root level
@@ -51,6 +61,25 @@ def build_card_response(card: Card, db: Session) -> CardResponse:
     return cards_build(card, db)
 
 
+def card_stub_to_response(stub) -> CardStubResponse:
+    """Convert queue_builder CardStub to API response."""
+    return CardStubResponse(
+        id=stub.id,
+        deck_id=stub.deck_id,
+        front_preview=stub.front_preview,
+        state=stub.state,
+        tags=stub.tags,
+        due_at=stub.due_at.isoformat() if stub.due_at else None,
+        created_at=stub.created_at.isoformat() if stub.created_at else datetime.utcnow().isoformat()
+    )
+
+
+def generate_session_id() -> str:
+    """Generate a unique session ID."""
+    import uuid
+    return f"session_{uuid.uuid4().hex[:16]}"
+
+
 @router.get("/stats", response_model=QueueStatsResponse)
 def get_queue_stats(
     deck_ids: Optional[List[int]] = Query(None),
@@ -71,6 +100,83 @@ def get_queue_stats(
         stats["due_counts"] = filtered_counts
     
     return QueueStatsResponse(**stats)
+
+
+@router.get("/stats/session", response_model=SessionStatsResponse)
+def get_session_stats(
+    scope: str = Query("all", description="'all' for All Decks, 'deck' for Specific Deck"),
+    deck_id: Optional[int] = Query(None, description="Required if scope='deck'"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get session-based queue statistics showing counts per section (New, Learning, Review).
+    
+    Phase 4 PRD implementation: Shows structured session statistics instead of single next-card logic.
+    """
+    user = get_default_user(db)
+    
+    # Validate inputs
+    if scope not in ["all", "deck"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="scope must be 'all' or 'deck'"
+        )
+    
+    if scope == "deck" and deck_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="deck_id required when scope='deck'"
+        )
+    
+    try:
+        # Build session to get section counts
+        sections, meta = queue_builder.build_session_queue(
+            db, user.id, scope, deck_id
+        )
+        
+        # Get traditional stats for limits and daily progress
+        traditional_stats = queue_builder.get_queue_stats(db, user.id)
+        
+        # Structure section counts
+        section_counts = {
+            "new": len(sections.new),
+            "learning": len(sections.learning), 
+            "review": len(sections.review)
+        }
+        
+        # Calculate total available (respecting daily limits)
+        total_available = section_counts["learning"]  # Learning unlimited
+        total_available += min(section_counts["review"], traditional_stats["remaining"]["reviews"])
+        total_available += min(section_counts["new"], traditional_stats["remaining"]["new"])
+        
+        # Optional: Per-deck breakdown for All Decks sessions
+        deck_breakdown = None
+        if scope == "all" and len(sections.new + sections.learning + sections.review) > 0:
+            deck_breakdown = {}
+            all_cards = sections.new + sections.learning + sections.review
+            deck_names = {card.deck_id: f"Deck {card.deck_id}" for card in all_cards}
+            
+            for deck_id_key, deck_name in deck_names.items():
+                deck_breakdown[deck_name] = {
+                    "new": len([c for c in sections.new if c.deck_id == deck_id_key]),
+                    "learning": len([c for c in sections.learning if c.deck_id == deck_id_key]),
+                    "review": len([c for c in sections.review if c.deck_id == deck_id_key])
+                }
+        
+        return SessionStatsResponse(
+            sections=section_counts,
+            limits=traditional_stats["limits"],
+            today=traditional_stats["today"],
+            remaining=traditional_stats["remaining"],
+            total_available=total_available,
+            deck_breakdown=deck_breakdown
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to get session stats: {str(e)}"
+        )
 
 
 @router.post("/start", response_model=dict)
@@ -172,6 +278,157 @@ def get_next_card(
             "easy": preview_times["easy"].isoformat()
         }
     )
+
+
+@router.post("/session/build", response_model=SessionBuildResponse)
+def build_session(
+    request: SessionBuildRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Build a structured Phase 4 session with three sections (New → Learning → Review).
+    
+    Phase 4 PRD implementation:
+    - All Decks: Uses global limits + per-deck caps, round-robin allocation
+    - Specific Deck: Uses only that deck's limits, ignores global limits
+    """
+    user = get_default_user(db)
+    
+    # Validate request
+    if request.scope not in ["all", "deck"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="scope must be 'all' or 'deck'"
+        )
+    
+    if request.scope == "deck" and request.deck_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="deck_id required when scope='deck'"
+        )
+    
+    try:
+        # Build structured session using Phase 4 queue builder
+        sections, meta = queue_builder.build_session_queue(
+            db=db,
+            user_id=user.id,
+            scope=request.scope,
+            deck_id=request.deck_id
+        )
+        
+        # Convert to API response format
+        sections_response = SessionSectionsResponse(
+            new=[card_stub_to_response(stub) for stub in sections.new],
+            learning=[card_stub_to_response(stub) for stub in sections.learning],
+            review=[card_stub_to_response(stub) for stub in sections.review]
+        )
+        
+        # Convert per-deck limits
+        per_deck_limits = {}
+        for deck_id, limits in meta.per_deck_limits.items():
+            per_deck_limits[deck_id] = DeckLimitsResponse(
+                new_cap=limits.new_cap,
+                review_cap=limits.review_cap,
+                new_used=limits.new_used,
+                review_used=limits.review_used
+            )
+        
+        meta_response = SessionMetaResponse(
+            total_new=meta.total_new,
+            total_learning=meta.total_learning,
+            total_review=meta.total_review,
+            deck_order=meta.deck_order,
+            global_limits=meta.global_limits,
+            per_deck_limits=per_deck_limits
+        )
+        
+        session_id = generate_session_id()
+        
+        return SessionBuildResponse(
+            sections=sections_response,
+            meta=meta_response,
+            session_id=session_id
+        )
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to build session: {str(e)}"
+        )
+
+
+@router.post("/answer/enhanced", response_model=ReviewAnswerEnhancedResponse)
+def answer_card_enhanced(
+    answer: ReviewAnswerEnhancedRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Phase 4 enhanced answer endpoint that handles in-session repeats.
+    
+    Updates scheduler state on every rating but only logs Good/Easy ratings.
+    'Again' ratings trigger client-side reinsertion logic.
+    """
+    user = get_default_user(db)
+    
+    # Get card
+    card = db.query(Card).filter(
+        Card.id == answer.card_id,
+        Card.user_id == user.id
+    ).first()
+    
+    if not card:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Card {answer.card_id} not found"
+        )
+    
+    # Validate rating and section
+    if answer.rating not in ["again", "good", "easy"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid rating: {answer.rating}"
+        )
+    
+    if answer.section not in ["new", "learning", "review"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid section: {answer.section}"
+        )
+    
+    try:
+        # Process rating with scheduler (always updates state)
+        updated_state = scheduler.process_rating(
+            db, card, answer.rating, user.id
+        )
+        
+        # Determine if this was logged (Good/Easy only)
+        log_written = answer.rating in ["good", "easy"]
+        
+        # Determine if repeat was scheduled (Again only)
+        repeat_scheduled = answer.rating == "again"
+        
+        # Build response
+        return ReviewAnswerEnhancedResponse(
+            updated={
+                "state": updated_state.state if hasattr(updated_state, 'state') else card.sched_state.state,
+                "due_at": updated_state.due_at.isoformat() if hasattr(updated_state, 'due_at') else card.sched_state.due_at.isoformat(),
+                "interval_days": updated_state.interval_days if hasattr(updated_state, 'interval_days') else card.sched_state.interval_days,
+                "ease_factor": updated_state.ease_factor if hasattr(updated_state, 'ease_factor') else card.sched_state.ease_factor
+            },
+            log_written=log_written,
+            repeat_scheduled=repeat_scheduled
+        )
+        
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
 
 
 @router.post("/answer", response_model=dict)

@@ -4,7 +4,7 @@ import { ThemeProvider } from './components/ThemeProvider'
 import { SettingsSync } from './components/SettingsSync'
 import { AriaAnnouncer } from './components/AriaAnnouncer'
 import { DashboardPage } from './pages/DashboardPage'
-import { ReviewPage } from './pages/ReviewPage'
+import { EnhancedReviewPage } from './pages/EnhancedReviewPage'
 import { BrowsePage } from './pages/BrowsePage'
 import { CardsPage } from './pages/CardsPage'
 import { StatsPage } from './pages/StatsPage'
@@ -33,7 +33,7 @@ function App() {
           <Routes>
             <Route path="/" element={<DashboardPage />} />
             <Route path="/welcome" element={<WelcomePage />} />
-            <Route path="/review" element={<ReviewPage />} />
+            <Route path="/review" element={<EnhancedReviewPage />} />
             <Route path="/browse" element={<BrowsePage />} />
             <Route path="/cards" element={<CardsPage />} />
             <Route path="/decks" element={<Decks />} />

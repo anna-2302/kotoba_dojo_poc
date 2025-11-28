@@ -15,6 +15,16 @@ export type {
   ImportResponse,
   ImportStatus,
   TodayStats,
+  // Phase 4 types
+  SessionBuildRequest,
+  SessionBuildResponse,
+  ReviewAnswerEnhancedRequest,
+  ReviewAnswerEnhancedResponse,
+  CardStub,
+  SessionSections,
+  SessionMeta,
+  SessionStats,
+  SessionStatsAnalytics,
 } from './types';
 
 // Export client and API functions

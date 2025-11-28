@@ -2,34 +2,55 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { reviewApi, statsApi } from '../api';
-import { DueCountsCard } from '../components/DueCountsCard';
+import { SessionDueCountsCard } from '../components/SessionDueCountsCard';
 import { QuickStatsCard } from '../components/QuickStatsCard';
 import { AppHeader } from '../components/AppHeader';
 
 export function DashboardPage() {
   const navigate = useNavigate();
 
-  // Fetch queue stats
-  const { data: stats, isLoading, error, refetch } = useQuery({
-    queryKey: ['reviewStats'],
-    queryFn: reviewApi.getStats,
+  // Fetch session-based queue stats
+  const { data: sessionStats, isLoading: sessionLoading, error: sessionError, refetch: refetchSession } = useQuery({
+    queryKey: ['sessionStats', 'all'],
+    queryFn: () => reviewApi.getSessionStats('all'),
     refetchInterval: 60000, // Refetch every minute
     staleTime: 30000, // Consider stale after 30 seconds
   });
 
   // Fetch today's stats
-  const { data: todayStats, isLoading: todayLoading } = useQuery({
+  const { data: todayStats, isLoading: todayLoading, refetch: refetchToday } = useQuery({
     queryKey: ['todayStats'],
     queryFn: statsApi.getToday,
     refetchInterval: 60000, // Refetch every minute
     staleTime: 30000,
   });
 
+  // Refetch data when page becomes visible (e.g., returning from review)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refetchSession();
+        refetchToday();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [refetchSession, refetchToday]);
+
+  // Also refetch when component mounts (returning from navigation)
+  useEffect(() => {
+    refetchSession();
+    refetchToday();
+  }, []);
+
   // Keyboard shortcut: R to start review
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === 'r' || event.key === 'R') {
-        if (stats && stats.total_due > 0) {
+        const hasCards = sessionStats && sessionStats.total_available > 0;
+        
+        if (hasCards) {
           navigate('/review');
         }
       }
@@ -37,7 +58,7 @@ export function DashboardPage() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [navigate, stats]);
+  }, [navigate, sessionStats]);
 
   const handleStartReview = () => {
     navigate('/review');
@@ -45,26 +66,26 @@ export function DashboardPage() {
 
   // Navigation handlers
   const handleNavigateToDecks = () => navigate('/decks');
-  const handleNavigateToBrowse = () => navigate('/browse');
-  const handleNavigateToStats = () => navigate('/stats');
-  const handleNavigateToSettings = () => navigate('/settings');
+
   const handleNavigateToCards = () => navigate('/cards');
   const handleNavigateToWelcome = () => navigate('/welcome');
 
   // Loading state
-  if (isLoading || todayLoading) {
+  if (sessionLoading || todayLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--kd-primary)' }}></div>
-          <p style={{ color: 'var(--kd-text-secondary)' }}>Loading your stats...</p>
+          <p style={{ color: 'var(--kd-text-secondary)' }}>
+            Loading review session...
+          </p>
         </div>
       </div>
     );
   }
 
   // Error state
-  if (error) {
+  if (sessionError) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-bg)' }}>
         <div className="text-center max-w-md">
@@ -76,7 +97,7 @@ export function DashboardPage() {
             Could not connect to the server. Make sure the backend is running.
           </p>
           <button
-            onClick={() => refetch()}
+            onClick={() => refetchSession()}
             className="px-6 py-3 rounded-lg transition-all focus:outline-none"
             style={{
               backgroundColor: 'var(--kd-primary)',
@@ -105,14 +126,16 @@ export function DashboardPage() {
       <div className="min-h-screen" style={{ backgroundColor: 'var(--kd-bg)' }}>
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 py-8">
+
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Due Counts - Takes 2 columns on large screens */}
           <div className="lg:col-span-2">
-            {stats && (
-              <DueCountsCard
-                stats={stats}
-                onStartReview={handleStartReview}
-                isLoading={isLoading}
+            {sessionStats && (
+              <SessionDueCountsCard
+                stats={sessionStats}
+                onStartSession={handleStartReview}
+                isLoading={sessionLoading}
               />
             )}
           </div>

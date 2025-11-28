@@ -249,6 +249,15 @@ class UserSettingsResponse(BaseModel):
     visual_theme: str = 'mizuiro'
     theme_mode: str = 'day'  # Phase 3: 'day' or 'night'
     
+    # Session configuration (Phase 4)
+    max_session_size: int = 50
+    preferred_session_scope: str = 'all'
+    preferred_deck_ids: List[int] = Field(default_factory=list)
+    new_section_limit: int = 15
+    learning_section_limit: int = 20
+    review_section_limit: int = 30
+    auto_start_sessions: bool = False
+    
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -262,6 +271,15 @@ class UserSettingsUpdate(BaseModel):
     music_volume: Optional[float] = Field(None, ge=0.0, le=1.0)
     visual_theme: Optional[str] = None
     theme_mode: Optional[str] = Field(None, pattern='^(day|night)$', description="Theme mode: 'day' or 'night'")
+    
+    # Session configuration (Phase 4)
+    max_session_size: Optional[int] = Field(None, ge=5, le=200, description="Maximum cards per session")
+    preferred_session_scope: Optional[str] = Field(None, pattern='^(all|deck)$', description="Session scope: 'all' or 'deck'")
+    preferred_deck_ids: Optional[List[int]] = Field(None, description="Preferred deck IDs for deck sessions")
+    new_section_limit: Optional[int] = Field(None, ge=0, le=50, description="Max new cards per session")
+    learning_section_limit: Optional[int] = Field(None, ge=0, le=100, description="Max learning cards per session")
+    review_section_limit: Optional[int] = Field(None, ge=0, le=150, description="Max review cards per session")
+    auto_start_sessions: Optional[bool] = Field(None, description="Auto-start next session after completion")
 
 
 # ============================================================================

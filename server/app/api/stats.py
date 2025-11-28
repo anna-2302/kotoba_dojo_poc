@@ -22,6 +22,15 @@ class TodayStatsResponse(BaseModel):
     retention_rate: float
     study_streak: int
     total_reviews: int
+
+
+class SessionStatsResponse(BaseModel):
+    """Phase 4 session-based statistics."""
+    total_sessions: int
+    average_completion_rate: float
+    section_completions: dict
+    daily_sessions: list[dict]
+    performance_trends: dict
     
 
 def get_default_user(db: Session) -> User:
@@ -175,3 +184,162 @@ def get_retention_stats(
         })
     
     return {"period_days": days, "daily_stats": result}
+
+
+@router.get("/sessions", response_model=SessionStatsResponse)
+def get_session_stats(
+    days: Optional[int] = 30,
+    db: Session = Depends(get_db)
+):
+    """
+    Get Phase 4 session-based statistics.
+    
+    Args:
+        days: Number of days to look back (default 30)
+    
+    Returns:
+        Session completion rates, section breakdowns, daily counts
+    """
+    user = get_default_user(db)
+    cutoff_date = datetime.now() - timedelta(days=days)
+    
+    # Get all reviews for the period
+    reviews = db.query(ReviewLog).filter(
+        and_(
+            ReviewLog.user_id == user.id,
+            ReviewLog.reviewed_at >= cutoff_date
+        )
+    ).all()
+    
+    # Get daily counters for the period
+    daily_counters = db.query(DailyCounter).filter(
+        and_(
+            DailyCounter.user_id == user.id,
+            DailyCounter.date >= cutoff_date.date()
+        )
+    ).all()
+    
+    # Calculate session-based metrics
+    total_sessions = len(daily_counters)  # Approximate: one session per day with activity
+    total_cards_reviewed = sum(counter.reviews_done for counter in daily_counters)
+    avg_session_size = total_cards_reviewed / total_sessions if total_sessions > 0 else 0
+    
+    # Calculate completion rate (assume 100% for completed sessions)
+    completion_rate = 100.0 if total_sessions > 0 else 0.0
+    
+    # Section breakdown (aggregate from all reviews)
+    section_breakdown = {
+        "new": 0,
+        "learning": 0, 
+        "review": 0
+    }
+    
+    # Approximate section breakdown based on card states during reviews
+    for review in reviews:
+        # This is a simplified approximation since we don't track session sections in ReviewLog yet
+        # In a full implementation, we'd track session_section in ReviewLog
+        if hasattr(review, 'card_state'):
+            if review.card_state == 'new':
+                section_breakdown["new"] += 1
+            elif review.card_state == 'learning':
+                section_breakdown["learning"] += 1
+            else:
+                section_breakdown["review"] += 1
+        else:
+            # Default to review section for existing data
+            section_breakdown["review"] += 1
+    
+    # Daily session counts
+    daily_session_counts = {}
+    for counter in daily_counters:
+        date_str = counter.date.strftime('%Y-%m-%d')
+        daily_session_counts[date_str] = {
+            "sessions": 1 if counter.reviews_done > 0 else 0,
+            "cards_reviewed": counter.reviews_done,
+            "new_cards": counter.introduced_new
+        }
+    
+    # Session success rates by section (approximated)
+    section_success_rates = {}
+    for section, count in section_breakdown.items():
+        if count > 0:
+            # Calculate success rate for this section (Good + Easy ratings)
+            section_reviews = [r for r in reviews if r.rating in ['good', 'easy']]
+            success_count = len(section_reviews)
+            section_success_rates[section] = {
+                "total": count,
+                "successful": success_count,
+                "rate": (success_count / count * 100) if count > 0 else 0.0
+            }
+        else:
+            section_success_rates[section] = {
+                "total": 0,
+                "successful": 0,
+                "rate": 0.0
+            }
+    
+    # Convert daily_session_counts to list of dicts for frontend
+    daily_sessions_list = []
+    for date_str, data in daily_session_counts.items():
+        daily_sessions_list.append({
+            "date": date_str,
+            "session_count": data["sessions"],
+            "cards_reviewed": data["cards_reviewed"],
+            "completion_rate": 100.0 if data["cards_reviewed"] > 0 else 0.0
+        })
+    
+    # Performance trends calculations
+    total_ratings = len(reviews)
+    if total_ratings > 0:
+        again_count = len([r for r in reviews if r.rating == 'again'])
+        good_count = len([r for r in reviews if r.rating == 'good'])
+        easy_count = len([r for r in reviews if r.rating == 'easy'])
+        
+        again_pct = (again_count / total_ratings) * 100
+        good_pct = (good_count / total_ratings) * 100
+        easy_pct = (easy_count / total_ratings) * 100
+        
+        # Simple trend calculation (comparing recent vs older reviews)
+        recent_reviews = [r for r in reviews if r.timestamp >= datetime.now() - timedelta(days=7)]
+        if len(recent_reviews) > 0:
+            recent_success_rate = len([r for r in recent_reviews if r.rating in ['good', 'easy']]) / len(recent_reviews)
+            older_reviews = [r for r in reviews if r.timestamp < datetime.now() - timedelta(days=7)]
+            if len(older_reviews) > 0:
+                older_success_rate = len([r for r in older_reviews if r.rating in ['good', 'easy']]) / len(older_reviews)
+                if recent_success_rate > older_success_rate + 0.05:
+                    trend = 'improving'
+                elif recent_success_rate < older_success_rate - 0.05:
+                    trend = 'declining'
+                else:
+                    trend = 'stable'
+            else:
+                trend = 'stable'
+        else:
+            trend = 'stable'
+    else:
+        again_pct = good_pct = easy_pct = 0.0
+        trend = 'stable'
+
+    # Section completions data
+    section_completions = {
+        "new_section_completions": section_breakdown.get("new", 0),
+        "learning_section_completions": section_breakdown.get("learning", 0),
+        "review_section_completions": section_breakdown.get("review", 0),
+        "total_section_attempts": sum(section_breakdown.values())
+    }
+
+    # Performance trends data
+    performance_trends = {
+        "again_percentage": round(again_pct, 1),
+        "good_percentage": round(good_pct, 1),
+        "easy_percentage": round(easy_pct, 1),
+        "improvement_trend": trend
+    }
+
+    return SessionStatsResponse(
+        total_sessions=total_sessions,
+        average_completion_rate=round(completion_rate, 1),
+        section_completions=section_completions,
+        daily_sessions=daily_sessions_list,
+        performance_trends=performance_trends
+    )

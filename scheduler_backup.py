@@ -1,3 +1,4 @@
+"""
 """SM-2 Scheduler Service
 Implements REQ-4: Spaced-Repetition Scheduler from PRD.
 
@@ -271,9 +272,7 @@ def process_rating(
                 introduced_new=0,
                 again_count=0,
                 good_count=0,
-                easy_count=0,
-                introduced_new_per_deck={},
-                reviews_done_per_deck={}
+                easy_count=0,\n                introduced_new_per_deck={},\n                reviews_done_per_deck={}
             )
             db.add(counter)
         

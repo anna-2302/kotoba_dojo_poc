@@ -188,8 +188,8 @@ export const BrowsePage: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
           {/* Sidebar - Filters */}
-          <div className="lg:col-span-1 space-y-4">
-            <div className="sticky top-24">
+          <div className="lg:col-span-1">
+            <div className="space-y-4" style={{ position: 'sticky', top: '5rem', zIndex: 40, maxHeight: 'calc(100vh - 6rem)', overflowY: 'auto' }}>
               <CardFiltersComponent
               filters={filters}
               decks={decks}

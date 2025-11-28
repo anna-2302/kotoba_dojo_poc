@@ -16,6 +16,12 @@ import type {
   ImportStatus,
   DeckInfo,
   TodayStats,
+  SessionBuildRequest,
+  SessionBuildResponse,
+  ReviewAnswerEnhancedRequest,
+  ReviewAnswerEnhancedResponse,
+  SessionStats,
+  SessionStatsAnalytics,
 } from './types';
 
 // Re-export all types for convenience
@@ -36,6 +42,11 @@ export type {
   ImportStatus,
   DeckInfo,
   TodayStats,
+  SessionBuildRequest,
+  SessionBuildResponse,
+  ReviewAnswerEnhancedRequest,
+  ReviewAnswerEnhancedResponse,
+  SessionStats,
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -87,6 +98,28 @@ export const reviewApi = {
       rating,
       deck_ids: deckId ? [deckId] : null,
     });
+    return response.data;
+  },
+
+  // Phase 4: Enhanced session endpoints
+  buildSession: async (request: SessionBuildRequest): Promise<SessionBuildResponse> => {
+    const response = await apiClient.post('/review/session/build', request);
+    return response.data;
+  },
+
+  submitEnhancedRating: async (request: ReviewAnswerEnhancedRequest): Promise<ReviewAnswerEnhancedResponse> => {
+    const response = await apiClient.post('/review/answer/enhanced', request);
+    return response.data;
+  },
+
+  getSessionStats: async (scope: 'all' | 'deck' = 'all', deckId?: number): Promise<SessionStats> => {
+    const params = new URLSearchParams();
+    params.append('scope', scope);
+    if (scope === 'deck' && deckId) {
+      params.append('deck_id', deckId.toString());
+    }
+    
+    const response = await apiClient.get(`/review/stats/session?${params.toString()}`);
     return response.data;
   },
 };
@@ -230,7 +263,17 @@ export const importApi = {
 
 export const statsApi = {
   getToday: async (): Promise<TodayStats> => {
-    const response = await apiClient.get('/stats/today');
+    const response = await apiClient.get('/api/stats/today');
+    return response.data;
+  },
+
+  getSessions: async (days: number = 30): Promise<SessionStatsAnalytics> => {
+    const response = await apiClient.get(`/api/stats/sessions?days=${days}`);
+    return response.data;
+  },
+
+  getRetention: async (days: number = 30): Promise<any> => {
+    const response = await apiClient.get(`/api/stats/retention?days=${days}`);
     return response.data;
   },
 };

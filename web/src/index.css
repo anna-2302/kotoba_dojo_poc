@@ -3,6 +3,9 @@
 /* Import design tokens first */
 @import "./styles/tokens.css";
 
+/* Import component styles */
+@import "./styles/components.css";
+
 /* Tailwind v4 theme configuration */
 @theme {
   /* Override Tailwind's default colors to use our theme-aware variables */
@@ -72,6 +75,3 @@
   --shadow-kd-xs: var(--kd-shadow-xs);
   --shadow-kd-xl: var(--kd-shadow-xl);
 }
-
-/* Import component styles */
-@import "./styles/components.css";

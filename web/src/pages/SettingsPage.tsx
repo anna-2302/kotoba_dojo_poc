@@ -2,10 +2,9 @@
  * Settings Page - User Preferences
  * Implements REQ-10 (Theme System) and REQ-11 (Music)
  */
-import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { settingsApi } from '../api';
-import type { UserSettingsUpdate } from '../api';
+import { settingsApi, decksApi } from '../api';
+import type { UserSettingsUpdate, Deck } from '../api';
 import { useTheme } from '../components/ThemeProvider';
 import { AppHeader } from '../components/AppHeader';
 import type { VisualTheme, ThemeMode } from '../theme/themeTypes';
@@ -48,6 +47,13 @@ export function SettingsPage() {
     queryKey: ['settings'],
     queryFn: settingsApi.get,
     staleTime: 60000, // 1 minute
+  });
+
+  // Fetch decks for session configuration
+  const { data: decks } = useQuery({
+    queryKey: ['decks'],
+    queryFn: decksApi.list,
+    staleTime: 300000, // 5 minutes
   });
 
   // Update settings mutation
@@ -263,6 +269,238 @@ export function SettingsPage() {
                 <p className="text-xs mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
                   Comma-separated learning intervals in minutes (e.g., "10,1440" = 10 min, 1 day)
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Session Configuration Section */}
+          <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
+            <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
+              🎯 Session Configuration
+            </h2>
+            
+            <div className="space-y-6">
+              {/* Session Size Settings */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
+                    Max Session Size
+                  </label>
+                  <input
+                    type="number"
+                    value={settings.max_session_size || 50}
+                    onChange={(e) => updateMutation.mutate({ max_session_size: parseInt(e.target.value) || 50 })}
+                    className="w-full px-4 py-2 rounded-lg"
+                    style={{
+                      backgroundColor: 'var(--kd-surface-2)',
+                      color: 'var(--kd-text-primary)',
+                      border: '1px solid var(--kd-border)'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                      e.currentTarget.style.outlineOffset = '0px';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.outline = 'none';
+                    }}
+                    min="5"
+                    max="200"
+                  />
+                  <p className="text-xs mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
+                    Maximum cards per review session (5-200)
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
+                    Session Scope Preference
+                  </label>
+                  <select
+                    value={settings.preferred_session_scope || 'all'}
+                    onChange={(e) => updateMutation.mutate({ preferred_session_scope: e.target.value as 'all' | 'deck' })}
+                    className="w-full px-4 py-2 rounded-lg"
+                    style={{
+                      backgroundColor: 'var(--kd-surface-2)',
+                      color: 'var(--kd-text-primary)',
+                      border: '1px solid var(--kd-border)'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                      e.currentTarget.style.outlineOffset = '0px';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.outline = 'none';
+                    }}
+                  >
+                    <option value="all">All Decks</option>
+                    <option value="deck">Specific Decks</option>
+                  </select>
+                  <p className="text-xs mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
+                    Default session scope when starting reviews
+                  </p>
+                </div>
+              </div>
+
+              {/* Section Limits */}
+              <div>
+                <h3 className="text-lg font-medium mb-3" style={{ color: 'var(--kd-text-primary)' }}>
+                  Section Limits
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--kd-warning)' }}></span>
+                        New Cards
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      value={settings.new_section_limit || 15}
+                      onChange={(e) => updateMutation.mutate({ new_section_limit: parseInt(e.target.value) || 15 })}
+                      className="w-full px-4 py-2 rounded-lg"
+                      style={{
+                        backgroundColor: 'var(--kd-surface-2)',
+                        color: 'var(--kd-text-primary)',
+                        border: '1px solid var(--kd-border)'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                        e.currentTarget.style.outlineOffset = '0px';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                      }}
+                      min="0"
+                      max="50"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--kd-info)' }}></span>
+                        Learning Cards
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      value={settings.learning_section_limit || 20}
+                      onChange={(e) => updateMutation.mutate({ learning_section_limit: parseInt(e.target.value) || 20 })}
+                      className="w-full px-4 py-2 rounded-lg"
+                      style={{
+                        backgroundColor: 'var(--kd-surface-2)',
+                        color: 'var(--kd-text-primary)',
+                        border: '1px solid var(--kd-border)'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                        e.currentTarget.style.outlineOffset = '0px';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                      }}
+                      min="0"
+                      max="100"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--kd-success)' }}></span>
+                        Review Cards
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      value={settings.review_section_limit || 30}
+                      onChange={(e) => updateMutation.mutate({ review_section_limit: parseInt(e.target.value) || 30 })}
+                      className="w-full px-4 py-2 rounded-lg"
+                      style={{
+                        backgroundColor: 'var(--kd-surface-2)',
+                        color: 'var(--kd-text-primary)',
+                        border: '1px solid var(--kd-border)'
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = '2px solid var(--kd-focus-ring)';
+                        e.currentTarget.style.outlineOffset = '0px';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                      }}
+                      min="0"
+                      max="150"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs mt-2" style={{ color: 'var(--kd-text-secondary)' }}>
+                  Maximum cards per section within each session. Set to 0 to disable section.
+                </p>
+              </div>
+
+              {/* Preferred Decks Selection */}
+              {(settings.preferred_session_scope === 'deck') && decks && (
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--kd-text-primary)' }}>
+                    Preferred Decks
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-48 overflow-y-auto p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-surface-2)', border: '1px solid var(--kd-border)' }}>
+                    {decks.map((deck: Deck) => {
+                      const isSelected = (settings.preferred_deck_ids || []).includes(deck.id);
+                      return (
+                        <label key={deck.id} className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              const currentIds = settings.preferred_deck_ids || [];
+                              const newIds = e.target.checked 
+                                ? [...currentIds, deck.id]
+                                : currentIds.filter(id => id !== deck.id);
+                              updateMutation.mutate({ preferred_deck_ids: newIds });
+                            }}
+                            className="rounded"
+                            style={{ accentColor: 'var(--kd-primary)' }}
+                          />
+                          <span className="text-sm" style={{ color: 'var(--kd-text-primary)' }}>
+                            {deck.name}
+                          </span>
+                          <span className="text-xs ml-auto" style={{ color: 'var(--kd-text-secondary)' }}>
+                            {deck.card_count || 0} cards
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs mt-1" style={{ color: 'var(--kd-text-secondary)' }}>
+                    Select which decks to include when using 'Specific Decks' scope
+                  </p>
+                </div>
+              )}
+
+              {/* Session Behavior */}
+              <div>
+                <h3 className="text-lg font-medium mb-3" style={{ color: 'var(--kd-text-primary)' }}>
+                  Session Behavior
+                </h3>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={settings.auto_start_sessions || false}
+                    onChange={(e) => updateMutation.mutate({ auto_start_sessions: e.target.checked })}
+                    className="rounded"
+                    style={{ accentColor: 'var(--kd-primary)' }}
+                  />
+                  <div>
+                    <span className="text-sm font-medium" style={{ color: 'var(--kd-text-primary)' }}>
+                      Auto-start Next Session
+                    </span>
+                    <p className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>
+                      Automatically start the next session after completing the current one
+                    </p>
+                  </div>
+                </label>
               </div>
             </div>
           </div>

@@ -98,6 +98,15 @@ export interface UserSettings {
   music_volume: number;
   visual_theme: string;
   theme_mode?: 'day' | 'night'; // New unified theme mode
+  
+  // Session configuration (Phase 4)
+  max_session_size: number; // Maximum cards per session
+  preferred_session_scope: 'all' | 'deck'; // Session scope preference
+  preferred_deck_ids: number[]; // Preferred deck IDs for deck sessions
+  new_section_limit: number; // Max new cards per session
+  learning_section_limit: number; // Max learning cards per session
+  review_section_limit: number; // Max review cards per session
+  auto_start_sessions: boolean; // Auto-start next session after completion
 }
 
 export interface UserSettingsUpdate {
@@ -107,6 +116,15 @@ export interface UserSettingsUpdate {
   music_volume?: number;
   visual_theme?: string;
   theme_mode?: 'day' | 'night'; // New unified theme mode
+  
+  // Session configuration (Phase 4)
+  max_session_size?: number; // Maximum cards per session
+  preferred_session_scope?: 'all' | 'deck'; // Session scope preference
+  preferred_deck_ids?: number[]; // Preferred deck IDs for deck sessions
+  new_section_limit?: number; // Max new cards per session
+  learning_section_limit?: number; // Max learning cards per session
+  review_section_limit?: number; // Max review cards per session
+  auto_start_sessions?: boolean; // Auto-start next session after completion
 }
 
 // ============================================================================
@@ -147,4 +165,151 @@ export interface TodayStats {
   retention_rate: number;
   study_streak: number;
   total_reviews: number;
+}
+
+// ============================================================================
+// PHASE 4 SESSION TYPES - Enhanced review sessions
+// ============================================================================
+
+export interface CardStub {
+  id: number;
+  front: string;
+  back: string;
+  deck_name: string;
+  state: 'new' | 'learning' | 'review';
+  due_at: string;
+}
+
+export interface SessionSections {
+  new: CardStub[];
+  learning: CardStub[];
+  review: CardStub[];
+}
+
+export interface SessionMeta {
+  total_new: number;
+  total_learning: number;
+  total_review: number;
+  deck_order: string[];
+  global_limits: Record<string, number>;
+  per_deck_limits: Record<string, any>;
+}
+
+export interface SessionBuildRequest {
+  scope: 'all' | 'deck';
+  deck_ids?: number[];
+  max_session_size?: number;
+}
+
+export interface SessionBuildResponse {
+  sections: SessionSections;
+  meta: SessionMeta;
+  session_id: string;
+}
+
+export interface ReviewAnswerEnhancedRequest {
+  session_id: string;
+  card_id: number;
+  rating: 'again' | 'good' | 'easy';
+  section: 'new' | 'learning' | 'review';
+}
+
+export interface ReviewAnswerEnhancedResponse {
+  success: boolean;
+  message: string;
+  session_complete: boolean;
+  current_position: number;
+  total_cards: number;
+  section_progress: {
+    new_completed: number;
+    learning_completed: number;
+    review_completed: number;
+  };
+}
+
+export interface SessionStats {
+  sections: {
+    new: number;
+    learning: number;
+    review: number;
+  };
+  limits: {
+    new_per_day: number;
+    review_per_day: number;
+  };
+  today: {
+    reviews_done: number;
+    introduced_new: number;
+    again_count: number;
+    good_count: number;
+    easy_count: number;
+    date: string;
+  };
+  remaining: {
+    reviews: number;
+    new: number;
+  };
+  total_available: number;
+  deck_breakdown?: Record<string, {
+    new: number;
+    learning: number;
+    review: number;
+  }>;
+}
+
+export interface SessionStatsAnalytics {
+  total_sessions: number;
+  average_completion_rate: number;
+  section_completions: {
+    new_section_completions: number;
+    learning_section_completions: number;
+    review_section_completions: number;
+    total_section_attempts: number;
+  };
+  daily_sessions: {
+    date: string;
+    session_count: number;
+    cards_reviewed: number;
+    completion_rate: number;
+  }[];
+  performance_trends: {
+    again_percentage: number;
+    good_percentage: number;
+    easy_percentage: number;
+    improvement_trend: 'improving' | 'stable' | 'declining';
+  };
+}
+
+// ============================================================================
+// PHASE 4 SESSION STATS TYPES - Session-based queue statistics
+// ============================================================================
+
+export interface SessionStats {
+  sections: {
+    new: number;
+    learning: number;
+    review: number;
+  };
+  limits: {
+    new_per_day: number;
+    review_per_day: number;
+  };
+  today: {
+    reviews_done: number;
+    introduced_new: number;
+    again_count: number;
+    good_count: number;
+    easy_count: number;
+    date: string;
+  };
+  remaining: {
+    reviews: number;
+    new: number;
+  };
+  total_available: number;
+  deck_breakdown?: Record<string, {
+    new: number;
+    learning: number;
+    review: number;
+  }>;
 }

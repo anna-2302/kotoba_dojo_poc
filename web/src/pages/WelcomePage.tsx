@@ -2,7 +2,7 @@
  * Welcome Page - First-run experience with prebuilt deck import
  * Implements REQ-12 (Prebuilt N4 Decks)
  */
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { importApi } from '../api';

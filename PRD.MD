@@ -1703,3 +1703,381 @@ Theme and mode selections update the entire app’s color system (header, sideba
 - Preferences persist across reloads with no theme flash.
 - All major components adhere to tokens and maintain AA contrast.
 - Minimal performance impact (no measurable increase in input-to-render latency).
+
+# Phase 4 PRD: Enhanced Review Session Logic (Anki-like, Fixed Queue)
+
+## Summary
+Enhance the review session to follow an Anki-like flow while keeping a fixed queue for simplicity. Sessions can be started from the home page (All Decks) or from a specific deck page. The session presents cards grouped by type in the order New → Learning → Review. Allocation across decks uses round-robin distribution with deck-level caps enforced in All Decks sessions. Within each deck’s pool, selection is randomized. “Again” responses trigger in-session repeats with fixed spacing until the user rates Good or Easy.
+
+## Goals
+- Provide an intuitive, Anki-like structure using New, Learning, and Review groups.
+- Support studying All Decks or a Specific Deck with clear limits and distribution rules.
+- Keep the session queue fixed for predictability, while allowing in-session repeats for “Again.”
+- Maintain simple, deterministic allocation and ordering rules that are easy to implement and test.
+
+## Non-Goals
+- Dynamic queue insertions based on timestamps (no mid-session rebuilding of due cards).
+- Complex interleaving rules or bury/sibling handling.
+- Creating new Learning states from lapses (only legacy Learning cards appear in Learning).
+
+## Session Types
+
+### All Decks session (Home page)
+- Includes eligible cards from all decks.
+- Global limits apply (Review=150, New=12, Learning uncapped), with deck-level caps enforced as per-deck maxima.
+- Round-robin distribution across decks for each section (New, Learning, Review).
+
+### Specific Deck session (Decks page)
+- Includes eligible cards from the selected deck only.
+- Deck limits override global limits (Learning uncapped).
+- Within-deck ordering randomized per section.
+
+## Queue Structure and Order
+- Fixed queue built at session start and remains unchanged except for “Again” repeats.
+- Section order within a session: New → Learning → Review.
+
+### Round-robin allocation per section
+- Rotate across eligible decks alphabetically by deck name.
+- Pick at most one card per deck per rotation.
+- Skip decks that have exhausted their per-deck cap or pool.
+- Continue rotating until section capacity is filled (or pools exhausted).
+
+### Within-deck pool ordering
+- New: randomized.
+- Learning: randomized.
+- Review: randomized.
+
+## Limits and Caps
+
+### Global defaults
+- New per day: 12
+- Review per day: 150
+- Learning: uncapped
+
+### All Decks session
+- Apply global limits and per-deck caps (`deck.new_limit`, `deck.review_limit`) as maxima.
+- Learning due is uncapped but still distributed round-robin.
+
+### Specific Deck session
+- Use the deck’s `new_limit` and `review_limit` only (ignore global limits for that session).
+- Learning uncapped.
+
+## In-Session “Again” Repeat Logic
+- Applies to New, Learning, and Review sections.
+- On “Again” (rating 1):
+  - Reinsert the card after N=3 cards of the same type within its current section.
+  - If fewer than 3 cards remain in the section, use end-of-section loop: append to the end of its section; keep repeating until rated Good (2) or Easy (3).
+- Only the final successful rating in the session is counted in stats (Again repeats are not logged as separate reviews).
+
+## Scheduler State Updates
+
+### New cards
+- Again: remain New; no due timestamp change; in-session repeats per N=3 rule.
+- Good: graduate to Review with due in 1 day; EF unchanged.
+- Easy: graduate to Review with due in 1 day; EF increases by +0.15 (clamp EF to [1.3, 3.0]).
+
+### Learning cards (legacy Learning only; no new Learning created)
+- Again: repeat in-session with N=3 rule; optionally reset step to 0 and set due to now + 10m for future sessions.
+- Good: advance to next step; if last step completed, graduate to Review due in 1 day.
+- Easy: graduate to Review due in 1 day; EF increases by +0.15 (clamped).
+
+### Review cards
+- Again:
+  - Remain in Review.
+  - EF decreases by 0.2 (min 1.3).
+  - Next interval = max(1, round(prevInterval * 0.5)).
+  - Due = now + interval.
+  - In-session repeats per N=3 rule.
+- Good:
+  - EF unchanged.
+  - Next interval = round(prevInterval * EF).
+  - Due = now + interval.
+- Easy:
+  - EF increases by +0.15 (clamped to [1.3, 3.0]).
+  - Next interval = round(prevInterval * EF * 1.3).
+  - Due = now + interval.
+
+Notes:
+- All intervals rounded to whole days.
+- “Today” boundaries use UTC for POC.
+
+## Allocation Details (All Decks)
+
+### New section
+- Compute global remaining capacity and per-deck remaining capacity based on what’s already introduced today.
+- Build each deck’s randomized pool of New cards (excluding suspended).
+- Round-robin pick one card per deck per rotation, consuming deck/global capacity until filled.
+
+### Learning section
+- Build each deck’s randomized pool of due Learning cards (excluding suspended).
+- Round-robin pick one card per deck per rotation; Learning is uncapped globally, but a deck with no Learning due is skipped.
+
+### Review section
+- Compute global remaining capacity and per-deck remaining capacity based on reviews done today.
+- Build each deck’s randomized pool of due Review cards (excluding suspended).
+- Round-robin pick one card per deck per rotation, consuming deck/global capacity until filled.
+
+## Session Flow
+- Start session from Home (All Decks) or Deck page (Specific Deck).
+- Present New cards first, then Learning, then Review.
+- Keyboard shortcuts:
+  - `Space` flips
+  - `1` = Again
+  - `2` = Good
+  - `3` = Easy
+  - `Esc` ends session
+- “Again” repeats are scheduled within the current section with N=3 spacing; end-of-section loop ensures repetition until rated 2 or 3.
+
+### Ending session early
+- Any New cards shown count as introduced today.
+- Only the final rating per card in this session is counted in stats; repeated “Again” attempts are not counted.
+
+## Filtering and Exclusions
+- Suspended cards never appear in any section.
+- No tag filters in this enhancement; scope is deck vs all decks only.
+
+## Stats and Tracking
+- Track `introduced_new` per deck and globally.
+- Track `reviews_done` and counts for Again/Good/Easy, counting only the final rating per card within the session.
+- Log review events once per card per session occurrence (after final rating), including prev/next intervals and EF.
+
+## Acceptance Criteria
+- Starting an All Decks session builds a fixed queue with sections in the order New → Learning → Review using round-robin across decks and randomized within-deck pools.
+- Starting a Specific Deck session builds a fixed queue from that deck only, using its deck limits; New and Review randomized; Learning randomized and uncapped.
+- “Again” responses cause in-session reinsertions with N=3 spacing and end-of-section loop until rated Good or Easy.
+- Deck-level caps apply during All Decks sessions; global limits are respected; Learning is uncapped.
+- Suspended cards are excluded; keyboard shortcuts work; stats count only the final rating per card in the session.
+
+## Algorithm Notes (POC-friendly)
+
+### Round-robin selection
+- Maintain an ordered list of eligible decks (alphabetical by name).
+- Iterate, picking one card per deck per pass, skipping depleted decks, until capacity reached.
+
+### In-session repeats
+- Maintain per-section queues and a small “repeat buffer” for “Again” cards.
+- On “Again,” compute target reinsertion index `current_index + 3` within the same section; if past the end, append; mark card as “pending repeat” until final rating.
+
+### Reconciliation of daily counters
+- Consult counters when building the queue so caps are not exceeded across multiple sessions.
+
+## Risks and Mitigations
+- Potentially long New section with repeats due to “Again”:
+  - Mitigation: N=3 spacing and end-of-section loop limit immediate repetition fatigue while ensuring practice.
+- Round-robin fairness can lead to frequent deck switching:
+  - Mitigation: Accept for POC; deterministic and simple; consider deck grouping settings later.
+- Stats undercount if user abandons session after many “Again” attempts:
+  - Mitigation: Document behavior; only final rating counts; optionally show “pending repeats” count in UI.
+
+# Technical Proposal: Enhanced Review Session Logic (Fixed Queue, Anki-like Sections)
+
+## Overview
+- Implement a server-built, fixed review session queue with three sections ordered New → Learning → Review.
+- Sessions can be started for All Decks or a Specific Deck. All Decks use global limits and deck caps; Specific Deck uses only that deck’s limits.
+- Allocation across decks uses round-robin per section; within each deck, pools are randomized.
+- “Again” (1) triggers in-session repeats with fixed spacing N=3 within the same section; if near the end, use end-of-section loop. Only the final successful rating (2 or 3) is counted in stats, but scheduler state is updated on every rating.
+
+## Backend
+
+### Endpoints
+- POST /api/v1/session/build
+  - Query params: scope=all|deck, deckId?, date? (optional, defaults to today UTC)
+  - Returns:
+    - sections: { new: CardStub[], learning: CardStub[], review: CardStub[] }
+    - appliedLimits: { global: {new, review}, perDeck: {deckId: {newUsed, newCap, reviewUsed, reviewCap}} }
+    - meta: { totalNew, totalLearning, totalReview, deckOrder: string[] }
+  - CardStub: { id, deckId, frontPreview, state, tags[], dueAt?, createdAt }
+- POST /api/v1/review/{cardId}/answer
+  - Body: { rating: 'again'|'good'|'easy', section: 'new'|'learning'|'review', elapsedMs? }
+  - Returns: { updated: { state, dueAt, intervalDays, easeFactor }, logWritten: boolean } (logWritten true only for good/easy)
+- GET /api/v1/today
+  - Returns counts: dueLearning, dueReview, availableNew; global remaining limits; per-deck remaining caps
+- Optional: POST /api/v1/session/end
+  - Body: { sessionId, summary } (for telemetry; optional in POC)
+
+### Queue Builder (server/services/queue.py)
+- Inputs:
+  - scope (all|deck), date (UTC day), deck caps and global limits (New=12, Review=150), learning uncapped
+  - daily counters: introduced_new (global and per deck), reviews_done (global and per deck)
+- Steps:
+  1) Build per-deck pools (exclude suspended):
+     - New pool: cards with state='new' not yet introduced today; randomized per deck.
+     - Learning pool: cards with state='learning' dueAt <= now; randomized per deck.
+     - Review pool: cards with state='review' dueAt <= now; randomized per deck.
+  2) Determine remaining capacities:
+     - All Decks: globalRemainingNew = max(0, 12 - introduced_new_global), globalRemainingReview = max(0, 150 - reviews_done_global)
+     - Per deck caps: deckRemainingNew = max(0, deckCapNew - introduced_new_deck), deckRemainingReview = max(0, deckCapReview - reviews_done_deck)
+     - Specific Deck: ignore globals; use only deckRemainingNew/Review
+  3) Round-robin selection per section:
+     - Deck order: alphabetical by deck name
+     - New: iterate decks; pick at most one card per deck per rotation while both deckRemainingNew and globalRemainingNew allow; consume capacities.
+     - Learning: iterate decks; pick at most one card per deck per rotation; learning has no caps; stop when pools exhausted.
+     - Review: iterate decks; pick at most one card per deck per rotation while capacities allow; consume capacities.
+  4) Return fixed arrays for sections in order New, Learning, Review.
+
+### Scheduler (server/services/scheduler.py)
+- New:
+  - Again: keep state='new'; no due change.
+  - Good: graduate to review; dueAt = now + 1 day; EF unchanged; intervalDays = 1.
+  - Easy: graduate to review; dueAt = now + 1 day; EF = min(3.0, EF + 0.15); intervalDays = 1.
+- Learning (legacy only):
+  - Again: optional reset step to 0; dueAt = now + 10m (for future sessions). In-session repeat handled client-side.
+  - Good: advance step; if last step, graduate to review due in 1 day.
+  - Easy: graduate to review due in 1 day; EF = min(3.0, EF + 0.15).
+- Review:
+  - Again: state='review'; EF = max(1.3, EF - 0.2); intervalDays = max(1, round(prevIntervalDays * 0.5)); dueAt = now + intervalDays.
+  - Good: intervalDays = round(prevIntervalDays * EF); dueAt = now + intervalDays; EF unchanged.
+  - Easy: EF = min(3.0, EF + 0.15); intervalDays = round(prevIntervalDays * EF * 1.3); dueAt = now + intervalDays.
+
+### Logging and Stats
+- Only log and count on final successful rating (good/easy).
+  - ReviewLog entry includes prev/next interval, EF, prev/next state.
+  - Stats: increment reviews_done and good/easy counts; introduced_new increments when a New card is first shown that day.
+- “Again”:
+  - Update scheduler state (EF, interval) immediately.
+  - Do not write ReviewLog or increment stats.
+
+## Frontend
+
+### Session State (Zustand or React Context)
+- session: {
+  id,
+  sections: {
+    new: CardView[], learning: CardView[], review: CardView[]
+  },
+  pointers: { section: 'new'|'learning'|'review', index: number },
+  repeatBuffers: {
+    new: RepeatQueue, learning: RepeatQueue, review: RepeatQueue
+  },
+  limitsApplied: { global, perDeck },
+  deckOrder: string[]
+}
+- CardView includes id, deckId, front/back, tags, state
+
+### In-Session “Again” Handling (N=3)
+- On rating “again”:
+  - Compute insertion target within the current section: currentIndex + 3
+  - If target < section.length: insert card at target; else append to end (end-of-section loop)
+  - Mark card as pendingRepeat=true; do not advance section pointer beyond reinsertion
+  - Call POST /review/{id}/answer with rating='again' to update schedule; ignore logWritten=false
+- On final rating (good/easy):
+  - Clear pendingRepeat; remove from queue (already consumed)
+  - Call POST /review/{id}/answer with rating='good'|'easy'; if logWritten=true, update local stats
+- Progress UI:
+  - Show base counts (initial size per section)
+  - Optional: show a badge for repeats pending in current section
+
+### Queue Navigation
+- Section order fixed: New → Learning → Review
+- Move to next section only when current section queue (excluding repeats pending) is exhausted
+- Esc ends session; session state cleared
+
+## Pseudocode
+
+### Queue builder (server-side)
+```
+newQueue = roundRobinPick(decksSorted, deckNewPools, deckRemainingNew, globalRemainingNew)
+learningQueue = roundRobinPick(decksSorted, deckLearningPools, noCaps, noCaps)
+reviewQueue = roundRobinPick(decksSorted, deckReviewPools, deckRemainingReview, globalRemainingReview)
+
+function roundRobinPick(decks, pools, deckCapMap, globalCap) {
+  result = []
+  caps = clone(deckCapMap)
+  while (true) {
+    progressed = false
+    for deck in decks:
+      if pools[deck].isEmpty(): continue
+      if caps && caps[deck] <= 0: continue
+      if globalCap !== null && globalCap <= 0: break
+      card = pools[deck].pop() // pools randomized pre-build
+      result.push(card)
+      progressed = true
+      if caps: caps[deck] -= 1
+      if globalCap !== null: globalCap -= 1
+      if globalCap === 0: break
+    if !progressed: break
+  }
+  return result
+}
+```
+
+### Client-side “Again” reinsertion
+```
+function handleAgain(section) {
+  const arr = session.sections[section]
+  const card = arr[currentIndex]
+  // remove current occurrence
+  arr.splice(currentIndex, 1)
+  const target = Math.min(currentIndex + 3, arr.length)
+  arr.splice(target, 0, { ...card, pendingRepeat: true })
+  api.reviewAnswer(card.id, { rating: 'again', section })
+  // Do not advance index; show next card now at currentIndex
+}
+
+function handleFinalRating(section, rating) {
+  const arr = session.sections[section]
+  const card = arr[currentIndex]
+  api.reviewAnswer(card.id, { rating, section }).then(res => {
+    // remove card
+    arr.splice(currentIndex, 1)
+    updateLocalStats(rating) // count only good/easy
+    // stay in same section until arr.length === 0
+  })
+}
+```
+
+## Data and Counters
+- daily_counters:
+  - introduced_new_global, introduced_new_per_deck
+  - reviews_done_global, reviews_done_per_deck
+  - good_count, easy_count (again_count omitted per PRD; optional telemetry only)
+- Update introduced_new when a New card is first included in a session (or on first reveal)
+
+## Implementation Challenges and Mitigations
+- Counting only final ratings while updating schedule on “Again”
+  - Challenge: Keep stats accurate without losing scheduling changes
+  - Mitigation: Update schedule on every rating; suppress ReviewLog and stats on “Again”; log only on Good/Easy; optionally store attempts in session state for telemetry
+- “Again” repeat management within fixed sections
+  - Challenge: Avoid infinite loops or index glitches
+  - Mitigation: N=3 reinsertion with end-of-section loop; always remove current occurrence before inserting; guard against zero-length edge cases; add a max repeat safeguard (optional)
+- Round-robin fairness with randomized pools
+  - Challenge: Deterministic distribution while pools are random
+  - Mitigation: Deterministic deck order (alphabetical); pre-shuffle per-deck pools once; retain ordering for the session; unit-test round-robin allocator
+- Multi-session caps across a day
+  - Challenge: Ensuring caps not exceeded when starting multiple sessions
+  - Mitigation: Read daily counters before build; compute remaining capacities; update counters on final ratings and first-time New introductions
+- Legacy Learning handling
+  - Challenge: Learning cards from prior data need consistent behavior without new learning creation
+  - Mitigation: Support learning ratings (again/good/easy) in scheduler; include learning due pools; do not create new learning on lapses
+- Backend-frontend coordination for “Again”
+  - Challenge: Server unaware of client-side reinsertion position
+  - Mitigation: Keep reinsertion purely client-side; server focuses on schedule updates; return minimal info (updated state)
+- Session persistence
+  - Challenge: Mid-session browser refresh will lose the fixed queue
+  - Mitigation: Optional: store session state in sessionStorage; for POC, accept loss on refresh
+- Performance under heavy repeats
+  - Challenge: Long queues with many “Again” reinsertions may increase DOM updates
+  - Mitigation: Use efficient state updates; virtualize long sections if needed; batch state changes
+- Timezone and “today” boundaries
+  - Challenge: Accurate counters across TZ
+  - Mitigation: POC uses UTC day; later can adapt to user timezone
+- Testing complexity
+  - Challenge: Many permutations (All Decks vs Specific Deck, repeats, caps)
+  - Mitigation: Add unit tests for allocator and “Again” reinsertion; API tests for scheduler math; E2E tests for session flow with repeats and stats correctness
+
+## Testing Plan
+- Unit tests:
+  - Round-robin allocator correctness across varying caps/pools
+  - Scheduler math for review good/easy/again
+  - Reinsertion logic (N=3, end-of-section loop)
+- Integration/API:
+  - Session build enforces caps and excludes suspended
+  - Review endpoint updates schedule and logs only on good/easy
+- E2E:
+  - All Decks session: New → Learning → Review order; repeats until rated 2/3; stats increment only on final ratings
+  - Specific Deck session: ignores globals; randomized selection within deck
+
+## Delivery Plan (POC)
+- Step 1: Backend session/build; allocator; scheduler endpoint adjustments; counters reconciliation
+- Step 2: Frontend session state and UI; “Again” repeat mechanics; progress indicators; QA and tests
+- Step 3: Polish and fix edge cases; accessibility and performance pass
