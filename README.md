@@ -2,7 +2,7 @@
 
 🎌 A cozy, lightweight spaced-repetition flashcard app for Japanese language learning.
 
-**Status**: ✅ **Phase 4 Enhanced Review Complete** - Structured session-based review system with SM-2 scheduling!
+The app has been made with Claude Sonnet 4.5.
 
 ## 🎯 Features
 
@@ -141,7 +141,6 @@ source venv/bin/activate
 
 ```bash
 # Install Python dependencies
-cd server
 pip install -r requirements.txt
 
 # Start PostgreSQL database
@@ -238,33 +237,8 @@ npm run dev
 
 1. Navigate to: http://localhost:5173/welcome
 2. Click "Import Starter Decks"
-3. Get 50 ready-to-study JLPT N4 cards!
+3. Get ready-to-study JLPT cards!
 
-## 🧪 Testing
-
-### Backend Tests
-
-```bash
-cd server
-
-# Run all tests
-pytest
-
-# Run specific test file
-pytest tests/test_api_settings.py -v
-pytest tests/test_import_api.py -v
-
-# Run with coverage
-pytest --cov=app --cov-report=html
-
-# Run with verbose output
-pytest -v -s
-```
-
-**Test Coverage:**
-- Settings API: 9 tests ✅
-- Import API: 10 tests ✅
-- All tests passing
 
 ### Manual Testing
 
@@ -398,99 +372,6 @@ Edit `web/.env` (create if doesn't exist):
 VITE_API_URL=http://localhost:8000
 ```
 
-## 🐛 Troubleshooting
-
-### Backend Won't Start
-
-**Issue**: "Default user not found" or "Database connection failed"
-
-**Solution**:
-```bash
-# Ensure PostgreSQL is running
-docker-compose up -d
-
-# Initialize database
-cd server
-python init_db.py
-
-# Run migrations
-alembic upgrade head
-```
-
-### Frontend Build Errors
-
-**Issue**: TypeScript import errors or "does not provide an export"
-
-**Solution**: Run import checker
-```bash
-cd web
-.\check-imports.ps1
-# Or manually fix type imports with 'import type { ... }'
-```
-
-### CORS Errors
-
-**Issue**: "Access blocked by CORS policy"
-
-**Solution**:
-```bash
-# Verify backend is running
-Invoke-RestMethod http://localhost:8000/health
-
-# Restart backend with correct CORS settings
-cd server
-uvicorn app.main:app --reload --host 0.0.0.0
-```
-
-### Database Errors
-
-**Issue**: "Could not connect to database"
-
-**Solution 1** (PostgreSQL):
-```bash
-# Start PostgreSQL
-docker-compose up -d db
-
-# Check it's running
-docker ps
-```
-
-**Solution 2** (Switch to SQLite):
-```python
-# Edit server/app/core/config.py
-database_url: str = "sqlite:///./app.db"
-```
-
-### Port Already in Use
-
-**Issue**: "Port 8000 is already in use"
-
-**Solution**:
-```bash
-# Windows
-netstat -ano | findstr :8000
-taskkill /PID <PID> /F
-
-# Linux/Mac
-lsof -ti:8000 | xargs kill -9
-
-# Or use different port
-uvicorn app.main:app --reload --port 8001
-```
-
-### Frontend Build Errors
-
-**Issue**: npm install fails
-
-**Solution**:
-```bash
-cd web
-rm -rf node_modules package-lock.json
-npm install
-```
-
-See `FIX_CORS_ERROR.md` for detailed troubleshooting.
-
 ## 📏 Development Status
 
 ### Completed Implementation ✅
@@ -587,38 +468,24 @@ docker-compose logs -f
 
 ## 🤝 Contributing
 
-This is a POC project. For production use:
-
-1. Replace sample N4 data with full JMdict/KANJIDIC parsing
-2. Add user authentication
-3. Implement multi-user support
-4. Add cloud sync
-5. Create mobile apps
-
-## 📄 License
-
-MIT License - See LICENSE file for details
+This is a POC project.
 
 ## 🙏 Acknowledgments
 
 - **JMdict/KANJIDIC**: Japanese dictionary data (EDRDG)
 - **Anki**: Inspiration for spaced repetition features
 - **JLPT Resources**: Sample vocabulary and kanji
+- **Random vibe coding course**: Inspiration for the wasted tokens ^_^
 
 ## 📞 Support
 
-For issues, questions, or feedback:
-
-- Check `FIX_CORS_ERROR.md` for common problems
-- See `PHASE5_7_QUICKSTART.md` for detailed setup
-- Review API docs at `/docs` endpoint
+Kindly ask an AI agent of your choice.
 
 ---
 
 **Made with ❤️ for Japanese language learners**
 
-**Version**: 0.2.0 (Phase 4+ Enhanced)
+**Version**: 0.2.0
 
 **Last Updated**: 2025-11-28
 
-**Status**: ✅ Advanced Session-Based Review System Complete!

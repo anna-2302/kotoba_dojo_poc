@@ -296,7 +296,7 @@ def get_today_counter(db: Session, user_id: int, today: date = None) -> DailyCou
     
     counter = db.query(DailyCounter).filter(
         DailyCounter.user_id == user_id,
-        DailyCounter.date == today_dt
+        func.date(DailyCounter.date) == today
     ).first()
     
     if not counter:

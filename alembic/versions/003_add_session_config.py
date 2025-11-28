@@ -18,21 +18,24 @@ depends_on = None
 
 def upgrade():
     # Add session configuration columns to user_settings table
-    op.add_column('user_settings', sa.Column('max_session_size', sa.Integer(), nullable=False, server_default='50'))
-    op.add_column('user_settings', sa.Column('preferred_session_scope', sa.String(length=20), nullable=False, server_default='all'))
-    op.add_column('user_settings', sa.Column('preferred_deck_ids', sa.JSON(), nullable=False, server_default='[]'))
-    op.add_column('user_settings', sa.Column('new_section_limit', sa.Integer(), nullable=False, server_default='15'))
-    op.add_column('user_settings', sa.Column('learning_section_limit', sa.Integer(), nullable=False, server_default='20'))
-    op.add_column('user_settings', sa.Column('review_section_limit', sa.Integer(), nullable=False, server_default='30'))
-    op.add_column('user_settings', sa.Column('auto_start_sessions', sa.Boolean(), nullable=False, server_default='false'))
+    # SQLite-compatible version using batch operations
+    with op.batch_alter_table('user_settings', schema=None) as batch_op:
+        batch_op.add_column(sa.Column('max_session_size', sa.Integer(), nullable=False, server_default='50'))
+        batch_op.add_column(sa.Column('preferred_session_scope', sa.String(length=20), nullable=False, server_default='all'))
+        batch_op.add_column(sa.Column('preferred_deck_ids', sa.Text(), nullable=False, server_default='[]'))  # Use Text instead of JSON for SQLite
+        batch_op.add_column(sa.Column('new_section_limit', sa.Integer(), nullable=False, server_default='15'))
+        batch_op.add_column(sa.Column('learning_section_limit', sa.Integer(), nullable=False, server_default='20'))
+        batch_op.add_column(sa.Column('review_section_limit', sa.Integer(), nullable=False, server_default='30'))
+        batch_op.add_column(sa.Column('auto_start_sessions', sa.Boolean(), nullable=False, server_default='0'))  # Use 0 instead of 'false' for SQLite
 
 
 def downgrade():
     # Remove session configuration columns from user_settings table
-    op.drop_column('user_settings', 'auto_start_sessions')
-    op.drop_column('user_settings', 'review_section_limit')
-    op.drop_column('user_settings', 'learning_section_limit')
-    op.drop_column('user_settings', 'new_section_limit')
-    op.drop_column('user_settings', 'preferred_deck_ids')
-    op.drop_column('user_settings', 'preferred_session_scope')
-    op.drop_column('user_settings', 'max_session_size')
+    with op.batch_alter_table('user_settings', schema=None) as batch_op:
+        batch_op.drop_column('auto_start_sessions')
+        batch_op.drop_column('review_section_limit')
+        batch_op.drop_column('learning_section_limit')
+        batch_op.drop_column('new_section_limit')
+        batch_op.drop_column('preferred_deck_ids')
+        batch_op.drop_column('preferred_session_scope')
+        batch_op.drop_column('max_session_size')

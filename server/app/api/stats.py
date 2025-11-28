@@ -65,7 +65,7 @@ def get_today_stats(db: Session = Depends(get_db)):
     daily_counter = db.query(DailyCounter).filter(
         and_(
             DailyCounter.user_id == user.id,
-            DailyCounter.date == today_start
+            func.date(DailyCounter.date) == today_start.date()
         )
     ).first()
     

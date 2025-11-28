@@ -56,23 +56,31 @@ def list_decks(
     today = datetime.utcnow().date()
     counter = db.query(DailyCounter).filter(
         DailyCounter.user_id == user.id,
-        DailyCounter.date == today
+        func.date(DailyCounter.date) == today
     ).first()
     
     if not counter:
         # Create today's counter if it doesn't exist
-        counter = DailyCounter(
-            user_id=user.id,
-            date=today,
-            introduced_new=0,
-            reviews_done=0,
-            again_count=0,
-            good_count=0,
-            easy_count=0
-        )
-        db.add(counter)
-        db.commit()
-        db.refresh(counter)
+        try:
+            counter = DailyCounter(
+                user_id=user.id,
+                date=today,
+                introduced_new=0,
+                reviews_done=0,
+                again_count=0,
+                good_count=0,
+                easy_count=0
+            )
+            db.add(counter)
+            db.commit()
+            db.refresh(counter)
+        except Exception:
+            # Counter was created by another request, just fetch it
+            db.rollback()
+            counter = db.query(DailyCounter).filter(
+                DailyCounter.user_id == user.id,
+                func.date(DailyCounter.date) == today
+            ).first()
     
     # Get decks with card counts
     decks = db.query(Deck).filter(Deck.user_id == user.id).all()

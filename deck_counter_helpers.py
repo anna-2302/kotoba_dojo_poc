@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 def get_today_deck_counter(db: Session, user_id: int, deck_id: int, today: date = None):
     """Get or create today's per-deck counter."""
     from app.models.database import DailyDeckCounter
+    from sqlalchemy.exc import IntegrityError
     
     if today is None:
         today = datetime.utcnow().date()
@@ -30,7 +31,18 @@ def get_today_deck_counter(db: Session, user_id: int, deck_id: int, today: date 
             reviews_done=0
         )
         db.add(counter)
-        db.flush()  # Use flush instead of commit to keep transaction open
+        try:
+            db.flush()  # Use flush instead of commit to keep transaction open
+        except IntegrityError:
+            # Race condition: another request created it, rollback and query again
+            db.rollback()
+            counter = db.query(DailyDeckCounter).filter(
+                DailyDeckCounter.user_id == user_id,
+                DailyDeckCounter.deck_id == deck_id,
+                DailyDeckCounter.date == today_dt
+            ).first()
+            if not counter:
+                raise  # Should never happen, re-raise if it does
     
     return counter
 

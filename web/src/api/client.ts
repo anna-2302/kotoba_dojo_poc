@@ -64,7 +64,7 @@ export const apiClient = axios.create({
 
 export const reviewApi = {
   getStats: async (): Promise<QueueStats> => {
-    const response = await apiClient.get('/review/stats');
+    const response = await apiClient.get('/review/stats/');
     const data = response.data;
     
     // Transform backend response to frontend format
@@ -83,14 +83,14 @@ export const reviewApi = {
   },
 
   startSession: async (deckId?: number): Promise<ReviewCard> => {
-    const response = await apiClient.post('/review/start', {
+    const response = await apiClient.post('/review/start/', {
       deck_ids: deckId ? [deckId] : null,
     });
     return response.data;
   },
 
   getNext: async (): Promise<ReviewCard | null> => {
-    const response = await apiClient.get('/review/next');
+    const response = await apiClient.get('/review/next/');
     return response.data;
   },
 
@@ -99,7 +99,7 @@ export const reviewApi = {
     rating: 'again' | 'good' | 'easy',
     deckId?: number
   ): Promise<RatingResponse> => {
-    const response = await apiClient.post('/review/answer', {
+    const response = await apiClient.post('/review/answer/', {
       card_id: cardId,
       rating,
       deck_ids: deckId ? [deckId] : null,
@@ -109,12 +109,12 @@ export const reviewApi = {
 
   // Phase 4: Enhanced session endpoints
   buildSession: async (request: SessionBuildRequest): Promise<SessionBuildResponse> => {
-    const response = await apiClient.post('/review/session/build', request);
+    const response = await apiClient.post('/review/session/build/', request);
     return response.data;
   },
 
   submitEnhancedRating: async (request: ReviewAnswerEnhancedRequest): Promise<ReviewAnswerEnhancedResponse> => {
-    const response = await apiClient.post('/review/answer/enhanced', request);
+    const response = await apiClient.post('/review/answer/enhanced/', request);
     return response.data;
   },
 
@@ -171,7 +171,7 @@ export const cardsApi = {
   },
 
   create: async (data: CardCreateRequest): Promise<Card> => {
-    const response = await apiClient.post('/cards', data);
+    const response = await apiClient.post('/cards/', data);
     return response.data;
   },
 
@@ -205,7 +205,7 @@ export const cardsApi = {
 
 export const decksApi = {
   list: async (): Promise<Deck[]> => {
-    const response = await apiClient.get('/decks');
+    const response = await apiClient.get('/decks/');
     // Backend returns { decks: [...], total: ... }
     return response.data.decks || [];
   },
@@ -217,12 +217,12 @@ export const decksApi = {
 
 export const tagsApi = {
   list: async (): Promise<Tag[]> => {
-    const response = await apiClient.get('/tags');
+    const response = await apiClient.get('/tags/');
     return response.data;
   },
 
   create: async (name: string): Promise<Tag> => {
-    const response = await apiClient.post('/tags', { name });
+    const response = await apiClient.post('/tags/', { name });
     return response.data;
   },
 
@@ -237,12 +237,12 @@ export const tagsApi = {
 
 export const settingsApi = {
   get: async (): Promise<UserSettings> => {
-    const response = await apiClient.get('/settings');
+    const response = await apiClient.get('/settings/');
     return response.data;
   },
 
   update: async (data: UserSettingsUpdate): Promise<UserSettings> => {
-    const response = await apiClient.put('/settings', data);
+    const response = await apiClient.put('/settings/', data);
     return response.data;
   },
 };
@@ -253,12 +253,12 @@ export const settingsApi = {
 
 export const importApi = {
   importPrebuilt: async (): Promise<ImportResponse> => {
-    const response = await apiClient.post('/import/prebuilt');
+    const response = await apiClient.post('/import/prebuilt/');
     return response.data;
   },
 
   getStatus: async (): Promise<ImportStatus> => {
-    const response = await apiClient.get('/import/status');
+    const response = await apiClient.get('/import/status/');
     return response.data;
   },
 };
@@ -269,7 +269,7 @@ export const importApi = {
 
 export const statsApi = {
   getToday: async (): Promise<TodayStats> => {
-    const response = await apiClient.get('/stats/today');
+    const response = await apiClient.get('/stats/today/');
     return response.data;
   },
 

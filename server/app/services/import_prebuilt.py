@@ -22,6 +22,7 @@ def import_prebuilt_decks(db: Session, user_id: int = 1) -> dict:
     - JLPT N4 Colors & Descriptions (12 cards) - Colors and descriptive words
     - JLPT N4 Weather & Seasons (12 cards) - Weather and seasons
     - JLPT N4 Family (15 cards) - Family relationships
+    - JLPT N4 Adverbs (100 cards) - Time, frequency, manner, and degree adverbs
     
     Idempotent: Can be run multiple times safely.
     
@@ -76,6 +77,11 @@ def import_prebuilt_decks(db: Session, user_id: int = 1) -> dict:
             "name": "JLPT N4 Family",
             "description": "Family members and relationship vocabulary with humble/polite forms",
             "data_key": "family"
+        },
+        {
+            "name": "JLPT N4 Adverbs",
+            "description": "Essential adverbs for time, frequency, manner, degree, and state expressions",
+            "data_key": "adverbs"
         }
     ]
     
@@ -263,7 +269,8 @@ def check_import_status(db: Session, user_id: int = 1) -> dict:
         "JLPT N4 Transportation",
         "JLPT N4 Colors & Descriptions",
         "JLPT N4 Weather & Seasons",
-        "JLPT N4 Family"
+        "JLPT N4 Family",
+        "JLPT N4 Adverbs"
     ]
     
     decks_info = []

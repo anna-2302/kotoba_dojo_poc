@@ -872,6 +872,620 @@ N4_FAMILY = [
     }
 ]
 
+# N4 Adverbs (100 cards)
+N4_ADVERBS = [
+    # Time-related adverbs
+    {
+        "front": "今 (いま)",
+        "back": "now, at this moment",
+        "notes": "Present time",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "もう",
+        "back": "already, anymore",
+        "notes": "With affirmative: already; with negative: anymore",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "まだ",
+        "back": "still, not yet",
+        "notes": "With affirmative: still; with negative: not yet",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "いつも",
+        "back": "always, usually",
+        "notes": "Habitual action",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "時々 (ときどき)",
+        "back": "sometimes, occasionally",
+        "notes": "Moderate frequency",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "よく",
+        "back": "often, well",
+        "notes": "High frequency or doing something well",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "たまに",
+        "back": "occasionally, once in a while",
+        "notes": "Low frequency",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "全然 (ぜんぜん)",
+        "back": "not at all, (not) entirely",
+        "notes": "Usually with negative",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "すぐ",
+        "back": "immediately, soon",
+        "notes": "Near future",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "やっと",
+        "back": "finally, at last",
+        "notes": "After waiting or effort",
+        "tags": ["adverb", "n4", "time"]
+    },
+    # Degree and quantity
+    {
+        "front": "とても",
+        "back": "very, much",
+        "notes": "High degree",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "大変 (たいへん)",
+        "back": "very, extremely, terribly",
+        "notes": "Strong emphasis",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "少し (すこし)",
+        "back": "a little, a few",
+        "notes": "Small amount",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "ちょっと",
+        "back": "a little, a bit",
+        "notes": "Casual form of 少し",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "たくさん",
+        "back": "a lot, many",
+        "notes": "Large quantity",
+        "tags": ["adverb", "n4", "quantity"]
+    },
+    {
+        "front": "もっと",
+        "back": "more, further",
+        "notes": "Comparative",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "一番 (いちばん)",
+        "back": "most, best, number one",
+        "notes": "Superlative",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "あまり",
+        "back": "not very, not much",
+        "notes": "Usually with negative",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "ずっと",
+        "back": "by far, all the time, much more",
+        "notes": "Continuation or emphasis",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "だいたい",
+        "back": "mostly, roughly, approximately",
+        "notes": "Approximation",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    # Manner adverbs
+    {
+        "front": "ゆっくり",
+        "back": "slowly, leisurely",
+        "notes": "Slow pace",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "早く (はやく)",
+        "back": "quickly, early",
+        "notes": "Fast pace or early timing",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "急に (きゅうに)",
+        "back": "suddenly, abruptly",
+        "notes": "Unexpected change",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "だんだん",
+        "back": "gradually, little by little",
+        "notes": "Progressive change",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "本当に (ほんとうに)",
+        "back": "really, truly",
+        "notes": "Emphasis on truth",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "一緒に (いっしょに)",
+        "back": "together",
+        "notes": "Doing something with others",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "別々に (べつべつに)",
+        "back": "separately, individually",
+        "notes": "Apart from others",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "直接 (ちょくせつ)",
+        "back": "directly",
+        "notes": "Without intermediary",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "特に (とくに)",
+        "back": "especially, particularly",
+        "notes": "Emphasis",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "普通 (ふつう)",
+        "back": "usually, normally, ordinary",
+        "notes": "Standard way",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    # State and condition
+    {
+        "front": "まだまだ",
+        "back": "still more, not yet",
+        "notes": "Emphasis on continuation",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "もちろん",
+        "back": "of course, naturally",
+        "notes": "Agreement",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "実は (じつは)",
+        "back": "actually, in fact",
+        "notes": "Revealing truth",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "多分 (たぶん)",
+        "back": "probably, maybe",
+        "notes": "Uncertainty",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "きっと",
+        "back": "surely, certainly",
+        "notes": "Strong probability",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "必ず (かならず)",
+        "back": "without fail, certainly",
+        "notes": "Absolute certainty",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "絶対に (ぜったいに)",
+        "back": "absolutely, definitely",
+        "notes": "Strong emphasis",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "たぶん",
+        "back": "probably, perhaps",
+        "notes": "Moderate certainty",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "やはり / やっぱり",
+        "back": "as expected, after all",
+        "notes": "Confirmation of expectation",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "もしかしたら",
+        "back": "perhaps, possibly",
+        "notes": "Uncertainty",
+        "tags": ["adverb", "n4", "state"]
+    },
+    # Additional time expressions
+    {
+        "front": "最近 (さいきん)",
+        "back": "recently, lately",
+        "notes": "Near past",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "前に (まえに)",
+        "back": "before, ago",
+        "notes": "Prior time",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "後で (あとで)",
+        "back": "later, afterwards",
+        "notes": "Future time",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "さっき",
+        "back": "a moment ago, just now",
+        "notes": "Recent past",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "この間 (このあいだ)",
+        "back": "the other day, recently",
+        "notes": "Recent past event",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "先週 (せんしゅう)",
+        "back": "last week",
+        "notes": "Previous week",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "来週 (らいしゅう)",
+        "back": "next week",
+        "notes": "Following week",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "今週 (こんしゅう)",
+        "back": "this week",
+        "notes": "Current week",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "毎週 (まいしゅう)",
+        "back": "every week",
+        "notes": "Weekly frequency",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "毎月 (まいつき)",
+        "back": "every month",
+        "notes": "Monthly frequency",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    # More manner and degree
+    {
+        "front": "はっきり",
+        "back": "clearly, distinctly",
+        "notes": "Clear manner",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "しっかり",
+        "back": "firmly, steadily",
+        "notes": "Solid manner",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "ちゃんと",
+        "back": "properly, correctly",
+        "notes": "Appropriate manner",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "ぜんぶ",
+        "back": "all, entirely",
+        "notes": "Complete amount",
+        "tags": ["adverb", "n4", "quantity"]
+    },
+    {
+        "front": "全部 (ぜんぶ)",
+        "back": "all, the whole",
+        "notes": "Everything",
+        "tags": ["adverb", "n4", "quantity"]
+    },
+    {
+        "front": "半分 (はんぶん)",
+        "back": "half",
+        "notes": "50 percent",
+        "tags": ["adverb", "n4", "quantity"]
+    },
+    {
+        "front": "少しずつ (すこしずつ)",
+        "back": "little by little",
+        "notes": "Gradual increments",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "だいぶ",
+        "back": "considerably, quite",
+        "notes": "Significant degree",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "かなり",
+        "back": "fairly, considerably",
+        "notes": "High degree",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "なかなか",
+        "back": "quite, considerably",
+        "notes": "With affirmative: quite; with negative: not easily",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    # More state expressions
+    {
+        "front": "例えば (たとえば)",
+        "back": "for example",
+        "notes": "Introducing examples",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "つまり",
+        "back": "in other words, that is",
+        "notes": "Rephrasing",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "ところで",
+        "back": "by the way",
+        "notes": "Topic change",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "では / じゃ",
+        "back": "well then, in that case",
+        "notes": "Transition",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "それで",
+        "back": "and then, so",
+        "notes": "Consequence",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "それから",
+        "back": "and then, after that",
+        "notes": "Sequential action",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "しかし",
+        "back": "however, but",
+        "notes": "Contrast",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "でも",
+        "back": "but, however",
+        "notes": "Casual contrast",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "だから",
+        "back": "therefore, so",
+        "notes": "Reason/result",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "そして",
+        "back": "and, and then",
+        "notes": "Addition",
+        "tags": ["adverb", "n4", "state"]
+    },
+    # Additional practical adverbs
+    {
+        "front": "まず",
+        "back": "first of all, to begin with",
+        "notes": "First step",
+        "tags": ["adverb", "n4", "order"]
+    },
+    {
+        "front": "次に (つぎに)",
+        "back": "next, secondly",
+        "notes": "Following step",
+        "tags": ["adverb", "n4", "order"]
+    },
+    {
+        "front": "最後に (さいごに)",
+        "back": "finally, lastly",
+        "notes": "Final step",
+        "tags": ["adverb", "n4", "order"]
+    },
+    {
+        "front": "もう一度 (もういちど)",
+        "back": "once more, again",
+        "notes": "Repetition",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "また",
+        "back": "again, also",
+        "notes": "Repetition or addition",
+        "tags": ["adverb", "n4", "frequency"]
+    },
+    {
+        "front": "今度 (こんど)",
+        "back": "next time, this time",
+        "notes": "Future occasion",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "初めて (はじめて)",
+        "back": "for the first time",
+        "notes": "First experience",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "やっぱり",
+        "back": "as I thought, also",
+        "notes": "Confirmation",
+        "tags": ["adverb", "n4", "state"]
+    },
+    {
+        "front": "ちょうど",
+        "back": "exactly, just",
+        "notes": "Precise timing/amount",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "同じ (おなじ)",
+        "back": "same, identical",
+        "notes": "Similarity",
+        "tags": ["adverb", "n4", "state"]
+    },
+    # More practical expressions
+    {
+        "front": "ぜひ",
+        "back": "by all means, certainly",
+        "notes": "Strong recommendation",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "やっと",
+        "back": "at last, finally",
+        "notes": "After difficulty",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "いつか",
+        "back": "someday, sometime",
+        "notes": "Indefinite future",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "どうして",
+        "back": "why, how",
+        "notes": "Asking reason",
+        "tags": ["adverb", "n4", "question"]
+    },
+    {
+        "front": "どうやって",
+        "back": "how, in what way",
+        "notes": "Asking method",
+        "tags": ["adverb", "n4", "question"]
+    },
+    {
+        "front": "なぜ",
+        "back": "why",
+        "notes": "Formal 'why'",
+        "tags": ["adverb", "n4", "question"]
+    },
+    {
+        "front": "どのくらい",
+        "back": "how much, how long",
+        "notes": "Asking degree/duration",
+        "tags": ["adverb", "n4", "question"]
+    },
+    {
+        "front": "いくら",
+        "back": "how much (price)",
+        "notes": "Asking cost",
+        "tags": ["adverb", "n4", "question"]
+    },
+    {
+        "front": "どこ",
+        "back": "where",
+        "notes": "Asking location",
+        "tags": ["adverb", "n4", "question"]
+    },
+    {
+        "front": "いつ",
+        "back": "when",
+        "notes": "Asking time",
+        "tags": ["adverb", "n4", "question"]
+    },
+    # Final set
+    {
+        "front": "あまり...ない",
+        "back": "not very, not much",
+        "notes": "With negative verbs",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "少なくとも (すくなくとも)",
+        "back": "at least",
+        "notes": "Minimum amount",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "せめて",
+        "back": "at least, at most",
+        "notes": "Minimum expectation",
+        "tags": ["adverb", "n4", "degree"]
+    },
+    {
+        "front": "やがて",
+        "back": "before long, soon",
+        "notes": "Near future",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "そろそろ",
+        "back": "soon, gradually",
+        "notes": "Approaching time",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "ついに",
+        "back": "finally, at last",
+        "notes": "Long-awaited result",
+        "tags": ["adverb", "n4", "time"]
+    },
+    {
+        "front": "突然 (とつぜん)",
+        "back": "suddenly, abruptly",
+        "notes": "Unexpected",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "簡単に (かんたんに)",
+        "back": "easily, simply",
+        "notes": "Easy manner",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "丁寧に (ていねいに)",
+        "back": "politely, carefully",
+        "notes": "Careful manner",
+        "tags": ["adverb", "n4", "manner"]
+    },
+    {
+        "front": "静かに (しずかに)",
+        "back": "quietly, peacefully",
+        "notes": "Silent manner",
+        "tags": ["adverb", "n4", "manner"]
+    }
+]
+
 def get_all_sample_data():
     """Get all sample data for import."""
     return {
@@ -882,5 +1496,6 @@ def get_all_sample_data():
         "transport": N4_TRANSPORT,
         "colors": N4_COLORS,
         "weather": N4_WEATHER,
-        "family": N4_FAMILY
+        "family": N4_FAMILY,
+        "adverbs": N4_ADVERBS
     }

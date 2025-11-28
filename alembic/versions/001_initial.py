@@ -34,8 +34,8 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('username', sa.String(length=100), nullable=False),
         sa.Column('timezone', sa.String(length=50), nullable=False, server_default='UTC'),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
+        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_index('ix_users_id', 'users', ['id'])
@@ -50,8 +50,8 @@ def upgrade() -> None:
         sa.Column('description', sa.Text(), nullable=True),
         sa.Column('new_per_day', sa.Integer(), nullable=True),
         sa.Column('review_per_day', sa.Integer(), nullable=True),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
+        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
@@ -65,7 +65,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=100), nullable=False),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
@@ -83,8 +83,8 @@ def upgrade() -> None:
         sa.Column('back', sa.Text(), nullable=False),
         sa.Column('notes', sa.Text(), nullable=True),
         sa.Column('suspended', sa.Boolean(), nullable=False, server_default='false'),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
+        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['deck_id'], ['decks.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
@@ -100,7 +100,7 @@ def upgrade() -> None:
         'card_tags',
         sa.Column('card_id', sa.Integer(), nullable=False),
         sa.Column('tag_id', sa.Integer(), nullable=False),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['card_id'], ['cards.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['tag_id'], ['tags.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('card_id', 'tag_id')
@@ -119,8 +119,8 @@ def upgrade() -> None:
         sa.Column('learning_step', sa.Integer(), nullable=False, server_default='0'),
         sa.Column('lapses', sa.Integer(), nullable=False, server_default='0'),
         sa.Column('version', sa.Integer(), nullable=False, server_default='0'),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
+        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.CheckConstraint('ease_factor >= 1.3 AND ease_factor <= 3.0', name='check_ease_factor'),
         sa.ForeignKeyConstraint(['card_id'], ['cards.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
@@ -147,7 +147,7 @@ def upgrade() -> None:
         sa.Column('interval_after', sa.Float(), nullable=False),
         sa.Column('ease_factor_before', sa.Float(), nullable=False),
         sa.Column('ease_factor_after', sa.Float(), nullable=False),
-        sa.Column('reviewed_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('reviewed_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['card_id'], ['cards.id'], ondelete='CASCADE'),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
@@ -169,8 +169,8 @@ def upgrade() -> None:
         sa.Column('again_count', sa.Integer(), nullable=False, server_default='0'),
         sa.Column('good_count', sa.Integer(), nullable=False, server_default='0'),
         sa.Column('easy_count', sa.Integer(), nullable=False, server_default='0'),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
+        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id')
     )
@@ -190,8 +190,8 @@ def upgrade() -> None:
         sa.Column('music_enabled', sa.Boolean(), nullable=False, server_default='false'),
         sa.Column('music_volume', sa.Float(), nullable=False, server_default='0.5'),
         sa.Column('visual_theme', sa.String(length=50), nullable=False, server_default='mizuiro'),
-        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
-        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')),
+        sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
+        sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text("(datetime('now'))")),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('user_id')
@@ -202,13 +202,13 @@ def upgrade() -> None:
     # Insert default user for POC
     op.execute("""
         INSERT INTO users (username, timezone, created_at, updated_at) 
-        VALUES ('default_user', 'UTC', now(), now())
+        VALUES ('default_user', 'UTC', datetime('now'), datetime('now'))
     """)
 
     # Insert default settings for default user
     op.execute("""
         INSERT INTO user_settings (user_id, learning_steps, dark_mode, music_enabled, music_volume, created_at, updated_at)
-        SELECT id, '10,1440', false, false, 0.5, now(), now()
+        SELECT id, '10,1440', 0, 0, 0.5, datetime('now'), datetime('now')
         FROM users WHERE username = 'default_user'
     """)
 

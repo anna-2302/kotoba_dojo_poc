@@ -12,6 +12,7 @@ Based on SuperMemo SM-2 algorithm with modifications:
 from datetime import datetime, timedelta
 from typing import Tuple, Literal
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.models.database import Card, SchedState, ReviewLog, DailyCounter, DailyDeckCounter
 from deck_counter_helpers import update_deck_counters
@@ -239,6 +240,9 @@ def process_rating(
     if rating == "again" and old_state == "review":
         sched_state.lapses += 1
     
+    # Flush sched_state changes immediately to ensure they're committed even if counter creation fails
+    db.flush()
+    
     # Phase 4: Conditional logging (skip for Again repeats in sessions)
     if log_review:
         # Create review log (PRD lines 456-463)
@@ -260,10 +264,12 @@ def process_rating(
         today = now.date()
         counter = db.query(DailyCounter).filter(
             DailyCounter.user_id == user_id,
-            DailyCounter.date == today
+            func.date(DailyCounter.date) == today
         ).first()
         
         if not counter:
+            from sqlalchemy.exc import IntegrityError
+            # Try to create counter, but handle race condition gracefully
             counter = DailyCounter(
                 user_id=user_id,
                 date=today,
@@ -276,6 +282,29 @@ def process_rating(
                 reviews_done_per_deck={}
             )
             db.add(counter)
+            try:
+                db.flush()  # Flush to detect race condition
+            except IntegrityError:
+                # Race condition: counter created by another request
+                # Must rollback to clear the failed transaction state
+                db.rollback()
+                # Re-apply the sched_state changes after rollback
+                sched_state.state = new_state
+                sched_state.due_at = due_at
+                sched_state.interval_days = interval
+                sched_state.ease_factor = ef
+                sched_state.learning_step = step
+                sched_state.version += 1
+                if rating == "again" and old_state == "review":
+                    sched_state.lapses += 1
+                # Query for the existing counter
+                counter = db.query(DailyCounter).filter(
+                    DailyCounter.user_id == user_id,
+                    func.date(DailyCounter.date) == today
+                ).first()
+                if not counter:
+                    # This should never happen - if IntegrityError was raised, counter must exist
+                    raise ValueError(f"DailyCounter race condition: counter not found after IntegrityError")
         
         # Track if this is a new card introduction (only on first successful rating)
         if old_state == "new" and rating in ["good", "easy"]:

@@ -44,7 +44,7 @@ async def import_prebuilt(db: Session = Depends(get_db)):
     """
     Import prebuilt JLPT N4 decks.
     
-    Creates 8 themed decks:
+    Creates 9 themed decks:
     - JLPT N4 Vocabulary (30 cards)
     - JLPT N4 Kanji (20 cards)
     - JLPT N4 Numbers & Counters (15 cards)
@@ -53,8 +53,9 @@ async def import_prebuilt(db: Session = Depends(get_db)):
     - JLPT N4 Colors & Descriptions (12 cards)
     - JLPT N4 Weather & Seasons (12 cards)
     - JLPT N4 Family (15 cards)
+    - JLPT N4 Adverbs (100 cards)
     
-    Total: 139 cards across 8 decks
+    Total: 239 cards across 9 decks
     
     Idempotent: Can be called multiple times safely.
     

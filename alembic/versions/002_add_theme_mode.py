@@ -23,29 +23,29 @@ def upgrade() -> None:
     """
     Add theme_mode column to user_settings.
     Migrate dark_mode values: False -> 'day', True -> 'night'.
+    SQLite-compatible version using batch operations.
     """
-    # Add theme_mode column with default 'day'
-    op.add_column(
-        'user_settings',
-        sa.Column('theme_mode', sa.String(length=10), nullable=False, server_default='day')
-    )
+    with op.batch_alter_table('user_settings', schema=None) as batch_op:
+        # Add theme_mode column with default 'day'
+        batch_op.add_column(
+            sa.Column('theme_mode', sa.String(length=10), nullable=False, server_default='day')
+        )
+        
+        # Add check constraint (SQLite supports this in batch mode)
+        batch_op.create_check_constraint(
+            'ck_user_settings_theme_mode',
+            "theme_mode IN ('day', 'night')"
+        )
     
     # Migrate existing dark_mode values to theme_mode
-    # PostgreSQL uses TRUE/FALSE, SQLite uses 1/0, so we use boolean comparison
+    # SQLite uses 1/0 for boolean
     op.execute("""
         UPDATE user_settings 
         SET theme_mode = CASE 
-            WHEN dark_mode = TRUE THEN 'night'
+            WHEN dark_mode = 1 THEN 'night'
             ELSE 'day'
         END
     """)
-    
-    # Add check constraint to ensure theme_mode is valid
-    op.create_check_constraint(
-        'ck_user_settings_theme_mode',
-        'user_settings',
-        "theme_mode IN ('day', 'night')"
-    )
     
     # Note: We keep dark_mode column for backward compatibility during transition
     # It can be removed in a future migration after frontend is fully migrated
@@ -55,5 +55,6 @@ def downgrade() -> None:
     """
     Remove theme_mode column and check constraint.
     """
-    op.drop_constraint('ck_user_settings_theme_mode', 'user_settings', type_='check')
-    op.drop_column('user_settings', 'theme_mode')
+    with op.batch_alter_table('user_settings', schema=None) as batch_op:
+        batch_op.drop_constraint('ck_user_settings_theme_mode', type_='check')
+        batch_op.drop_column('theme_mode')
