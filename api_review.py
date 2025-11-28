@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models.database import User, Card
+from app.models.database import User, Card, Deck
 from app.schemas.schemas import CardResponse
 
 # Import review-specific schemas (these are at root level)
@@ -61,12 +61,19 @@ def build_card_response(card: Card, db: Session) -> CardResponse:
     return cards_build(card, db)
 
 
-def card_stub_to_response(stub) -> CardStubResponse:
+def card_stub_to_response(stub, db: Session) -> CardStubResponse:
     """Convert queue_builder CardStub to API response."""
+    # Fetch full card data from database
+    card = db.query(Card).filter(Card.id == stub.id).first()
+    deck = db.query(Deck).filter(Deck.id == stub.deck_id).first()
+    
     return CardStubResponse(
         id=stub.id,
         deck_id=stub.deck_id,
         front_preview=stub.front_preview,
+        front=card.front if card else stub.front_preview,
+        back=card.back if card else "",
+        deck_name=deck.name if deck else f"Deck {stub.deck_id}",
         state=stub.state,
         tags=stub.tags,
         due_at=stub.due_at.isoformat() if stub.due_at else None,
@@ -318,9 +325,9 @@ def build_session(
         
         # Convert to API response format
         sections_response = SessionSectionsResponse(
-            new=[card_stub_to_response(stub) for stub in sections.new],
-            learning=[card_stub_to_response(stub) for stub in sections.learning],
-            review=[card_stub_to_response(stub) for stub in sections.review]
+            new=[card_stub_to_response(stub, db) for stub in sections.new],
+            learning=[card_stub_to_response(stub, db) for stub in sections.learning],
+            review=[card_stub_to_response(stub, db) for stub in sections.review]
         )
         
         # Convert per-deck limits

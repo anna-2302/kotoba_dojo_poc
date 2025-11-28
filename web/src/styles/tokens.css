@@ -85,9 +85,13 @@
   
   /* State colors */
   --kd-success: #2d7a3e;           /* 5.1:1 on #f8fbfe */
+  --kd-success-bg: #e8f5ea;        /* Light green background */
   --kd-warning: #a0640a;           /* 5.5:1 on #f8fbfe */
+  --kd-warning-bg: #fff4e6;        /* Light amber background */
   --kd-danger: #b82838;            /* 6.8:1 on #f8fbfe */
+  --kd-danger-bg: #ffe6e9;         /* Light red background */
   --kd-info: #2563a8;
+  --kd-primary-bg: #e6f2fb;        /* Light blue background */
   
   /* Borders and dividers */
   --kd-border: #b8d4ed;
@@ -168,9 +172,13 @@
   
   /* State colors */
   --kd-success: #5fb577;           /* 5.8:1 on #151b21 */
+  --kd-success-bg: #1a2d1f;        /* Dark green background */
   --kd-warning: #e0a868;           /* 6.2:1 on #151b21 */
+  --kd-warning-bg: #2d2519;        /* Dark amber background */
   --kd-danger: #e89098;            /* 5.5:1 on #151b21 */
+  --kd-danger-bg: #2d1a1d;         /* Dark red background */
   --kd-info: #5a9fd8;
+  --kd-primary-bg: #1a2835;        /* Dark blue background */
   
   /* Borders and dividers */
   --kd-border: #344252;
@@ -251,9 +259,13 @@
   
   /* State colors */
   --kd-success: #4a8b5c;           /* 5.1:1 on #fffbfc */
+  --kd-success-bg: #edf7f0;        /* Light green background */
   --kd-warning: #c97d3e;           /* 4.8:1 on #fffbfc */
+  --kd-warning-bg: #fff5ed;        /* Light peach background */
   --kd-danger: #c94554;            /* 5.9:1 on #fffbfc */
+  --kd-danger-bg: #ffeef0;         /* Light red background */
   --kd-info: #6b8fd9;
+  --kd-primary-bg: #fce8f0;        /* Light pink background */
   
   /* Borders and dividers */
   --kd-border: #f5d0df;
@@ -330,9 +342,13 @@
   
   /* State colors */
   --kd-success: #7fc894;           /* 6.9:1 on #251419 */
+  --kd-success-bg: #1f2d24;        /* Dark green background */
   --kd-warning: #ffb366;           /* 7.1:1 on #251419 */
+  --kd-warning-bg: #2d2419;        /* Dark amber background */
   --kd-danger: #ff8891;            /* 6.2:1 on #251419 */
+  --kd-danger-bg: #2d1a1d;         /* Dark red background */
   --kd-info: #8db4ff;
+  --kd-primary-bg: #3a202a;        /* Dark pink background */
   
   /* Borders and dividers */
   --kd-border: #4a3038;

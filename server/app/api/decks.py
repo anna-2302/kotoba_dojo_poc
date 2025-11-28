@@ -127,6 +127,8 @@ def list_decks(
             "card_count": card_count,
             "due_count": due_count,
             "new_count": new_count,
+            "learning_count": learning_due,
+            "review_count": review_due,
             "created_at": deck.created_at,
             "updated_at": deck.updated_at
         }
@@ -217,15 +219,26 @@ def get_deck(
         (SchedState.state == 'new') | (SchedState.state == None)
     ).scalar() or 0
     
-    # Count due cards
+    # Count learning and review cards due now
     from datetime import datetime
-    due_count = db.query(func.count(Card.id)).filter(
+    now = datetime.utcnow()
+    learning_due = db.query(func.count(Card.id)).filter(
         Card.deck_id == deck.id,
         Card.suspended == False
     ).join(SchedState, Card.id == SchedState.card_id).filter(
-        SchedState.state.in_(['learning', 'review']),
-        SchedState.due_at <= datetime.utcnow()
+        SchedState.state == 'learning',
+        SchedState.due_at <= now
     ).scalar() or 0
+    
+    review_due = db.query(func.count(Card.id)).filter(
+        Card.deck_id == deck.id,
+        Card.suspended == False
+    ).join(SchedState, Card.id == SchedState.card_id).filter(
+        SchedState.state == 'review',
+        SchedState.due_at <= now
+    ).scalar() or 0
+    
+    due_count = learning_due + review_due + new_count
     
     deck_dict = {
         "id": deck.id,
@@ -237,6 +250,8 @@ def get_deck(
         "card_count": card_count,
         "due_count": due_count,
         "new_count": new_count,
+        "learning_count": learning_due,
+        "review_count": review_due,
         "created_at": deck.created_at,
         "updated_at": deck.updated_at
     }
@@ -289,13 +304,24 @@ def update_deck(
     ).scalar() or 0
     
     from datetime import datetime
-    due_count = db.query(func.count(Card.id)).filter(
+    now = datetime.utcnow()
+    learning_due = db.query(func.count(Card.id)).filter(
         Card.deck_id == deck.id,
         Card.suspended == False
     ).join(SchedState, Card.id == SchedState.card_id).filter(
-        SchedState.state.in_(['learning', 'review']),
-        SchedState.due_at <= datetime.utcnow()
+        SchedState.state == 'learning',
+        SchedState.due_at <= now
     ).scalar() or 0
+    
+    review_due = db.query(func.count(Card.id)).filter(
+        Card.deck_id == deck.id,
+        Card.suspended == False
+    ).join(SchedState, Card.id == SchedState.card_id).filter(
+        SchedState.state == 'review',
+        SchedState.due_at <= now
+    ).scalar() or 0
+    
+    due_count = learning_due + review_due + new_count
     
     deck_dict = {
         "id": deck.id,
@@ -307,6 +333,8 @@ def update_deck(
         "card_count": card_count,
         "due_count": due_count,
         "new_count": new_count,
+        "learning_count": learning_due,
+        "review_count": review_due,
         "created_at": deck.created_at,
         "updated_at": deck.updated_at
     }

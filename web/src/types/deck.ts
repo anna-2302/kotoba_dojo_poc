@@ -5,6 +5,8 @@ export interface Deck {
   card_count: number;
   due_count: number;
   new_count: number;
+  learning_count: number;
+  review_count: number;
   created_at: string;
   updated_at: string;
   new_per_day?: number;

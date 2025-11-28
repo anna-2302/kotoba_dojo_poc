@@ -2081,3 +2081,168 @@ function handleFinalRating(section, rating) {
 - Step 1: Backend session/build; allocator; scheduler endpoint adjustments; counters reconciliation
 - Step 2: Frontend session state and UI; “Again” repeat mechanics; progress indicators; QA and tests
 - Step 3: Polish and fix edge cases; accessibility and performance pass
+
+
+
+### Phase 4.1 PRD: Deck-Specific Study Overview on Decks Page
+Feature Name: Deck-Specific Study Overview
+Author: Anna Khoziasheva
+Date: November 28, 2025
+
+Objective
+Enhance the user experience on the Decks page by providing a clear breakdown of the cards in each deck (New, Learning, Review) and the total number of cards in the deck. This will allow users to understand the scope of their study session before clicking the "Study Now" button.
+
+Requirements
+Functional Requirements
+Deck Breakdown Display:
+
+For each deck, display the following card counts:
+New Cards: Cards that have not been studied yet.
+Learning Cards: Cards currently in the learning phase.
+Review Cards: Cards scheduled for review.
+Show these counts in a visually distinct and intuitive format (e.g., a horizontal bar or list).
+Total Cards Chip:
+
+Display the total number of cards in the deck as a small chip or badge, regardless of their status.
+The chip should be visually distinct and placed near the deck name.
+"Study Now" Button:
+
+The "Study Now" button should remain prominent and clearly indicate that it will start a study session for the selected deck.
+Ensure the button is aligned with the card breakdown for clarity.
+Dynamic Updates:
+
+The card counts (New, Learning, Review, Total) should dynamically update based on the current state of the deck.
+Non-Functional Requirements
+Performance:
+
+Ensure the card counts are fetched efficiently to avoid delays in rendering the Decks page.
+Use TanStack Query caching to minimize redundant API calls.
+Responsiveness:
+
+The layout should be mobile-friendly and adapt to smaller screens without losing clarity.
+Styling:
+
+Use Tailwind CSS for consistent styling.
+Ensure dark mode compatibility.
+Accessibility:
+
+Add ARIA labels for the card counts and "Study Now" button to ensure screen reader compatibility.
+API Changes
+Endpoint: /api/decks/{deck_id}/stats
+Method: GET
+Response:
+UI/UX Design
+Deck Card Layout:
+
+Deck Name: Large and bold at the top.
+Card Counts:
+Display New, Learning, and Review counts in a horizontal row or stacked vertically.
+Use icons or color-coded labels for each category.
+Total Cards Chip:
+Small badge near the deck name, e.g., "50 cards".
+Study Now Button:
+Prominent button below the card counts.
+Example Layout:
+
+Acceptance Criteria
+The Decks page displays the New, Learning, and Review counts for each deck.
+The total number of cards in the deck is displayed as a chip.
+The "Study Now" button is clearly visible and aligned with the card breakdown.
+The card counts dynamically update when the deck's state changes.
+The layout is responsive and works in both light and dark modes.
+Out of Scope
+Changes to the "Study Now" session logic.
+Adding new deck management features.
+
+
+
+#### Phase 4.1 Implementation Plan: Deck-Specific Study Overview on Decks Page
+Overview
+Add New/Learning/Review card counts and total cards chip to each deck on the Decks page, matching the structure shown on the dashboard.
+
+Implementation Tasks
+Task 1: Backend API Enhancement
+File: decks.py
+Estimated Time: 1 hour
+
+1.1 Add Deck Stats Endpoint
+1.2 Add Schema Definition
+File: schemas.py
+
+Task 2: Frontend Type Definitions
+File: types.ts
+Estimated Time: 15 minutes
+
+Task 3: Frontend API Client Enhancement
+File: client.ts
+Estimated Time: 15 minutes
+
+Task 4: Create Deck Stats Component
+File: web/src/components/DeckStatsDisplay.tsx
+Estimated Time: 1 hour
+
+Task 5: Update DeckCard Component
+File: web/src/components/DeckCard.tsx
+Estimated Time: 45 minutes
+
+Task 6: Update Decks Page
+File: web/src/pages/DecksPage.tsx
+Estimated Time: 30 minutes
+
+Task 7: Backend Tests
+File: test_api_decks.py
+Estimated Time: 45 minutes
+
+Task 8: Frontend Tests
+File: web/src/components/__tests__/DeckStatsDisplay.test.tsx
+Estimated Time: 30 minutes
+
+Error Handling Strategy
+Backend
+404 Error: When deck doesn't exist or doesn't belong to user
+Database Errors: Log and return 500 with generic message
+Input Validation: Pydantic handles deck_id validation
+Frontend
+API Errors: Show error message instead of stats
+Loading States: Skeleton loading animation
+Empty State: Show "No cards" when total is 0
+Network Errors: TanStack Query handles retry logic
+Performance Considerations
+Backend
+Query optimization: Single query with GROUP BY for card counts
+Database indexes: Existing indexes on deck_id and state should be sufficient
+Caching: Not needed initially, stats change infrequently
+Frontend
+TanStack Query caching: 5-minute stale time
+Only fetch stats when deck card is visible (default behavior)
+Skeleton loading prevents layout shift
+Testing Strategy
+Unit Tests
+Backend: Test stats calculation logic with different card states
+Frontend: Test component rendering with various data states
+Integration Tests
+Backend: Test full endpoint with database
+Frontend: Test API integration with mocked responses
+E2E Tests (Optional)
+Navigate to decks page
+Verify stats display for each deck
+Click "Study Now" and verify navigation
+Accessibility
+ARIA labels for study buttons
+Color indicators with text labels (not color-only)
+Proper heading hierarchy
+Keyboard navigation support
+Timeline Estimate
+Backend: 1.5 hours
+Frontend: 2.5 hours
+Testing: 1.5 hours
+Total: ~5-6 hours
+Files Modified
+decks.py (new endpoint)
+schemas.py (new schema)
+types.ts (new interface)
+client.ts (new API method)
+web/src/components/DeckStatsDisplay.tsx (new component)
+web/src/components/DeckCard.tsx (updated)
+web/src/pages/DecksPage.tsx (updated)
+Test files (new)

@@ -376,27 +376,27 @@ export const StatsPage: React.FC = () => {
             </h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-surface-2)' }}>
-                <span style={{ color: 'var(--kd-text-primary)' }}>Total Responses</span>
+                <span className="font-medium" style={{ color: 'var(--kd-text-primary)' }}>Total Responses</span>
                 <span className="font-bold" style={{ color: 'var(--kd-text-primary)' }}>
                   {(calculatedStats.easy_count || 0) +
                     (calculatedStats.good_count || 0) +
                     (calculatedStats.again_count || 0)}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-success)', opacity: 0.15 }}>
-                <span style={{ color: 'var(--kd-text-primary)' }}>Correct Answers</span>
+              <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-success-bg)' }}>
+                <span className="font-medium" style={{ color: 'var(--kd-text-primary)' }}>Correct Answers</span>
                 <span className="font-bold" style={{ color: 'var(--kd-success)' }}>
                   {(calculatedStats.easy_count || 0) + (calculatedStats.good_count || 0)}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-danger)', opacity: 0.15 }}>
-                <span style={{ color: 'var(--kd-text-primary)' }}>Needs Review</span>
+              <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-danger-bg)' }}>
+                <span className="font-medium" style={{ color: 'var(--kd-text-primary)' }}>Needs Review</span>
                 <span className="font-bold" style={{ color: 'var(--kd-danger)' }}>
                   {calculatedStats.again_count}
                 </span>
               </div>
-              <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-primary)', opacity: 0.15 }}>
-                <span style={{ color: 'var(--kd-text-primary)' }}>Success Rate</span>
+              <div className="flex justify-between items-center p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-primary-bg)' }}>
+                <span className="font-medium" style={{ color: 'var(--kd-text-primary)' }}>Success Rate</span>
                 <span className="font-bold" style={{ color: 'var(--kd-primary)' }}>
                   {calculatedStats.retention_display}
                 </span>
@@ -404,41 +404,6 @@ export const StatsPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Tips Section */}
-        <div className="rounded-lg p-6" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }}>
-          <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
-            💡 Understanding Your Stats
-          </h2>
-          <div className="space-y-3 text-sm" style={{ color: 'var(--kd-text-secondary)' }}>
-            <p>
-              <strong style={{ color: 'var(--kd-text-primary)' }}>Retention Rate:</strong> Percentage of cards you answered correctly
-              (Good + Easy). Aim for 80%+ for optimal learning.
-            </p>
-            <p>
-              <strong style={{ color: 'var(--kd-text-primary)' }}>Ease Factor:</strong> SM-2 algorithm parameter. Starts at 2.5. Increases
-              with correct answers, decreases with mistakes.
-            </p>
-            <p>
-              <strong style={{ color: 'var(--kd-text-primary)' }}>Rating Distribution:</strong> Shows the balance of your answers. Too
-              many "Again" means cards need more review time.
-            </p>
-            <p>
-              <strong style={{ color: 'var(--kd-text-primary)' }}>Accuracy:</strong> Overall percentage of correct responses, calculated
-              as (Easy + Good) / Total.
-            </p>
-          </div>
-        </div>
-
-        {/* No Data State */}
-        {calculatedStats.totalReviews === 0 && (
-          <div className="mt-8 rounded-lg p-6 text-center" style={{ backgroundColor: 'var(--kd-warning)', color: 'var(--kd-text-inverse)', opacity: 0.9, border: '2px solid var(--kd-warning)' }}>
-            <div className="text-3xl mb-2">📝</div>
-            <p>
-              No reviews yet today. Start a review session to see your statistics!
-            </p>
-          </div>
-        )}
         </div>
       </div>
     </>

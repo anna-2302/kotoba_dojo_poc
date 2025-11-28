@@ -87,7 +87,7 @@ export function EnhancedReviewPage() {
   useEffect(() => {
     const request: SessionBuildRequest = {
       scope: deckId ? 'deck' : 'all',
-      deck_ids: deckId ? [deckId] : undefined,
+      deck_id: deckId ? deckId : undefined,
       max_session_size: 50 // Default session size
     };
     
@@ -201,7 +201,7 @@ export function EnhancedReviewPage() {
   const handleRestartSession = useCallback(() => {
     const request: SessionBuildRequest = {
       scope: deckId ? 'deck' : 'all',
-      deck_ids: deckId ? [deckId] : undefined,
+      deck_id: deckId ? deckId : undefined,
       max_session_size: 50
     };
     buildSessionMutation.mutate(request);
@@ -231,10 +231,10 @@ export function EnhancedReviewPage() {
   // Loading state
   if (buildSessionMutation.isPending || !sessionData) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-background)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-xl text-gray-600 dark:text-gray-400">Building your session...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--kd-primary)' }}></div>
+          <p className="text-xl" style={{ color: 'var(--kd-text-secondary)' }}>Building your session...</p>
         </div>
       </div>
     );
@@ -243,17 +243,20 @@ export function EnhancedReviewPage() {
   // No cards in session
   if (allCards.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-background)' }}>
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
             🎉 All caught up!
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
+          <p className="mb-8" style={{ color: 'var(--kd-text-secondary)' }}>
             No cards available for review right now.
           </p>
           <button
             onClick={() => window.history.back()}
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg"
+            className="px-6 py-3 font-medium rounded-lg transition-all"
+            style={{ backgroundColor: 'var(--kd-primary)', color: 'var(--kd-text-inverse)' }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
           >
             Back to Dashboard
           </button>
@@ -265,12 +268,12 @@ export function EnhancedReviewPage() {
   // Session complete
   if (sessionComplete) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--kd-background)' }}>
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+          <h1 className="text-3xl font-bold mb-4" style={{ color: 'var(--kd-text-primary)' }}>
             ✨ Session Complete!
           </h1>
-          <div className="text-gray-600 dark:text-gray-400 mb-8 space-y-2">
+          <div className="mb-8 space-y-2" style={{ color: 'var(--kd-text-secondary)' }}>
             <p>Cards completed: {completedCards}</p>
             <p>Again repeats: {againRepeats.length}</p>
             <p>Total reviews: {completedCards + againRepeats.length}</p>
@@ -278,13 +281,19 @@ export function EnhancedReviewPage() {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => window.history.back()}
-              className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg"
+              className="px-6 py-3 font-medium rounded-lg transition-all"
+              style={{ backgroundColor: 'var(--kd-text-secondary)', color: 'var(--kd-text-inverse)' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               Back to Dashboard
             </button>
             <button
               onClick={handleRestartSession}
-              className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg"
+              className="px-6 py-3 font-medium rounded-lg transition-all"
+              style={{ backgroundColor: 'var(--kd-primary)', color: 'var(--kd-text-inverse)' }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.9'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
             >
               New Session
             </button>
@@ -298,7 +307,7 @@ export function EnhancedReviewPage() {
   return (
     <>
       <AppHeader />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+      <div className="min-h-screen py-8 px-4" style={{ backgroundColor: 'var(--kd-background)' }}>
         <div className="max-w-4xl mx-auto">
           {/* Phase 4: Enhanced progress indicator */}
           <SessionProgressIndicator
@@ -337,7 +346,10 @@ export function EnhancedReviewPage() {
               
               {/* Deck indicator */}
               <div className="text-center mt-4 mb-6">
-                <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">
+                <span className="px-3 py-1 rounded-full text-sm" style={{ 
+                  backgroundColor: 'var(--kd-primary-bg)', 
+                  color: 'var(--kd-primary)' 
+                }}>
                   📚 {currentCard.deck_name} • {currentSection.toUpperCase()}
                 </span>
               </div>

@@ -29,13 +29,6 @@ export function SessionDueCountsCard({ stats, onStartSession, isLoading }: Sessi
             Cards organized in structured sections
           </p>
         </div>
-        <div className="text-sm px-3 py-1 rounded-full" style={{ 
-          backgroundColor: 'var(--kd-primary)', 
-          color: 'var(--kd-text-inverse)',
-          opacity: 0.9 
-        }}>
-          Phase 4
-        </div>
       </div>
 
       {/* Section Progress Overview */}

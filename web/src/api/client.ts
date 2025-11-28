@@ -73,6 +73,12 @@ export const reviewApi = {
       reviews_due: data.due_counts.review,
       new_available: data.due_counts.new,
       total_due: data.total_due,
+      today_stats: {
+        total_reviews: data.today.reviews_done,
+        again_count: data.today.again_count,
+        good_count: data.today.good_count,
+        easy_count: data.today.easy_count,
+      },
     };
   },
 
@@ -263,17 +269,17 @@ export const importApi = {
 
 export const statsApi = {
   getToday: async (): Promise<TodayStats> => {
-    const response = await apiClient.get('/api/stats/today');
+    const response = await apiClient.get('/stats/today');
     return response.data;
   },
 
   getSessions: async (days: number = 30): Promise<SessionStatsAnalytics> => {
-    const response = await apiClient.get(`/api/stats/sessions?days=${days}`);
+    const response = await apiClient.get(`/stats/sessions?days=${days}`);
     return response.data;
   },
 
   getRetention: async (days: number = 30): Promise<any> => {
-    const response = await apiClient.get(`/api/stats/retention?days=${days}`);
+    const response = await apiClient.get(`/stats/retention?days=${days}`);
     return response.data;
   },
 };

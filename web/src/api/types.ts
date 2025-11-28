@@ -20,6 +20,12 @@ export interface QueueStats {
   reviews_due: number;
   new_available: number;
   total_due: number;
+  today_stats?: {
+    total_reviews: number;
+    again_count: number;
+    good_count: number;
+    easy_count: number;
+  };
 }
 
 export interface ReviewCard {
@@ -178,6 +184,7 @@ export interface CardStub {
   deck_name: string;
   state: 'new' | 'learning' | 'review';
   due_at: string;
+  tags: string[];
 }
 
 export interface SessionSections {
@@ -197,7 +204,7 @@ export interface SessionMeta {
 
 export interface SessionBuildRequest {
   scope: 'all' | 'deck';
-  deck_ids?: number[];
+  deck_id?: number;
   max_session_size?: number;
 }
 

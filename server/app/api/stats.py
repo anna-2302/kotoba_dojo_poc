@@ -300,10 +300,10 @@ def get_session_stats(
         easy_pct = (easy_count / total_ratings) * 100
         
         # Simple trend calculation (comparing recent vs older reviews)
-        recent_reviews = [r for r in reviews if r.timestamp >= datetime.now() - timedelta(days=7)]
+        recent_reviews = [r for r in reviews if r.reviewed_at >= datetime.now() - timedelta(days=7)]
         if len(recent_reviews) > 0:
             recent_success_rate = len([r for r in recent_reviews if r.rating in ['good', 'easy']]) / len(recent_reviews)
-            older_reviews = [r for r in reviews if r.timestamp < datetime.now() - timedelta(days=7)]
+            older_reviews = [r for r in reviews if r.reviewed_at < datetime.now() - timedelta(days=7)]
             if len(older_reviews) > 0:
                 older_success_rate = len([r for r in older_reviews if r.rating in ['good', 'easy']]) / len(older_reviews)
                 if recent_success_rate > older_success_rate + 0.05:

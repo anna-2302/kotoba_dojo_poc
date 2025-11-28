@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { cardsApi, decksApi, tagsApi } from '../api';
@@ -118,33 +118,6 @@ export const CardsPage: React.FC = () => {
     },
   });
 
-  const suspendMutation = useMutation({
-    mutationFn: ({ id, suspended }: { id: number; suspended: boolean }) =>
-      cardsApi.suspend(id, suspended),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cards'] });
-      showSuccessNotification('Card status updated');
-    },
-    onError: (error: any) => {
-      console.error('Suspend card error:', error);
-      showErrorNotification(error.response?.data?.detail || 'Failed to update card');
-    },
-  });
-
-  const moveMutation = useMutation({
-    mutationFn: ({ id, deckId }: { id: number; deckId: number }) =>
-      cardsApi.move(id, deckId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cards'] });
-      queryClient.invalidateQueries({ queryKey: ['decks'] });
-      showSuccessNotification('Card moved to new deck');
-    },
-    onError: (error: any) => {
-      console.error('Move card error:', error);
-      showErrorNotification(error.response?.data?.detail || 'Failed to move card');
-    },
-  });
-
   // Handlers
   const handleCreateCard = (data: CardCreateRequest) => {
     createMutation.mutate(data);
@@ -169,14 +142,9 @@ export const CardsPage: React.FC = () => {
     }
   };
 
-  const handleSuspendToggle = (card: Card) => {
+  const handleSuspendToggle = () => {
     // Show sensei modal instead of suspending
     setShowSuspendModal(true);
-  };
-
-  const handleMoveCard = (card: Card, deckId: number) => {
-    if (card.deck_id === deckId) return;
-    moveMutation.mutate({ id: card.id, deckId });
   };
 
   const handleFilterChange = (newFilters: any) => {

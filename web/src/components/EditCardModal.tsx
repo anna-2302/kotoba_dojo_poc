@@ -54,11 +54,12 @@ export const EditCardModal: React.FC<EditCardModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // For now, we'll pass the tag names and let the backend handle conversion
+    // This is a temporary fix - ideally we should track tag IDs
     onSave(card.id, {
       front,
       back,
       notes: notes || null,
-      tags: selectedTags,
     });
   };
 

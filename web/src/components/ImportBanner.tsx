@@ -2,7 +2,6 @@
  * Import Banner - Prompts users to import prebuilt decks
  * Shows on dashboard if decks haven't been imported yet
  */
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface ImportBannerProps {

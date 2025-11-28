@@ -13,22 +13,22 @@ export function SectionTransition({ currentSection, cardPosition, sectionMeta }:
       title: 'New Cards',
       description: 'Learning new material',
       icon: '🌟',
-      color: 'text-green-600 dark:text-green-400',
-      bgColor: 'bg-green-50 dark:bg-green-900/20',
+      color: 'var(--kd-success)',
+      bgColor: 'var(--kd-success-bg)',
     },
     learning: {
       title: 'Learning Cards', 
       description: 'Cards in learning phase',
       icon: '📚',
-      color: 'text-yellow-600 dark:text-yellow-400',
-      bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+      color: 'var(--kd-warning)',
+      bgColor: 'var(--kd-warning-bg)',
     },
     review: {
       title: 'Review Cards',
       description: 'Spaced repetition review',
       icon: '🔄',
-      color: 'text-blue-600 dark:text-blue-400', 
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      color: 'var(--kd-primary)', 
+      bgColor: 'var(--kd-primary-bg)',
     },
   };
   
@@ -38,7 +38,11 @@ export function SectionTransition({ currentSection, cardPosition, sectionMeta }:
   if (totalInSection === 0) return null;
 
   return (
-    <div className={`w-full max-w-2xl mx-auto mb-6 p-4 rounded-lg border ${info.bgColor} ${info.color}`}>
+    <div className="w-full max-w-2xl mx-auto mb-6 p-4 rounded-lg border" style={{ 
+      backgroundColor: info.bgColor,
+      borderColor: info.color,
+      color: info.color
+    }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-2xl">{info.icon}</span>

@@ -41,10 +41,22 @@ export const BrowsePage: React.FC = () => {
     staleTime: 60000,
   });
 
+  // Ensure tags is always an array
+  const tagList = Array.isArray(tags) ? tags : [];
+
   // Mutations
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<Card> }) =>
-      cardsApi.update(id, data),
+    mutationFn: ({ id, data }: { id: number; data: Partial<Card> }) => {
+      // Convert Partial<Card> to CardUpdateRequest
+      const updateData: any = {
+        front: data.front,
+        back: data.back,
+        notes: data.notes === null ? undefined : data.notes,
+        deck_id: data.deck_id,
+        suspended: data.suspended,
+      };
+      return cardsApi.update(id, updateData);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cards'] });
       setEditingCard(null);
@@ -133,7 +145,7 @@ export const BrowsePage: React.FC = () => {
     updateMutation.mutate({ id, data });
   }, [updateMutation]);
 
-  const handleSuspendToggle = useCallback((card: Card) => {
+  const handleSuspendToggle = useCallback(() => {
     // Show sensei modal instead of suspending
     setShowSuspendModal(true);
   }, []);
@@ -193,10 +205,9 @@ export const BrowsePage: React.FC = () => {
               <CardFiltersComponent
               filters={filters}
               decks={decks}
-              tags={tags}
+              tags={tagList.map(t => t.name)}
               onChange={handleFiltersChange}
               onReset={handleFiltersReset}
-              totalCards={cardsData?.total}
             />
             </div>
           </div>
@@ -315,7 +326,7 @@ export const BrowsePage: React.FC = () => {
         isOpen={!!editingCard}
         onClose={() => setEditingCard(null)}
         onSave={handleSave}
-        availableTags={tags}
+        availableTags={tagList.map(t => t.name)}
       />
 
       {/* Suspend Modal */}

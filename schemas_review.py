@@ -102,7 +102,10 @@ class CardStubResponse(BaseModel):
     """Minimal card info for session queue."""
     id: int
     deck_id: int
-    front_preview: str
+    front_preview: str  # Keep for backward compatibility
+    front: str  # Full front content for review
+    back: str   # Full back content for review
+    deck_name: str  # Deck name for display
     state: str
     tags: List[str]
     due_at: Optional[str] = Field(None, description="Due timestamp in ISO format")

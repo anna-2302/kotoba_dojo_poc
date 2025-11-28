@@ -75,9 +75,9 @@ export function SessionProgressIndicator({
           const sectionPercentage = progress.total > 0 ? (progress.completed / progress.total) * 100 : 0;
           
           const sectionColors = {
-            new: { bg: 'bg-green-100 dark:bg-green-900', text: 'text-green-800 dark:text-green-200', bar: '#10b981' },
-            learning: { bg: 'bg-yellow-100 dark:bg-yellow-900', text: 'text-yellow-800 dark:text-yellow-200', bar: '#f59e0b' },
-            review: { bg: 'bg-blue-100 dark:bg-blue-900', text: 'text-blue-800 dark:text-blue-200', bar: '#3b82f6' },
+            new: { bar: 'var(--kd-success)' },
+            learning: { bar: 'var(--kd-warning)' },
+            review: { bar: 'var(--kd-primary)' },
           };
           
           const colors = sectionColors[sectionKey];
@@ -85,11 +85,12 @@ export function SessionProgressIndicator({
           return (
             <div
               key={section}
-              className={`p-3 rounded-lg border-2 transition-all ${
-                isActive 
-                  ? `${colors.bg} border-current ${colors.text}` 
-                  : 'bg-gray-50 dark:bg-gray-800 border-transparent text-gray-600 dark:text-gray-400'
-              }`}
+              className="p-3 rounded-lg border-2 transition-all"
+              style={{
+                backgroundColor: isActive ? 'var(--kd-primary-bg)' : 'var(--kd-surface)',
+                borderColor: isActive ? 'var(--kd-primary)' : 'transparent',
+                color: isActive ? 'var(--kd-primary)' : 'var(--kd-text-secondary)'
+              }}
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="font-medium capitalize">
@@ -101,12 +102,12 @@ export function SessionProgressIndicator({
               </div>
               
               {progress.total > 0 && (
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="w-full rounded-full h-2" style={{ backgroundColor: 'var(--kd-surface-2)' }}>
                   <div
                     className="h-2 rounded-full transition-all duration-300"
                     style={{
                       width: `${sectionPercentage}%`,
-                      backgroundColor: isActive ? colors.bar : '#9ca3af',
+                      backgroundColor: isActive ? colors.bar : 'var(--kd-divider)',
                     }}
                   />
                 </div>

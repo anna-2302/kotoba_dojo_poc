@@ -1,231 +1,262 @@
-# Kotoba Dojo POC - Phase 1 Setup Instructions
+# Kotoba Dojo POC - Setup Instructions
 
-## Step-by-Step Setup
+## Complete Application Setup
 
-### 1. Run the Setup Script
+This is a fully implemented Phase 4+ spaced repetition application. Follow these steps to run locally.
+
+### Prerequisites
+
+- Python 3.11+
+- Node.js 18+
+- Docker (for PostgreSQL)
+
+### 1. Environment Setup
 
 ```bash
-python setup_phase1.py
-```
-
-This will create:
-- Complete directory structure under `server/`
-- Core configuration files
-- Database models (SQLAlchemy)
-- All `__init__.py` files
-
-### 2. Create and Activate Virtual Environment
-
-**Windows:**
-```bash
+# Create virtual environment
 python -m venv venv
-venv\Scripts\activate
-```
 
-**Linux/Mac:**
-```bash
-python3 -m venv venv
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 2. Backend Setup
 
 ```bash
+# Install Python dependencies
+cd server
 pip install -r requirements.txt
-```
 
-This installs:
-- FastAPI & Uvicorn
-- SQLAlchemy & Alembic
-- PostgreSQL driver
-- Testing tools (pytest, httpx)
-- Pydantic & utilities
+# Start PostgreSQL database
+cd ..
+docker-compose up -d
 
-### 4. Set Up Environment Variables
-
-```bash
-# Copy the example file
-copy .env.example .env
-
-# Edit .env with your actual values (optional for local dev)
-```
-
-### 5. Start PostgreSQL Database
-
-```bash
-docker-compose up -d db
-```
-
-Verify it's running:
-```bash
-docker-compose ps
-```
-
-### 6. Initialize Database with Alembic
-
-After completing Step 1.3 (Alembic migrations), run:
-```bash
+# Initialize database and run migrations
 cd server
+python init_db.py
 alembic upgrade head
+
+# Start backend server
+uvicorn app.main:app --reload
 ```
 
-### 7. Create Initial User (Manual)
+**Backend will be running at:**
+- API: http://localhost:8000
+- Documentation: http://localhost:8000/docs
+- Health Check: http://localhost:8000/health
 
-The setup script will include a seed script. For now, you can use SQL:
-```sql
-INSERT INTO users (username, timezone) VALUES ('default_user', 'UTC');
-```
-
-### 8. Start Development Server
+### 3. Frontend Setup
 
 ```bash
-# From project root
-cd server
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# In a new terminal, install Node dependencies
+cd web
+npm install
+
+# Start development server
+npm run dev
 ```
 
-### 9. Verify API is Running
+**Frontend will be running at:** http://localhost:5173
 
-Open your browser:
-- API Docs: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-- Health: http://localhost:8000/health
+### 4. Import Starter Content (Optional)
 
-### 10. Run Tests
+1. Navigate to http://localhost:5173/welcome
+2. Click "Import Starter Decks"
+3. This adds 50 JLPT N4 vocabulary and kanji flashcards
 
-```bash
-cd server
-pytest
-```
+### 5. Verification
 
-With coverage:
-```bash
-pytest --cov=app --cov-report=html
-```
+**Test the application:**
+- Dashboard shows session statistics
+- Review session works with keyboard shortcuts (Space, 1/2/3, Esc)
+- Cards and decks can be created/edited
+- Theme switching works (dark/light/system)
+- Background music controls function
+- Statistics page displays progress
 
-## File Structure Created
+## Project Structure
 
 ```
 kotoba_dojo_poc/
-├── .gitignore
-├── .env.example
-├── README.md
-├── docker-compose.yml
-├── requirements.txt
-├── pyproject.toml
-├── setup_phase1.py          # Run this first!
+├── README.md                     # Complete project documentation
+├── START_HERE.md                 # Quick start guide
+├── docker-compose.yml            # PostgreSQL service
+├── api_review.py                 # Enhanced review session API
+├── scheduler.py                  # SM-2 algorithm implementation
+├── queue_builder.py              # Smart queue building
+├── alembic.ini                   # Database migration config
 │
-├── server/
+├── server/                       # FastAPI Backend
 │   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py           # FastAPI app (to be moved)
-│   │   │
-│   │   ├── api/              # API routes (Step 1.4)
-│   │   │   ├── __init__.py
-│   │   │   ├── decks.py      # (Next step)
-│   │   │   ├── cards.py
-│   │   │   └── tags.py
-│   │   │
-│   │   ├── models/           # SQLAlchemy models ✅
-│   │   │   ├── __init__.py
-│   │   │   └── database.py
-│   │   │
-│   │   ├── schemas/          # Pydantic schemas ✅
-│   │   │   ├── __init__.py
-│   │   │   └── (to be moved from schemas_all.py)
-│   │   │
-│   │   ├── services/         # Business logic
-│   │   │   ├── __init__.py
-│   │   │   ├── scheduler.py  # (Phase 2)
-│   │   │   └── queue.py
-│   │   │
-│   │   ├── db/               # Database config ✅
-│   │   │   ├── __init__.py
-│   │   │   └── session.py
-│   │   │
-│   │   └── core/             # Core config ✅
-│   │       ├── __init__.py
-│   │       └── config.py
-│   │
-│   └── tests/                # Tests (Step 1.5)
-│       ├── __init__.py
-│       ├── conftest.py
-│       └── test_*.py
+│   │   ├── main.py              # FastAPI application
+│   │   ├── api/                 # 6 API modules
+│   │   │   ├── cards.py         # Card management
+│   │   │   ├── decks.py         # Deck management
+│   │   │   ├── tags.py          # Tag system
+│   │   │   ├── settings.py      # User preferences
+│   │   │   ├── stats.py         # Analytics
+│   │   │   └── import_api.py    # JLPT N4 import
+│   │   ├── models/database.py   # Complete database schema
+│   │   ├── schemas/schemas.py   # Pydantic validation
+│   │   ├── db/session.py        # Database session
+│   │   └── core/config.py       # Application configuration
+│   ├── tests/                   # Comprehensive test suite
+│   ├── requirements.txt         # Python dependencies
+│   └── init_db.py              # Database initialization
+│
+├── web/                          # React TypeScript Frontend
+│   ├── src/
+│   │   ├── pages/               # 7 main pages
+│   │   │   ├── DashboardPage.tsx    # Session dashboard
+│   │   │   ├── EnhancedReviewPage.tsx  # Review sessions
+│   │   │   ├── BrowsePage.tsx       # Card browser
+│   │   │   ├── CardsPage.tsx        # Card management
+│   │   │   ├── StatsPage.tsx        # Analytics
+│   │   │   ├── SettingsPage.tsx     # Preferences
+│   │   │   └── WelcomePage.tsx      # Onboarding
+│   │   ├── components/          # 25+ reusable components
+│   │   ├── api/                 # Type-safe API client
+│   │   └── App.tsx              # Root component
+│   ├── package.json             # Node.js dependencies
+│   └── vite.config.ts          # Build configuration
+│
+└── alembic/versions/            # Database migrations
+    ├── 001_initial.py           # Base schema
+    ├── 002_add_theme_mode.py    # Theme system
+    └── 003_add_session_config.py # Session configuration
 ```
-
-## What's Next
-
-After completing Phase 1 setup:
-
-**Step 1.3:** Alembic Migrations Setup
-**Step 1.4:** Implement CRUD API Endpoints
-**Step 1.5:** Write and Run Tests
 
 ## Troubleshooting
 
-### Database Connection Issues
+### Database Issues
+
+**Issue**: "Could not connect to database" or "Default user not found"
 
 ```bash
-# Check if PostgreSQL is running
+# Check PostgreSQL status
 docker-compose ps
 
-# View logs
-docker-compose logs db
-
 # Restart database
-docker-compose restart db
+docker-compose down
+docker-compose up -d
+
+# Reinitialize database
+cd server
+python init_db.py
+alembic upgrade head
 ```
 
-### Import Errors
+### Frontend Build Errors
 
-Make sure you're in the activated virtual environment:
+**Issue**: TypeScript import errors or "does not provide an export"
+
+```bash
+cd web
+# Run import checker
+.\check-imports.ps1
+
+# Or fix manually by using 'import type { ... }' for types
+```
+
+### Port Conflicts
+
+**Backend (port 8000) in use:**
 ```bash
 # Windows
-venv\Scripts\activate
-
-# You should see (venv) in your prompt
-```
-
-### Port Already in Use
-
-If port 8000 or 5432 is already in use:
-```bash
-# Kill process on port (Windows)
 netstat -ano | findstr :8000
 taskkill /PID <PID> /F
 
-# Or change the port in the command
+# Or use different port
 uvicorn app.main:app --reload --port 8001
 ```
 
-## Quick Commands Reference
-
+**Frontend (port 5173) in use:**
 ```bash
-# Start everything
-docker-compose up -d db
-cd server && uvicorn app.main:app --reload
-
-# Run tests
-cd server && pytest
-
-# View coverage
-pytest --cov=app --cov-report=html
-# Open htmlcov/index.html in browser
-
-# Database migrations
-alembic revision --autogenerate -m "description"
-alembic upgrade head
-alembic downgrade -1
-
-# Stop services
-docker-compose down
+# Vite will automatically use next available port (5174, 5175, etc.)
+npm run dev
 ```
 
-## Files to Move After Setup
+### Environment Issues
 
-After running `setup_phase1.py`, manually move these files:
+**Virtual environment not activated:**
+```bash
+# Windows
+venv\Scripts\activate
+# You should see (venv) in your prompt
 
-1. `server_main.py` → `server/app/main.py`
-2. `schemas_all.py` → `server/app/schemas/schemas.py`
+# Linux/Mac
+source venv/bin/activate
+```
 
-Or the setup script will handle this automatically.
+### Reset Everything
+
+**Complete reset (warning: deletes all data):**
+```bash
+# Stop and remove database
+docker-compose down -v
+
+# Restart and reinitialize
+docker-compose up -d
+cd server
+python init_db.py
+alembic upgrade head
+```
+
+## Development Commands
+
+### Daily Development
+```bash
+# Start all services
+docker-compose up -d                    # PostgreSQL
+cd server && uvicorn app.main:app --reload  # Backend (terminal 1)
+cd web && npm run dev                    # Frontend (terminal 2)
+```
+
+### Database Operations
+```bash
+cd server
+alembic upgrade head                     # Apply migrations
+alembic revision --autogenerate -m "desc" # Create migration
+python init_db.py                       # Reset database
+```
+
+### Testing
+```bash
+cd server
+pytest                                   # All backend tests
+pytest -v --cov=app                     # With coverage
+
+cd web
+npm run build                            # Frontend build test
+.\check-imports.ps1                      # TypeScript validation
+```
+
+### Monitoring
+```bash
+docker-compose ps                        # Database status
+docker-compose logs -f                   # Database logs
+netstat -an | findstr "8000\|5173"       # Port usage
+```
+
+## Application URLs
+
+Once running:
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Alternative API Docs**: http://localhost:8000/redoc
+- **Health Check**: http://localhost:8000/health
+
+## Next Steps
+
+After successful setup:
+1. Import JLPT N4 starter decks via the Welcome page
+2. Create your own cards and decks
+3. Experience the enhanced review session system
+4. Explore themes, statistics, and settings
+5. Try keyboard shortcuts during review (Space, 1/2/3, Esc)
+
+**Ready to start learning Japanese! 🌸**

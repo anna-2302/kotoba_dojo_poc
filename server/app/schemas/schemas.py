@@ -39,6 +39,8 @@ class DeckResponse(DeckBase):
     card_count: int = Field(default=0, description="Total cards in deck")
     due_count: int = Field(default=0, description="Cards due for review")
     new_count: int = Field(default=0, description="New cards not yet studied")
+    learning_count: int = Field(default=0, description="Learning cards due now")
+    review_count: int = Field(default=0, description="Review cards due now")
     created_at: datetime
     updated_at: datetime
     

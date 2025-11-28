@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Deck } from '../../types/deck';
+import { DeckStatsDisplay } from '../DeckStatsDisplay';
 
 interface DeckCardProps {
   deck: Deck;
@@ -19,7 +20,7 @@ export const DeckCard: React.FC<DeckCardProps> = ({
   const hasDueCards = deck.due_count > 0;
 
   return (
-    <div className="rounded-lg p-6 transition-shadow" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)' }} onMouseEnter={(e) => (e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)')} onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)')}>
+    <div className="rounded-lg p-6 transition-shadow flex flex-col" style={{ backgroundColor: 'var(--kd-surface)', boxShadow: 'var(--kd-shadow-md)', minHeight: '280px' }} onMouseEnter={(e) => (e.currentTarget.style.boxShadow = 'var(--kd-shadow-lg)')} onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'var(--kd-shadow-md)')}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <h3 className="text-lg font-semibold mb-1" style={{ color: 'var(--kd-text-primary)' }}>
@@ -33,33 +34,10 @@ export const DeckCard: React.FC<DeckCardProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="text-center">
-          <div className="text-2xl font-bold" style={{ color: 'var(--kd-primary)' }}>{deck.due_count || 0}</div>
-          <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>Due</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold" style={{ color: 'var(--kd-info)' }}>{deck.new_count || 0}</div>
-          <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>New</div>
-        </div>
-        <div className="text-center">
-          <div className="text-2xl font-bold" style={{ color: 'var(--kd-text-primary)' }}>
-            {deck.card_count || 0}
-          </div>
-          <div className="text-xs" style={{ color: 'var(--kd-text-secondary)' }}>Total</div>
-        </div>
+      {/* Use the new DeckStatsDisplay component */}
+      <div className="mb-4 flex-grow" style={{ minHeight: '8rem' }}>
+        <DeckStatsDisplay deck={deck} />
       </div>
-
-      {(deck.new_per_day || deck.review_per_day) && (
-        <div className="text-xs mb-4 space-y-1" style={{ color: 'var(--kd-text-secondary)' }}>
-          {deck.new_per_day && (
-            <div>Daily new limit: {deck.new_per_day}</div>
-          )}
-          {deck.review_per_day && (
-            <div>Daily review limit: {deck.review_per_day}</div>
-          )}
-        </div>
-      )}
 
       <div className="flex flex-wrap gap-2">
         <button

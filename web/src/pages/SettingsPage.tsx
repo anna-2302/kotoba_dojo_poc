@@ -62,6 +62,10 @@ export function SettingsPage() {
     onSuccess: (data) => {
       queryClient.setQueryData(['settings'], data);
     },
+    onError: (error: any) => {
+      console.error('Settings update error:', error);
+      console.error('Error response:', error.response?.data);
+    },
   });
 
   const handleThemeChange = (newTheme: VisualTheme) => {
@@ -289,7 +293,12 @@ export function SettingsPage() {
                   <input
                     type="number"
                     value={settings.max_session_size || 50}
-                    onChange={(e) => updateMutation.mutate({ max_session_size: parseInt(e.target.value) || 50 })}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (value >= 5 && value <= 200) {
+                        updateMutation.mutate({ max_session_size: value });
+                      }
+                    }}
                     className="w-full px-4 py-2 rounded-lg"
                     style={{
                       backgroundColor: 'var(--kd-surface-2)',
@@ -357,7 +366,12 @@ export function SettingsPage() {
                     <input
                       type="number"
                       value={settings.new_section_limit || 15}
-                      onChange={(e) => updateMutation.mutate({ new_section_limit: parseInt(e.target.value) || 15 })}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 0 && value <= 50) {
+                          updateMutation.mutate({ new_section_limit: value });
+                        }
+                      }}
                       className="w-full px-4 py-2 rounded-lg"
                       style={{
                         backgroundColor: 'var(--kd-surface-2)',
@@ -386,7 +400,12 @@ export function SettingsPage() {
                     <input
                       type="number"
                       value={settings.learning_section_limit || 20}
-                      onChange={(e) => updateMutation.mutate({ learning_section_limit: parseInt(e.target.value) || 20 })}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 0 && value <= 100) {
+                          updateMutation.mutate({ learning_section_limit: value });
+                        }
+                      }}
                       className="w-full px-4 py-2 rounded-lg"
                       style={{
                         backgroundColor: 'var(--kd-surface-2)',
@@ -415,7 +434,12 @@ export function SettingsPage() {
                     <input
                       type="number"
                       value={settings.review_section_limit || 30}
-                      onChange={(e) => updateMutation.mutate({ review_section_limit: parseInt(e.target.value) || 30 })}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value);
+                        if (!isNaN(value) && value >= 0 && value <= 150) {
+                          updateMutation.mutate({ review_section_limit: value });
+                        }
+                      }}
                       className="w-full px-4 py-2 rounded-lg"
                       style={{
                         backgroundColor: 'var(--kd-surface-2)',
