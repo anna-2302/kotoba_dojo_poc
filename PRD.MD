@@ -2085,11 +2085,7 @@ function handleFinalRating(section, rating) {
 
 
 ### Phase 4.1 PRD: Deck-Specific Study Overview on Decks Page
-Feature Name: Deck-Specific Study Overview
-Author: Anna Khoziasheva
-Date: November 28, 2025
-
-Objective
+Feature Name: Deck-Specific Study OverviewObjective
 Enhance the user experience on the Decks page by providing a clear breakdown of the cards in each deck (New, Learning, Review) and the total number of cards in the deck. This will allow users to understand the scope of their study session before clicking the "Study Now" button.
 
 Requirements
