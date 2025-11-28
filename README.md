@@ -2,28 +2,31 @@
 
 🎌 A cozy, lightweight spaced-repetition flashcard app for Japanese language learning.
 
-**Status**: ✅ **Feature-Complete POC** - All core phases (1-5.7) implemented and tested!
+**Status**: ✅ **Phase 4 Enhanced Review Complete** - Structured session-based review system with SM-2 scheduling!
 
 ## 🎯 Features
 
 ### Core Functionality
-- ✅ **Spaced Repetition**: SM-2 algorithm with learning/review states
-- ✅ **Review Sessions**: Keyboard shortcuts, flip cards, rate difficulty
-- ✅ **Deck Management**: Create, edit, delete decks with organization
-- ✅ **Card Management**: Full CRUD with front/back, notes, tags
-- ✅ **Browse & Search**: Filter by deck, tag, state, or search text
-- ✅ **Daily Limits**: Configurable new cards and reviews per day
-- ✅ **Statistics**: Progress tracking, retention rates, streak counter
-- ✅ **Tags**: Multi-tag support with filtering
-- ✅ **Suspend/Resume**: Pause cards from rotation
+- ✅ **Enhanced Review Sessions**: Structured New → Learning → Review progression
+- ✅ **SM-2 Scheduler**: Advanced spaced repetition with configurable learning steps
+- ✅ **Session Management**: Smart queue building with daily limits and deck filtering
+- ✅ **Deck Management**: Full CRUD with per-deck settings and organization
+- ✅ **Card Management**: Complete lifecycle with front/back, notes, tags, suspend
+- ✅ **Browse & Search**: Advanced filtering by deck, tag, state, or search text
+- ✅ **Statistics & Analytics**: Session stats, retention rates, progress tracking
+- ✅ **Daily Limits**: Configurable new/review limits with intelligent queue building
+- ✅ **Multi-tag Support**: Flexible categorization and filtering system
+- ✅ **Card State Management**: Suspend/resume with full scheduling state preservation
 
 ### User Experience
-- ✅ **Dashboard**: Today's queue, due counts, quick stats
-- ✅ **Dark Mode**: System-aware theme with manual toggle
-- ✅ **Background Music**: Optional chill music player
-- ✅ **Settings**: Customizable learning steps, daily limits
-- ✅ **Prebuilt Decks**: JLPT N4 vocabulary (30 cards) and kanji (20 cards)
-- ✅ **Welcome Flow**: First-run onboarding with deck import
+- ✅ **Smart Dashboard**: Session-based queue with progress visualization
+- ✅ **Advanced Theming**: Dark/light/system modes with visual theme customization
+- ✅ **Ambient Audio**: Background music with volume control and track selection
+- ✅ **Session Configuration**: Configurable learning steps, daily limits, deck-specific settings
+- ✅ **Prebuilt Content**: JLPT N4 vocabulary (30 cards) and kanji (20 cards)
+- ✅ **Guided Onboarding**: Welcome flow with automatic deck import
+- ✅ **Keyboard Shortcuts**: Full keyboard navigation (Space, 1/2/3, Esc, R)
+- ✅ **Responsive Design**: Mobile-friendly interface with accessibility support
 
 ## 🛠 Tech Stack
 
@@ -36,13 +39,13 @@
 - **pytest** - Testing framework
 
 ### Frontend
-- **React 18+** - Modern React with hooks
-- **TypeScript** - Type-safe JavaScript
-- **Vite** - Fast build tool
-- **TanStack Query** - Server state management
-- **Zustand** - Client state management
-- **Tailwind CSS** - Utility-first styling
-- **React Router** - Client-side routing
+- **React 18+** - Modern React with hooks and context
+- **TypeScript** - Full type safety with verbatimModuleSyntax
+- **Vite 7+** - Ultra-fast build tool and dev server
+- **TanStack Query v5** - Server state management with 5min stale time
+- **React Router v7** - Advanced client-side routing
+- **Tailwind CSS v4** - Utility-first styling with dark mode support
+- **Context API** - Theme management and settings sync
 
 ### Database
 - **PostgreSQL** - Production database
@@ -54,27 +57,26 @@
 kotoba_dojo_poc/
 ├── server/                          # FastAPI backend
 │   ├── app/
-│   │   ├── api/                     # API routes
-│   │   │   ├── cards.py            # Card CRUD
-│   │   │   ├── decks.py            # Deck CRUD
-│   │   │   ├── tags.py             # Tag management
-│   │   │   ├── settings.py         # User settings
-│   │   │   └── import_api.py       # Prebuilt deck import
+│   │   ├── api/                     # API routes (6 modules)
+│   │   │   ├── cards.py            # Card CRUD with suspend/resume
+│   │   │   ├── decks.py            # Deck management with counters
+│   │   │   ├── tags.py             # Tag system with filtering
+│   │   │   ├── settings.py         # User preferences & theme
+│   │   │   ├── import_api.py       # Prebuilt deck import
+│   │   │   └── stats.py            # Analytics and progress
 │   │   ├── models/                  # SQLAlchemy models
-│   │   │   └── database.py         # All models
-│   │   ├── schemas/                 # Pydantic schemas
+│   │   │   └── database.py         # Complete schema (9 tables)
+│   │   ├── schemas/                 # Pydantic validation
+│   │   │   └── schemas.py          # All request/response types
 │   │   ├── services/                # Business logic
-│   │   │   └── import_prebuilt.py  # Deck import service
-│   │   ├── db/                      # Database utilities
-│   │   │   ├── seed_data.py        # Sample N4 cards (50)
-│   │   │   └── session.py          # DB session
-│   │   └── core/                    # Config, dependencies
-│   │       └── config.py           # Settings
-│   ├── tests/                       # Backend tests
-│   │   ├── test_api_settings.py    # Settings tests (9)
-│   │   └── test_import_api.py      # Import tests (10)
-│   ├── alembic/                     # Database migrations
-│   ├── init_db.py                   # DB initialization script
+│   │   │   └── import_prebuilt.py  # N4 deck generation
+│   │   ├── db/                      # Database layer
+│   │   │   ├── seed_data.py        # JLPT N4 sample cards
+│   │   │   └── session.py          # Database session management
+│   │   ├── core/                    # Application core
+│   │   │   └── config.py           # Environment configuration
+│   │   └── main.py                  # FastAPI application
+│   ├── tests/                       # Comprehensive test suite
 │   └── requirements.txt             # Python dependencies
 ├── web/                             # React frontend
 │   ├── src/
@@ -112,33 +114,60 @@ kotoba_dojo_poc/
 
 - **Python 3.11+** ([Download](https://www.python.org/downloads/))
 - **Node.js 18+** ([Download](https://nodejs.org/))
-- **PostgreSQL** (via Docker) OR SQLite (built-in)
+- **PostgreSQL** (via Docker recommended)
 
-### Option 1: Automated Setup (Recommended)
+### 1. Clone and Setup Environment
 
-**Windows:**
 ```bash
-# 1. Run backend startup script
-start_backend.bat
+# Navigate to project
+cd kotoba_dojo_poc
 
-# 2. In a new terminal, start frontend
-cd web
-npm install
-npm run dev
+# Create Python virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
 ```
 
-**Linux/Mac:**
+### 2. Backend Setup
+
 ```bash
-# 1. Initialize and start backend
+# Install Python dependencies
+cd server
+pip install -r requirements.txt
+
+# Start PostgreSQL database
+cd ..
+docker-compose up -d
+
+# Initialize database
 cd server
 python init_db.py
-uvicorn app.main:app --reload
 
-# 2. In a new terminal, start frontend
+# Run database migrations
+alembic upgrade head
+
+# Start backend server
+uvicorn app.main:app --reload
+```
+
+**Backend running at:** http://localhost:8000
+
+### 3. Frontend Setup
+
+```bash
+# In a new terminal, install frontend dependencies
 cd web
 npm install
+
+# Start development server
 npm run dev
 ```
+
+**Frontend running at:** http://localhost:5173
 
 ### Option 2: Manual Setup
 
