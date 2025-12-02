@@ -2,7 +2,7 @@
 
 🎌 A cozy, lightweight spaced-repetition flashcard app for Japanese language learning.
 
-The app has been made with Claude Sonnet 4.5.
+The app has been made in VS Code by using GitHub Pilot (Claude Sonnet 4.5 for implementation).
 
 ## 🎯 Features
 
