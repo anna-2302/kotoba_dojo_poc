@@ -109,3 +109,7 @@ Retention Metrics:
 – Average Session Duration in low-light usage windows
 – Self-reported Ease-of-Use score in a quick post-session survey
 * Expected Result: Dark Mode users show ≥ 15% longer sessions after sunset and a 10-point higher Ease-of-Use rating than Light Mode users
+
+## Product Requirements Document
+
+- See the full product requirements and phased roadmap in `PRD.MD`.

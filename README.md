@@ -4,6 +4,8 @@
 
 The app has been made in VS Code by using GitHub Pilot (Claude Sonnet 4.5 for implementation).
 
+See the case study in `case_study.md`, Product Requirements in `prd.md`.
+
 ## 🎯 Features
 
 ### Core Functionality
