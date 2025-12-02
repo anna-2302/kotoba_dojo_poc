@@ -60,36 +60,44 @@ Priority: Learning dues → Review dues → New cards
 - Use `queue_builder.get_next_card()` for "what's next", `get_queue_stats()` for dashboard counts
 
 ### Database Migrations (Alembic)
-- Single migration: `alembic/versions/001_initial.py` creates all tables
-- **Do NOT autogenerate** new migrations casually - manually edit `001_initial.py` or create targeted migrations
+- Multiple migrations in sequence: `001_initial.py` → `002_add_theme_mode.py` → `003_add_session_config.py` → Phase 4 migrations
+- **Run migrations**: `alembic upgrade head` (from `server/` directory)
+- **Create new migration**: `alembic revision --autogenerate -m "description"` (but prefer manual edits for POC)
 - Seed data: `alembic/env.py` may run seed logic on upgrade (check before migrations)
+- **Reset DB**: `python init_db.py` creates fresh database with default_user
 
 ## Development Workflows
 
 ### Running Locally
 ```powershell
 # Backend (from root)
-docker-compose up -d db  # Start PostgreSQL
-cd server; uvicorn app.main:app --reload  # API on :8000
+docker-compose up -d  # Start PostgreSQL (port 5432)
+cd server
+python init_db.py  # First time: creates default_user
+alembic upgrade head  # Run migrations
+uvicorn app.main:app --reload  # API on :8000
 
-# Frontend (from root)
-cd web; npm run dev  # Vite dev server on :5173
-
-# Database setup (first time)
-alembic upgrade head  # Creates default_user + tables
+# Frontend (from root, new terminal)
+cd web
+npm install  # First time only
+npm run dev  # Vite dev server on :5173
 ```
+
+**Important**: Backend uses SQLite by default (`kotoba_dojo.db`). To use PostgreSQL, edit `server/app/core/config.py` and uncomment the PostgreSQL `database_url` line.
 
 ### Testing
 ```powershell
-cd server; pytest              # All tests
+cd server
+pytest              # All tests
 pytest -v --cov=app           # With coverage
 pytest tests/test_api_*.py    # Specific API tests
+pytest --pdb                  # Debug on failure
 ```
 
 **Test Fixtures** (`server/tests/conftest.py`):
-- `db`: Fresh SQLite DB per test, auto-creates `test_user` + default settings
+- `db`: Fresh SQLite DB per test, auto-creates `test_user` + default settings (SQLite in-memory)
 - `client`: TestClient with `get_db` override
-- `test_user`: Returns default test user
+- `test_user`: Returns default test user (username: "test_user")
 
 **ALWAYS** use fixtures, never create test data manually in test functions.
 
@@ -154,12 +162,13 @@ pytest tests/test_api_*.py    # Specific API tests
 - `web/src/components/AmbientAudioPlayer.tsx` - Global background music (controlled by settings)
 
 ### Config & Setup
-- `docker-compose.yml` - PostgreSQL service (user: kotoba_user, db: kotoba_dojo)
+- `docker-compose.yml` - PostgreSQL service (user: kotoba_user, db: kotoba_dojo, port: 5432)
 - `requirements.txt` - Backend dependencies
-- `alembic.ini` + `alembic/versions/001_initial.py` - Database schema
+- `alembic.ini` + `alembic/versions/*.py` - Database migrations (001 → 002 → 003 → Phase 4)
 - `web/package.json` - Frontend dependencies (React 19, TanStack Query 5, React Router 7)
 - `server/app/db/seed_data.py` - Prebuilt N4 decks (30 vocab + 20 kanji cards)
-- `.env` - Environment variables (DB URL, CORS origins, daily limits)
+- `.env` - Environment variables (DB URL, CORS origins, daily limits) - create if missing
+- `server/init_db.py` - Database initialization script (creates default_user + tables)
 
 ## Documentation References
 - **PRD.MD**: Requirements document (lines 58-73 for SM-2, lines 91-96 for daily limits)
@@ -175,3 +184,42 @@ pytest tests/test_api_*.py    # Specific API tests
 4. Check browser console + network tab (frontend), `pytest --pdb` (backend)
 5. Review PRD.MD lines for business logic requirements
 6. For import errors, run `.\check-imports.ps1` (frontend)
+
+## Quick Troubleshooting
+
+### Database Issues
+```powershell
+# Check PostgreSQL status
+docker-compose ps
+
+# Restart database
+docker-compose down
+docker-compose up -d
+
+# Reset database completely
+cd server
+python init_db.py
+alembic upgrade head
+```
+
+### Frontend Build Errors
+```powershell
+cd web
+# Check TypeScript import errors
+.\check-imports.ps1
+
+# Clean build
+Remove-Item -Recurse -Force node_modules, dist
+npm install
+npm run dev
+```
+
+### Port Conflicts
+```powershell
+# Backend (port 8000)
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
+
+# Or use different port
+uvicorn app.main:app --reload --port 8001
+```
