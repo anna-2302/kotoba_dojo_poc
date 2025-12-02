@@ -360,17 +360,6 @@ GET    /api/tags                 - List tags with usage counts
    - Retention rate, streak, cards reviewed
    - Charts and graphs
 
-### Keyboard Shortcuts
-
-**Review Session:**
-- `Space` - Flip card
-- `1` - Again (forgot)
-- `2` - Good (remembered)
-- `3` - Easy (too easy)
-- `Esc` - End session
-
-**Dashboard:**
-- `R` - Start review (when cards due)
 
 ## ⚙️ Configuration
 
@@ -402,29 +391,6 @@ Edit `web/.env` (create if doesn't exist):
 VITE_API_URL=http://localhost:8000
 ```
 
-## 📏 Development Status
-
-### Completed Implementation ✅
-
-- ✅ **Foundation**: Complete database schema with 9 tables
-- ✅ **Backend API**: 6 API modules with full CRUD operations
-- ✅ **SM-2 Scheduling**: Advanced spaced repetition algorithm
-- ✅ **Enhanced Review Sessions**: Structured New → Learning → Review progression
-- ✅ **Session Management**: Smart queue building with daily limits
-- ✅ **Frontend Application**: React TypeScript with 7 pages, 25+ components
-- ✅ **Advanced Theming**: Dark/light/system modes with visual customization
-- ✅ **Session Configuration**: Configurable learning steps and review settings
-- ✅ **Analytics & Statistics**: Progress tracking with retention analysis
-- ✅ **Content Management**: Full CRUD for decks, cards, and tags
-- ✅ **Prebuilt Content**: JLPT N4 vocabulary and kanji decks
-- ✅ **User Experience**: Keyboard shortcuts, mobile-responsive, accessibility
-
-### Latest Updates (November 2025)
-
-- ✅ **Unified Review Experience**: Removed classic/enhanced toggle, Phase 4 sessions only
-- ✅ **Session-Based Dashboard**: Smart queue visualization with section progress
-- ✅ **Enhanced Navigation**: Streamlined routing with single review experience
-- ✅ **Code Consolidation**: Removed legacy components, cleaner codebase
 
 ### Requirements Fulfilled
 
@@ -440,7 +406,7 @@ VITE_API_URL=http://localhost:8000
 - ✅ REQ-9: Daily limits (new/review per day)
 - ✅ REQ-10: Dark mode toggle
 - ✅ REQ-11: Background music controls
-- ✅ REQ-12: Prebuilt N4 decks (50 sample cards)
+- ✅ REQ-12: Prebuilt N4 decks (sample cards)
 
 ## 🎯 Usage Guide
 
@@ -468,37 +434,6 @@ VITE_API_URL=http://localhost:8000
    - **Settings**: Configure learning steps, daily limits, theme, music
    - Import JLPT N4 starter decks for immediate practice
 
-## 📦 Deployment
-
-### Production Checklist
-
-- [ ] Update `SECRET_KEY` in config
-- [ ] Configure production database URL
-- [ ] Set `DEBUG=False`
-- [ ] Configure CORS for production domain
-- [ ] Set up reverse proxy (Nginx)
-- [ ] Enable HTTPS/TLS
-- [ ] Set up database backups
-- [ ] Configure logging/monitoring
-
-### Docker Deployment (Future)
-
-```bash
-# Build containers
-docker-compose build
-
-# Start all services
-docker-compose up -d
-
-# Check logs
-docker-compose logs -f
-```
-
-## 🤝 Contributing
-
-This is a POC project.
-
-## 🙏 Acknowledgments
 
 - **JMdict/KANJIDIC**: Japanese dictionary data (EDRDG)
 - **Anki**: Inspiration for spaced repetition features

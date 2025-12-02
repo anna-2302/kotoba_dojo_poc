@@ -1,7 +1,34 @@
 # Kotoba Dojo POC PRD
 
+## Phase 1 Table of Contents
+
+- [Phases](#phases)
+- [Summary](#summary)
+- [Goals](#goals)
+- [Scope (MVP)](#scope-mvp)
+- [Functional Requirements](#functional-requirements)
+- [UX Flows](#ux-flows)
+- [Data Model (Local)](#data-model-local)
+- [Algorithm Spec (SM-2 Lite)](#algorithm-spec-sm-2-lite)
+- [Technical Notes](#technical-notes)
+- [Release Plan](#release-plan)
+- [Risks & Mitigations](#risks--mitigations)
+- [Open Questions](#open-questions)
+- [Attribution](#attribution)
+- [Technical Architecture Proposal](#technical-architecture-proposal)
+
+## Phases
+
+- [Phase 1 — POC](#phase-1-poc)
+- [Phase 2 — Ambient Audio, Theme & Cozy Design](#phase-2-prd-ambient-audio-player-theme-switcher-cozy-japan-design-enhancements)
+- [Phase 3 — Basic Scheduler (POC)](#phase-3-basic-spaced-repetition-scheduler-poc)
+- [Phase 4 — Themes: Mizuiro & Sakura (Day/Night)](#phase-4-prd-themes-mizuiro-calm-and-sakura-serenity-day--night-modes)
+- [Phase 5 — Enhanced Review Session (Anki-like)](#phase-5-prd-enhanced-review-session-logic-anki-like-fixed-queue)
+
+# Phase 1. POC
 ## Summary
 Kotoba Dojo is a cozy, lightweight spaced-repetition flashcard app inspired by Anki, focused on Japanese language learning. The POC will deliver:
+
 - Core deck/card management
 - A simple SM-2-style scheduler
 - Review session UI with keyboard shortcuts
@@ -28,7 +55,7 @@ It will ship with prebuilt JLPT N4 vocabulary decks seeded from Jisho.org (JMdic
 - Mobile apps; POC targets web desktop.
 
 ## Target Users
-- JLPT  learners and self-learners who prefer a minimal, distraction-free SRS tool.
+- JLPT learners and self-learners who prefer a minimal, distraction-free SRS tool.
 - Language students wanting curated starter decks and a simple daily routine.
 
 ## Assumptions
@@ -55,7 +82,7 @@ It will ship with prebuilt JLPT N4 vocabulary decks seeded from Jisho.org (JMdic
 - Assign cards to decks; move cards between decks.
 - Optional: per-deck daily limits override (if set).
 
-Acceptance:
+**Acceptance:**
 - User can create a deck with a name.
 - Deck shows card count and due count.
 - Delete deck requires confirmation and can optionally delete or orphan cards (MVP: delete deck and all cards within).
@@ -66,7 +93,7 @@ Acceptance:
 - Optional fields: notes, tags (multi-tag).
 - Card state: new, learning, review; suspended flag.
 
-Acceptance:
+**Acceptance:**
 - User can create a card with front/back; assign to deck.
 - User can tag and edit card text later.
 - Deleting a card removes it from scheduling and lists.
@@ -76,22 +103,23 @@ Acceptance:
 - Filter list and search by tag.
 - Show tag chips in browse.
 
-Acceptance:
+**Acceptance:**
 - Tagging UI supports multiple tags per card.
 - Filter list shows only cards with selected tags.
 
 ### 4) Spaced-Repetition Scheduler (SM-2 Lite)
-States:
+
+**States:**
 - New: cards not yet studied.
 - Learning: short-interval steps before graduating to Review.
 - Review: standard SM-2 progression.
 
-Defaults:
+**Defaults:**
 - Ease factor (EF) initial: 2.5 (min 1.3, max 3.0).
 - Learning steps: 10 minutes, 1 day.
 - First review intervals: I1 = 1 day, I2 = 6 days; then I(n) = round(I(n-1) × EF).
 
-Ratings:
+**Ratings:**
 - Again:
   - Learning → reset current step; due = now + 10m.
   - Review → lapse (interval = max(1, round(prevInterval × 0.5)), EF = max(1.3, EF - 0.2)).
@@ -100,10 +128,10 @@ Ratings:
 - Easy:
   - Learning → graduate immediately to Review with I1 = 1 day; Review → nextInterval = round(prevInterval × EF × 1.3), EF = min(3.0, EF + 0.15).
 
-Queue priorities:
+**Queue priorities:**
 - Due Learning steps first, then due Reviews, then New (respecting daily limits).
 
-Acceptance:
+**Acceptance:**
 - Ratings update due date, interval, EF, and state per rules.
 - Due list rebuilds correctly after each rating.
 
@@ -120,7 +148,7 @@ Acceptance:
   - Esc: end session
 - Optional: Per-card tags display and deck name.
 
-Acceptance:
+**Acceptance:**
 - User can complete reviews using buttons or shortcuts.
 - Session advances through today’s queue.
 - Visual feedback confirms rating.
@@ -130,7 +158,7 @@ Acceptance:
 - Defaults: New per day = 15; Review per day = 200; Learning due = unlimited but prioritized.
 - Show Today panel: due counts by category; allow start session.
 
-Acceptance:
+**Acceptance:**
 - Today panel shows counts for Learning/Review/New.
 - Starting session only pulls up to limits (except learning dues).
 - Introduced new cards capped at daily limit.
@@ -140,12 +168,12 @@ Acceptance:
 - Filters: by deck, state (new/learning/review/suspended), tags.
 - Text search: matches front/back/notes.
 
-Keyboard:
+**Keyboard:**
 - J/K: move selection
 - Enter: open edit
 - S: toggle suspend
 
-Acceptance:
+**Acceptance:**
 - Filters combine (AND) correctly with search text.
 - Edit modal accessible from list.
 
@@ -154,7 +182,7 @@ Acceptance:
 - Visual badge for suspended state.
 - Browsing filter by suspended.
 
-Acceptance:
+**Acceptance:**
 - Suspended cards never appear in due queue.
 - Unsuspend returns card to prior state without altering EF/interval (due remains; if past due, it enters queue next build).
 
@@ -164,20 +192,20 @@ Acceptance:
 - Due counts by category.
 - Optional: average EF for reviewed cards today.
 
-Acceptance:
+**Acceptance:**
 - Stats update live as user reviews.
 - Stats persist for the day.
 
 ### 10) Dark Mode and Cozy Aesthetic
 - Toggle dark/light; remember preference.
 
-Cozy vibe:
+**Cozy vibe:**
 - Palette: warm neutrals; muted accents (e.g., matcha green, sakura pink).
 - Rounded corners, soft shadows, gentle micro-interactions.
 - Typeface: legible sans with good Japanese glyph coverage (e.g., Noto Sans).
 - Reduce eye strain: ample spacing, focus states, accessible contrast.
 
-Acceptance:
+**Acceptance:**
 - Dark mode toggle switches instantly and persists.
 - UI elements reflect cozy theme consistently.
 
@@ -186,28 +214,28 @@ Acceptance:
 - Controls: play/pause, volume slider, mute; default OFF.
 - Respect system audio; no autoplay.
 
-Acceptance:
+**Acceptance:**
 - Music can be started/stopped; persists across session.
 - No playback if user declines interaction (no autoplay).
 
 ### 12) Prebuilt N4 Decks
 Ship with JLPT N4 vocab and kanji decks, curated from Jisho.org lookups (JMdict/Kanjidic derived).
 
-Decks:
+**Decks:**
 - N4 Vocab: nouns, verbs, adjectives, adverbs (tags).
 - N4 Kanji: characters with meanings; optional readings as notes.
 
-Tagging:
+**Tagging:**
 - “noun”
 - “verb”
 - “adjective”
 - “adverb”
 - “kanji”
 
-Attribution:
+**Attribution:**
 - Note data source in Settings/About.
 
-Acceptance:
+**Acceptance:**
 - On first run, user can import prebuilt decks.
 - Tags present and filterable.
 - Cards use Japanese front; English gloss on back; optional reading field shown on back.
@@ -338,10 +366,10 @@ Queue build order:
 - Dark mode adoption >50% in user testing.
 
 ## Release Plan
-- Week 1: Architecture scaffolding; data model; Deck/Card CRUD; tags.
-- Week 2: Scheduler implementation; queue builder; review UI; keyboard shortcuts.
-- Week 3: Browse/search; suspend; basic stats; dark mode; music controls.
-- Week 4: Prebuilt N4 decks curation/import; attribution; polish; QA; usability test; bug fixes.
+- Architecture scaffolding; data model; Deck/Card CRUD; tags.
+- Scheduler implementation; queue builder; review UI; keyboard shortcuts.
+- Browse/search; suspend; basic stats; dark mode; music controls.
+- Prebuilt N4 decks curation/import; attribution; polish; QA; usability test; bug fixes.
 
 ## Risks & Mitigations
 - Data licensing: Ensure JMdict/KANJIDIC attribution and limit to curated subset; avoid scraping in-app.
@@ -358,18 +386,15 @@ Queue build order:
 ## Attribution
 Vocabulary and kanji data derived via Jisho.org lookups, sourced from JMdict and KANJIDIC projects. Include licensing and attribution details in About page.
 
----
-
-# Technical Architecture Proposal – Kotoba Dojo POC
-
-## Overview
+## Technical Architecture Proposal
+### Overview
 - Client: Web app (React + TypeScript). Desktop-first, keyboard-driven UI, dark mode, cozy theme, optional background music.
 - API: Python backend (FastAPI) exposing REST endpoints for deck/card CRUD, scheduler actions, queues, search, tags, stats, settings, prebuilt deck import.
 - DB: SQLite for local/dev; PostgreSQL for staging/prod. Full-text search via SQLite FTS5 or PostgreSQL tsvector/trigrams.
 - Scheduler: Implement SM-2-lite on the backend. Queue built on demand per user/day; no background workers required for POC.
 - Assets: Prebuilt N4 decks stored as JSON/CSV; one locally hosted royalty-free lo-fi track.
 
-## Monorepo Structure
+### Monorepo Structure
 - kotoba-dojo/
   - web/ (frontend)
     - src/
@@ -433,7 +458,7 @@ Vocabulary and kanji data derived via Jisho.org lookups, sourced from JMdict and
   - README.md
   - LICENSE
 
-## Key Libraries
+### Key Libraries
 Backend (Python):
 - FastAPI (web framework)
 - SQLAlchemy 2.x (ORM, Core) + Alembic (migrations)
@@ -461,7 +486,7 @@ Frontend:
 Search:
 - SQLite FTS5 (dev) or PostgreSQL tsvector with GIN index; optional pg_trgm for LIKE performance
 
-## API Surface (selected)
+### API Surface (selected)
 Decks:
 - GET /api/v1/decks
 - POST /api/v1/decks
@@ -496,11 +521,11 @@ Import:
 Static:
 - GET /static/music/lofi.mp3
 
-## Authentication
+### Authentication
 - POC: single-user mode with a device_id cookie. Models include user_id for future multi-user support.
 - If multi-user later: add session-based auth with fastapi-login or JWT, and CSRF for browser.
 
-## Database Schema (PostgreSQL; SQLite analogous)
+### Database Schema (PostgreSQL; SQLite analogous)
 Users:
 - id: uuid (pk)
 - created_at: timestamptz default now()
@@ -584,7 +609,7 @@ Daily_counters:
 - easy_count: int default 0
 - primary key: (user_id, date)
 
-## Full-text Search
+### Full-text Search
 PostgreSQL:
 - cards_fts: generated column to_tsvector('simple', coalesce(front,'') || ' ' || coalesce(back,'') || ' ' || coalesce(notes,''))
 - GIN index on cards_fts; search via plainto_tsquery
@@ -594,7 +619,7 @@ SQLite:
 - FTS5 virtual table card_fts(front, back, notes, content='cards', content_rowid='id')
 - Triggers on insert/update/delete to keep FTS in sync
 
-## Scheduler Service (SM-2-lite)
+### Scheduler Service (SM-2-lite)
 Implement in server/services/scheduler.py
 
 Core operations:
@@ -620,7 +645,7 @@ Concurrency:
 - Single-user POC: tolerate minimal conflict
 - Guard review endpoint with a simple optimistic lock: pass last known sched_state.updated_at or version; if mismatch, rebuild next card
 
-## Representative Queries
+### Representative Queries
 Due reviews:
 - SELECT … FROM cards
   JOIN sched_states USING (card_id)
@@ -634,7 +659,7 @@ New cards:
   ORDER BY created_at ASC
   LIMIT :new_limit
 
-## Frontend Architecture Notes
+### Frontend Architecture Notes
 - Data fetching: TanStack Query for all server state (decks, cards, queue, stats)
 - Local UI: Zustand for review session ephemeral state (current card, flipped, hotkeys enabled)
 - Theming: CSS variables with prefers-color-scheme fallback; toggle persisted to backend settings and mirrored in localStorage for faster paint
@@ -646,7 +671,7 @@ New cards:
   - HTML5 audio element; default paused; persist volume/mute
   - Control bar component; handle visibility and focus states
 
-## Prebuilt Deck Import
+### Prebuilt Deck Import
 - server/app/services/import_prebuilt.py:
   - Read curated JSON/CSV derived from JMdict/KANJIDIC (stored under server/app/db/seed/)
   - Create decks: “N4 Vocab”, “N4 Kanji”
@@ -655,7 +680,7 @@ New cards:
   - Idempotent via a migration-like stamp in settings or an app_meta table
 - Attribution text stored in About/Settings from a template file
 
-## Potential Implementation Challenges and Mitigations
+### Potential Implementation Challenges and Mitigations
 - Timezones and “today” boundaries:
   - Challenge: Accurate daily limits and due calculations across TZ and DST
   - Mitigation: Store all timestamps in UTC; store user timezone; compute “local today” boundaries on server per request
@@ -690,13 +715,13 @@ New cards:
   - Challenge: Fonts and glyph coverage for Japanese
   - Mitigation: Use Noto Sans JP; include font-display: swap; subset fonts if necessary
 
-## Testing Strategy
+### Testing Strategy
 - Unit tests: scheduler, queue builder, search integration, tag filters
 - API tests (pytest + httpx): CRUD, review flow, limits
 - Frontend e2e (Playwright): review session hotkeys, browse filters, suspend toggle, dark mode toggle, music controls
 - Seed data tests: idempotent import
 
-## Deployment
+### Deployment
 - Dockerized services: web (static build), server (Uvicorn), db (Postgres)
 - Reverse proxy (Nginx) for TLS and static
 - Env vars:
@@ -708,13 +733,13 @@ New cards:
   - TZ_DEFAULT
 - Observability: access logs, basic metrics (request durations), error tracking (Sentry optional)
 
-## Scalability Notes (post-POC)
+### Scalability Notes (post-POC)
 - Move to async DB driver and connection pooling
 - Redis cache for counts and queue fragments
 - Background worker (RQ/Celery) for heavy imports or periodic maintenance
 - Multi-user auth and per-user storage isolation
 
-## Create Decks Presets
+### Create Decks Presets
 Use Jisho.org API:
 - [https://jisho.org/api/v1/search/words?keyword=jlpt-n5](https://jisho.org/api/v1/search/words?keyword=jlpt-n5)
 - [https://jisho.org/api/v1/search/words?keyword=%23jlpt-n3%20%23adjective](https://jisho.org/api/v1/search/words?keyword=%23jlpt-n3%20%23adjective)
@@ -727,7 +752,6 @@ Add decks and create cards for:
 - All vocab N5
 - All vocab N4
 
----
 
 # Phase 2 PRD: Ambient Audio Player, Theme Switcher, Cozy Japan Design Enhancements
 
@@ -870,12 +894,12 @@ Acceptance Criteria (Design):
 - Performance regressions: keep animations and textures lightweight; test under load.
 - Over-theming: maintain clarity and simplicity; avoid decorative elements that reduce readability.
 
-## Release Plan (Phase 2)
-Week 1:
+## Release Plan
+Step 1:
 - Implement global audio player component; wire to settings; keyboard shortcuts; persistence.
 - Implement theme toggle with early hydration; adjust tokens for contrast; Settings integration.
 
-Week 2:
+Step 2:
 - Apply enhanced design tokens across pages; refine components (buttons, cards, tags, lists); micro-interactions; accessibility pass.
 - QA: accessibility checks, cross-browser audio behavior, theme flash prevention; fix polish issues.
 
@@ -891,16 +915,16 @@ Week 2:
 - Typography and icon assets comply with licensing.
 - Continue to display JMdict/KANJIDIC attribution for prebuilt decks in About.
 
----
 
-# Technical Proposal for Phase 2 (Audio Player, Theme Switcher, Cozy Japan Design)
 
-## Overview
+## Technical Proposal
+
+### Overview
 Extend the existing SPA (React + Vite) and FastAPI backend to add a persistent, accessible audio player, robust dark/light theme switching, and cohesive cozy visual design aligned with Japanese study. Keep changes minimal and POC-friendly, favoring simple, testable implementations with graceful fallbacks.
 
-## Frontend Architecture
+### Frontend Architecture
 
-### Persistent Audio Player
+#### Persistent Audio Player
 Component:
 - AudioBar (always visible in AppShell header)
 
@@ -937,7 +961,7 @@ Implementation Sketch:
 - AudioBar renders play/pause, mute, volume slider, minimal progress (optional currentTime/duration)
 - Do not auto-play; call audio.play() on explicit click. Handle Promise rejections (Safari/Chrome policies).
 
-### Dark/Light Theme Switcher
+#### Dark/Light Theme Switcher
 Theme model:
 - Tokens via CSS variables on :root
 - Attribute: document.documentElement.dataset.theme = 'light'|'dark'
@@ -958,7 +982,7 @@ Implementation Sketch:
 - styles/tokens.css: define variables for both themes under [data-theme="light"] and [data-theme="dark"]
 - ThemeToggle uses a small store (Zustand or React context) to update state and call persistTheme + PUT /settings
 
-### Cozy Japan Design Enhancements
+#### Cozy Japan Design Enhancements
 Design tokens:
 - Palette: base-bg, surface, text, subtle-accent, primary-accent (matcha), highlight (sakura)
 - Shadows: soft layered shadows (respect dark mode)
@@ -978,7 +1002,7 @@ Assets:
 Feedback:
 - Toasts/snackbars for key actions (rate, suspend) with subtle animations; ARIA live region
 
-## Backend Additions
+### Backend Additions
 Static audio:
 - Serve lofi.mp3 from FastAPI /static/music/lofi.mp3
 - Enable caching headers (immutable, long max-age) for the track
@@ -988,7 +1012,7 @@ Settings API:
 - Debounced updates from frontend to reduce write frequency
 - No schema change required for Phase 2 (existing settings suffice)
 
-## Folder Structure Additions (web/)
+### Folder Structure Additions (web/)
 - src/providers/AudioProvider.tsx (context + hook)
 - src/components/AudioBar/AudioBar.tsx
 - src/components/AudioBar/styles
@@ -997,108 +1021,107 @@ Settings API:
 - src/app/AppShell.tsx (header with AudioBar + ThemeToggle)
 - public/index.html (inline theme hydration script; link font)
 
-## Key Libraries
+### Key Libraries
 - Native HTMLAudioElement (preferred) or howler.js for simplified cross-browser audio
 - classnames for conditional classes
 - dayjs or date-fns already in project
 - Optional: Radix UI primitives for accessible switch/slider, or implement accessible controls manually
 
-## Accessibility
+### Accessibility
 - Audio controls: role="button", aria-labels (“Play ambient music”, “Pause”, “Mute ambient audio”), focus outline, keyboard shortcuts documented
 - Theme toggle: proper role and state; visible focus ring
 - Reduced motion: media query to disable non-essential animations
 - Color contrast validated to WCAG AA
 
-## Performance Notes
+### Performance Notes
 - Avoid autoplay; defer audio creation until first use if necessary
 - Use CSS-only textures/accents (no heavy images)
 - Keep transitions lightweight; avoid large box-shadow blur on massive lists
 - Font loading: preload primary woff2, avoid layout shifts; test CLS
 
-## Browser Autoplay Restrictions
+### Browser Autoplay Restrictions
 Challenge:
 - Audio.play() rejected without user gesture
 
 Mitigation:
 - Default OFF; instantiate/play only on explicit click; handle promise rejections; show clear UI state
 
-## Audio Persistence Across Navigation
+### Audio Persistence Across Navigation
 Challenge:
 - Audio element remounts when navigating pages
 
 Mitigation:
 - Place AudioProvider above Router; keep a single audio element in a ref; do not recreate on re-renders
 
-## Shortcut Conflicts and Focus Management
+### Shortcut Conflicts and Focus Management
 Challenge:
 - Shift+P/Shift+M could interfere with inputs or review hotkeys
 
 Mitigation:
 - Require Shift modifier; ignore when input/textarea focused; document shortcuts; allow turning shortcuts off in Settings (optional)
 
-## Theme Flash (FOUC) on Initial Load
+### Theme Flash (FOUC) on Initial Load
 Challenge:
 - Wrong theme flashes before React initializes
 
 Mitigation:
 - Inline script sets data-theme from localStorage immediately; match prefers-color-scheme if no saved preference
 
-## Contrast and Readability with Cozy Palette
+### Contrast and Readability with Cozy Palette
 Challenge:
 - Warm tones can reduce contrast
 
 Mitigation:
 - Validate AA contrast; provide accessible variants in tokens; test light and dark separately
 
-## Performance Regressions from Design Polish
+### Performance Regressions from Design Polish
 Challenge:
 - Heavy shadows/animations can slow scrolling
 
 Mitigation:
 - Use modest shadows; CSS transitions only; keep list virtualization; respect reduced motion
 
-## Font Loading and Glyph Coverage
+### Font Loading and Glyph Coverage
 Challenge:
 - Japanese glyphs must render reliably; font loads can cause CLS
 
 Mitigation:
 - Use Noto Sans JP woff2; font-display: swap; test on Windows/macOS; preload primary weights
 
-## Settings Persistence Conflicts
+### Settings Persistence Conflicts
 Challenge:
 - LocalStorage vs backend settings can drift
 
 Mitigation:
 - Source of truth: localStorage for instant paint; after boot, fetch backend, reconcile and update localStorage; debounce settings writes
 
-## Static Asset Hosting and CORS
+### Static Asset Hosting and CORS
 Challenge:
 - Audio track must be accessible from SPA’s origin
 
 Mitigation:
 - Serve /static/music from the same host+port as API or configure CORS/Content-Type correctly; cache with long max-age
 
-## Accessibility Gaps
+### Accessibility Gaps
 Challenge:
 - New interactive controls must be accessible
 
 Mitigation:
 - ARIA labeling, focus outlines, keyboard operability tests; run axe/lighthouse audits
 
-## Testing and QA
+### Testing and QA
 - Unit: theme utils (getInitialTheme, persistTheme), AudioProvider behaviors (volume/mute transitions)
 - Integration: Play/pause across route navigation; theme toggle persistence; reduced-motion handling
 - E2E: No autoplay; shortcuts work; theme FOUC-free; contrast checks; audio continues during navigation; settings persisted
 
-## Success Criteria
+### Success Criteria
 - No audio plays until user initiates; playback continues across navigation
 - Theme toggling instantaneous and persists; no visible flash on reload
-- Visual polish increases perceived coziness without impacting review responsiveness
-- Accessibility and contrast meet AA; keyboard users can operate audio and theme controls easily
+- All major components adhere to tokens and maintain AA contrast
+- Minimal performance impact (no measurable increase in input-to-render latency).
 
----
 
-# Updated PRD: Basic Spaced-Repetition Scheduler (POC)
+# Phase 3: Basic Spaced-Repetition Scheduler (POC)
 
 ## Summary
 This PRD specifies the updated scheduler behavior for Kotoba Dojo. Users can study new and due cards in a single fixed-queue session, either across all decks or limited to a specific deck. Deck-level daily limits act as caps both in All Decks sessions and in single-deck sessions. The queue is built once at session start and remains fixed until the user manually starts a new session or rebuilds the queue.
@@ -1309,7 +1332,7 @@ Build queue (Deck C only):
 - Timezone-aware “today” beyond UTC.
 
 
-# Phase 3 PRD Themes: Mizuiro Calm and Sakura Serenity (Day & Night Modes)
+# Phase 4 PRD Themes: Mizuiro Calm and Sakura Serenity (Day & Night Modes)
 
 ## Summary
 Introduce a two-tier theming system with two distinct themes, each with day and night modes:
@@ -1539,14 +1562,14 @@ Theme and mode selections update the entire app’s color system (header, sideba
 - Error reports or feedback on readability/contrast.
 - Timing metrics for theme switch (should be near-instant, <16ms paint where possible).
 
-# Technical Proposal for Themes: Mizuiro Calm and Sakura Serenity (Day/Night)
+## Technical Proposal for Themes: Mizuiro Calm and Sakura Serenity (Day/Night)
 
-## Overview
+### Overview
 - Implement a token-driven theming system using CSS variables that supports two themes (Mizuiro Calm, Sakura Serenity), each with Day and Night modes.
 - Apply theme and mode globally via data attributes on documentElement for instant, full-app updates (header, cards, buttons, inputs, lists, dialogs, toasts, music bar).
 - Persist user choices locally (localStorage) for FOUC-free boot and to the backend (Settings) for cross-session consistency.
 
-## Architecture and Key Decisions
+### Architecture and Key Decisions
 - Tokens-first approach:
   - Define semantic tokens (bg, surface, text-primary, primary, accent, border, focus-ring, etc.) in CSS variables.
   - Provide four palettes: mizuiro/day, mizuiro/night, sakura/day, sakura/night.
@@ -1562,9 +1585,9 @@ Theme and mode selections update the entire app’s color system (header, sideba
   - Pre-validated token sets to meet WCAG AA; provide a small set of “-strong” tokens where needed.
   - Maintain a consistent, visible focus-ring token per theme/mode.
 
-## Frontend Implementation
+### Frontend Implementation
 
-### 1) Files and Structure
+#### 1) Files and Structure
 - src/styles/tokens.css
   - Base semantic tokens with defaults.
   - Theme scope blocks:
@@ -1590,7 +1613,7 @@ Theme and mode selections update the entire app’s color system (header, sideba
 - src/providers/ThemeProvider.tsx (optional)
   - Small context and hook for current theme/mode, with setters that call applyTheme + persist + debounce PUT /settings
 
-### 2) Applying Tokens in Components
+#### 2) Applying Tokens in Components
 - Buttons:
   - Primary uses --color-primary, --color-primary-contrast
   - Hover uses --color-hover; focus uses --color-focus-ring; disabled uses --color-disabled
@@ -1607,12 +1630,12 @@ Theme and mode selections update the entire app’s color system (header, sideba
 - Music Bar:
   - Surface-2, text, slider accent from tokens
 
-### 3) Optional Tailwind Integration (if using Tailwind)
+#### 3) Optional Tailwind Integration (if using Tailwind)
 - Configure CSS variables as Tailwind color sources:
   - In tailwind.config.js, set colors to CSS var references (e.g., primary: 'var(--color-primary)')
 - Result: use utility classes (text-primary, bg-surface) and they auto-adapt to theme switches
 
-### 4) Settings Integration (Backend)
+#### 4) Settings Integration (Backend)
 - Extend Settings model and API to store theme and mode:
   - Add columns: theme (enum: 'mizuiro'|'sakura'), mode (enum: 'day'|'night')
   - Defaults: theme='mizuiro', mode='day'
@@ -1621,19 +1644,19 @@ Theme and mode selections update the entire app’s color system (header, sideba
   - Read local; apply
   - Fetch backend; if backend timestamp newer, apply backend and update local; otherwise PUT local to backend debounced
 
-### 5) Developer Ergonomics and Theming Discipline
+#### 5) Developer Ergonomics and Theming Discipline
 - No hard-coded colors in components. Use tokenized CSS classes or variables only.
 - Centralize new color needs by adding semantic tokens; avoid component-specific ad-hoc variables.
 - Third-party components:
   - Wrap with a className layer to apply colors via CSS variables where possible.
   - For unavoidable inline styles, provide CSS overrides in a global stylesheet.
 
-### 6) Performance and Boot
+#### 6) Performance and Boot
 - Inline pre-hydration script ensures zero FOUC.
 - Theme switches at runtime are O(1) DOM attribute updates; repaint uses CSS vars (very fast).
 - Avoid heavy shadows or large blur radii on massive lists; prefer modest elevation.
 
-### 7) Testing and QA
+#### 7) Testing and QA
 - Storybook (optional for POC) with Theme/Mode toolbar to preview components in all four variants.
 - E2E smoke tests:
   - Theme toggle changes header/cards/buttons immediately.
@@ -1641,31 +1664,32 @@ Theme and mode selections update the entire app’s color system (header, sideba
 - Accessibility:
   - Use automated checks (axe) to validate contrast per theme/mode on critical components.
 
-## Backend Implementation
+### Backend Implementation
 
-### 1) Database Migration
+#### 1) Database Migration
 - Alembic migration to add to settings:
   - theme: varchar(16) or enum ('mizuiro','sakura'), not null default 'mizuiro'
   - mode: varchar(16) or enum ('day','night'), not null default 'day'
   - updated_at: timestamptz with default now()
 - Update Pydantic schema and FastAPI routes for Settings.
 
-### 2) API Behavior
+#### 2) API Behavior
 - GET /api/v1/settings returns theme and mode along with existing fields.
 - PUT /api/v1/settings accepts theme and mode, validates enums, updates updated_at.
 - Debounce client writes to avoid chatty updates during quick toggling.
 
-## Rollout Plan
+### Rollout Plan
 - Step 1: Add tokens.css and inline boot script; wire ThemeControls to localStorage only.
 - Step 2: Add backend settings fields; implement reconciliation on boot and debounced PUT.
 - Step 3: Refactor key components to use tokens exclusively (buttons, cards, inputs, lists, toasts, music bar).
 - Step 4: QA pass on contrast, focus rings, hover/active; adjust tokens; finalize palettes.
 
-## Potential Implementation Challenges and Mitigations
+### Potential Implementation Challenges and Mitigations
 - Flash of incorrect theme on load (FOUC)
   - Risk: White flash or wrong theme before app mounts.
   - Mitigation: Inline script sets data-theme and data-mode before bundle loads; ensure tokens.css is in the first CSS delivered.
 - Inconsistent styling on third-party components
+
   - Risk: Components that hard-code colors won’t adapt.
   - Mitigation: Choose headless primitives when possible; add CSS overrides; or wrap components to inject CSS var styles.
 - Contrast issues with pastel palettes in Sakura Serenity
@@ -1690,7 +1714,7 @@ Theme and mode selections update the entire app’s color system (header, sideba
   - Risk: Missing regressions in one theme/mode.
   - Mitigation: Use Storybook with four variants and a visual pass; add a Cypress/Playwright test that toggles through all four and snapshots critical screens.
 
-## Deliverables
+### Deliverables
 - tokens.css with four scoped palettes and semantic tokens
 - Theme selector and Day/Night toggle components
 - Theme boot script and ThemeProvider utilities
@@ -1698,13 +1722,13 @@ Theme and mode selections update the entire app’s color system (header, sideba
 - Refactored core components to consume tokens
 - QA checklist results across all screens and four theme/mode combinations
 
-## Success Criteria
+### Success Criteria
 - Theme/mode switching is instantaneous and consistent across the app.
 - Preferences persist across reloads with no theme flash.
 - All major components adhere to tokens and maintain AA contrast.
 - Minimal performance impact (no measurable increase in input-to-render latency).
 
-# Phase 4 PRD: Enhanced Review Session Logic (Anki-like, Fixed Queue)
+# Phase 5 PRD: Enhanced Review Session Logic (Anki-like, Fixed Queue)
 
 ## Summary
 Enhance the review session to follow an Anki-like flow while keeping a fixed queue for simplicity. Sessions can be started from the home page (All Decks) or from a specific deck page. The session presents cards grouped by type in the order New → Learning → Review. Allocation across decks uses round-robin distribution with deck-level caps enforced in All Decks sessions. Within each deck’s pool, selection is randomized. “Again” responses trigger in-session repeats with fixed spacing until the user rates Good or Easy.
@@ -1869,17 +1893,17 @@ Notes:
 - Stats undercount if user abandons session after many “Again” attempts:
   - Mitigation: Document behavior; only final rating counts; optionally show “pending repeats” count in UI.
 
-# Technical Proposal: Enhanced Review Session Logic (Fixed Queue, Anki-like Sections)
+## Technical Proposal: Enhanced Review Session Logic (Fixed Queue, Anki-like Sections)
 
-## Overview
+### Overview
 - Implement a server-built, fixed review session queue with three sections ordered New → Learning → Review.
 - Sessions can be started for All Decks or a Specific Deck. All Decks use global limits and deck caps; Specific Deck uses only that deck’s limits.
 - Allocation across decks uses round-robin per section; within each deck, pools are randomized.
 - “Again” (1) triggers in-session repeats with fixed spacing N=3 within the same section; if near the end, use end-of-section loop. Only the final successful rating (2 or 3) is counted in stats, but scheduler state is updated on every rating.
 
-## Backend
+### Backend
 
-### Endpoints
+#### Endpoints
 - POST /api/v1/session/build
   - Query params: scope=all|deck, deckId?, date? (optional, defaults to today UTC)
   - Returns:
@@ -1895,7 +1919,7 @@ Notes:
 - Optional: POST /api/v1/session/end
   - Body: { sessionId, summary } (for telemetry; optional in POC)
 
-### Queue Builder (server/services/queue.py)
+#### Queue Builder (server/services/queue.py)
 - Inputs:
   - scope (all|deck), date (UTC day), deck caps and global limits (New=12, Review=150), learning uncapped
   - daily counters: introduced_new (global and per deck), reviews_done (global and per deck)
@@ -1915,10 +1939,10 @@ Notes:
      - Review: iterate decks; pick at most one card per deck per rotation while capacities allow; consume capacities.
   4) Return fixed arrays for sections in order New, Learning, Review.
 
-### Scheduler (server/services/scheduler.py)
+#### Scheduler (server/services/scheduler.py)
 - New:
   - Again: keep state='new'; no due change.
-  - Good: graduate to review; dueAt = now + 1 day; EF unchanged; intervalDays = 1.
+  - Good: graduate to review; dueAt = now + 1 day; EF unchanged.
   - Easy: graduate to review; dueAt = now + 1 day; EF = min(3.0, EF + 0.15); intervalDays = 1.
 - Learning (legacy only):
   - Again: optional reset step to 0; dueAt = now + 10m (for future sessions). In-session repeat handled client-side.
@@ -1929,7 +1953,7 @@ Notes:
   - Good: intervalDays = round(prevIntervalDays * EF); dueAt = now + intervalDays; EF unchanged.
   - Easy: EF = min(3.0, EF + 0.15); intervalDays = round(prevIntervalDays * EF * 1.3); dueAt = now + intervalDays.
 
-### Logging and Stats
+#### Logging and Stats
 - Only log and count on final successful rating (good/easy).
   - ReviewLog entry includes prev/next interval, EF, prev/next state.
   - Stats: increment reviews_done and good/easy counts; introduced_new increments when a New card is first shown that day.
@@ -1937,9 +1961,9 @@ Notes:
   - Update scheduler state (EF, interval) immediately.
   - Do not write ReviewLog or increment stats.
 
-## Frontend
+### Frontend
 
-### Session State (Zustand or React Context)
+#### Session State (Zustand or React Context)
 - session: {
   id,
   sections: {
@@ -1954,7 +1978,7 @@ Notes:
 }
 - CardView includes id, deckId, front/back, tags, state
 
-### In-Session “Again” Handling (N=3)
+#### In-Session “Again” Handling (N=3)
 - On rating “again”:
   - Compute insertion target within the current section: currentIndex + 3
   - If target < section.length: insert card at target; else append to end (end-of-section loop)
@@ -1967,14 +1991,14 @@ Notes:
   - Show base counts (initial size per section)
   - Optional: show a badge for repeats pending in current section
 
-### Queue Navigation
+#### Queue Navigation
 - Section order fixed: New → Learning → Review
 - Move to next section only when current section queue (excluding repeats pending) is exhausted
 - Esc ends session; session state cleared
 
-## Pseudocode
+### Pseudocode
 
-### Queue builder (server-side)
+#### Queue builder (server-side)
 ```
 newQueue = roundRobinPick(decksSorted, deckNewPools, deckRemainingNew, globalRemainingNew)
 learningQueue = roundRobinPick(decksSorted, deckLearningPools, noCaps, noCaps)
@@ -2001,7 +2025,7 @@ function roundRobinPick(decks, pools, deckCapMap, globalCap) {
 }
 ```
 
-### Client-side “Again” reinsertion
+#### Client-side “Again” reinsertion
 ```
 function handleAgain(section) {
   const arr = session.sections[section]
@@ -2026,20 +2050,20 @@ function handleFinalRating(section, rating) {
 }
 ```
 
-## Data and Counters
+### Data and Counters
 - daily_counters:
   - introduced_new_global, introduced_new_per_deck
   - reviews_done_global, reviews_done_per_deck
   - good_count, easy_count (again_count omitted per PRD; optional telemetry only)
 - Update introduced_new when a New card is first included in a session (or on first reveal)
 
-## Implementation Challenges and Mitigations
+### Implementation Challenges and Mitigations
 - Counting only final ratings while updating schedule on “Again”
   - Challenge: Keep stats accurate without losing scheduling changes
   - Mitigation: Update schedule on every rating; suppress ReviewLog and stats on “Again”; log only on Good/Easy; optionally store attempts in session state for telemetry
 - “Again” repeat management within fixed sections
   - Challenge: Avoid infinite loops or index glitches
-  - Mitigation: N=3 reinsertion with end-of-section loop; always remove current occurrence before inserting; guard against zero-length edge cases; add a max repeat safeguard (optional)
+  - Mitigation: N=3 reinsertion with end-of-section loop limit immediate repetition fatigue while ensuring practice.
 - Round-robin fairness with randomized pools
   - Challenge: Deterministic distribution while pools are random
   - Mitigation: Deterministic deck order (alphabetical); pre-shuffle per-deck pools once; retain ordering for the session; unit-test round-robin allocator
@@ -2048,86 +2072,62 @@ function handleFinalRating(section, rating) {
   - Mitigation: Read daily counters before build; compute remaining capacities; update counters on final ratings and first-time New introductions
 - Legacy Learning handling
   - Challenge: Learning cards from prior data need consistent behavior without new learning creation
-  - Mitigation: Support learning ratings (again/good/easy) in scheduler; include learning due pools; do not create new learning on lapses
-- Backend-frontend coordination for “Again”
-  - Challenge: Server unaware of client-side reinsertion position
-  - Mitigation: Keep reinsertion purely client-side; server focuses on schedule updates; return minimal info (updated state)
-- Session persistence
-  - Challenge: Mid-session browser refresh will lose the fixed queue
-  - Mitigation: Optional: store session state in sessionStorage; for POC, accept loss on refresh
-- Performance under heavy repeats
-  - Challenge: Long queues with many “Again” reinsertions may increase DOM updates
-  - Mitigation: Use efficient state updates; virtualize long sections if needed; batch state changes
-- Timezone and “today” boundaries
-  - Challenge: Accurate counters across TZ
-  - Mitigation: POC uses UTC day; later can adapt to user timezone
-- Testing complexity
-  - Challenge: Many permutations (All Decks vs Specific Deck, repeats, caps)
-  - Mitigation: Add unit tests for allocator and “Again” reinsertion; API tests for scheduler math; E2E tests for session flow with repeats and stats correctness
-
-## Testing Plan
-- Unit tests:
-  - Round-robin allocator correctness across varying caps/pools
-  - Scheduler math for review good/easy/again
-  - Reinsertion logic (N=3, end-of-section loop)
-- Integration/API:
-  - Session build enforces caps and excludes suspended
   - Review endpoint updates schedule and logs only on good/easy
 - E2E:
   - All Decks session: New → Learning → Review order; repeats until rated 2/3; stats increment only on final ratings
   - Specific Deck session: ignores globals; randomized selection within deck
 
-## Delivery Plan (POC)
+### Delivery Plan (POC)
 - Step 1: Backend session/build; allocator; scheduler endpoint adjustments; counters reconciliation
 - Step 2: Frontend session state and UI; “Again” repeat mechanics; progress indicators; QA and tests
 - Step 3: Polish and fix edge cases; accessibility and performance pass
 
 
+# Phase 5.1 PRD: Deck-Specific Study Overview on Decks Page
 
-### Phase 4.1 PRD: Deck-Specific Study Overview on Decks Page
-Feature Name: Deck-Specific Study OverviewObjective
+## Feature Name: Deck-Specific Study
+
+### Objective
 Enhance the user experience on the Decks page by providing a clear breakdown of the cards in each deck (New, Learning, Review) and the total number of cards in the deck. This will allow users to understand the scope of their study session before clicking the "Study Now" button.
 
-Requirements
-Functional Requirements
+## Requirements
+### Functional Requirements
 Deck Breakdown Display:
 
-For each deck, display the following card counts:
-New Cards: Cards that have not been studied yet.
-Learning Cards: Cards currently in the learning phase.
-Review Cards: Cards scheduled for review.
-Show these counts in a visually distinct and intuitive format (e.g., a horizontal bar or list).
+- For each deck, display the following card counts:
+- New Cards: Cards that have not been studied yet.
+- Learning Cards: Cards currently in the learning phase.
+- Review Cards: Cards scheduled for review.
+- Show these counts in a visually distinct and intuitive format (e.g., a horizontal bar or list).
+
 Total Cards Chip:
 
-Display the total number of cards in the deck as a small chip or badge, regardless of their status.
-The chip should be visually distinct and placed near the deck name.
+- Display the total number of cards in the deck as a small chip or badge, regardless of their status.
+- The chip should be visually distinct and placed near the deck name.
+
 "Study Now" Button:
 
-The "Study Now" button should remain prominent and clearly indicate that it will start a study session for the selected deck.
-Ensure the button is aligned with the card breakdown for clarity.
+- The "Study Now" button should remain prominent and clearly indicate that it will start a study session for the selected deck.
+- Ensure the button is aligned with the card breakdown for clarity.
+
 Dynamic Updates:
 
-The card counts (New, Learning, Review, Total) should dynamically update based on the current state of the deck.
-Non-Functional Requirements
+- The card counts (New, Learning, Review, Total) should dynamically update based on the current state of the deck.
+
+
+## Non-Functional Requirements
 Performance:
-
-Ensure the card counts are fetched efficiently to avoid delays in rendering the Decks page.
-Use TanStack Query caching to minimize redundant API calls.
+- Ensure the card counts are fetched efficiently to avoid delays in rendering the Decks page.
+- Use TanStack Query caching to minimize redundant API calls.
 Responsiveness:
-
-The layout should be mobile-friendly and adapt to smaller screens without losing clarity.
+- The layout should be mobile-friendly and adapt to smaller screens without losing clarity.
 Styling:
-
-Use Tailwind CSS for consistent styling.
-Ensure dark mode compatibility.
+- Use Tailwind CSS for consistent styling.
+- Ensure dark mode compatibility.
 Accessibility:
+- Add ARIA labels for the card counts and "Study Now" button to ensure screen reader compatibility.
 
-Add ARIA labels for the card counts and "Study Now" button to ensure screen reader compatibility.
-API Changes
-Endpoint: /api/decks/{deck_id}/stats
-Method: GET
-Response:
-UI/UX Design
+## UI/UX Design
 Deck Card Layout:
 
 Deck Name: Large and bold at the top.
@@ -2140,105 +2140,81 @@ Study Now Button:
 Prominent button below the card counts.
 Example Layout:
 
-Acceptance Criteria
-The Decks page displays the New, Learning, and Review counts for each deck.
-The total number of cards in the deck is displayed as a chip.
-The "Study Now" button is clearly visible and aligned with the card breakdown.
-The card counts dynamically update when the deck's state changes.
-The layout is responsive and works in both light and dark modes.
-Out of Scope
-Changes to the "Study Now" session logic.
-Adding new deck management features.
+```plaintext
++---------------------------------------------+
+| Deck Name          [Start Session Button]   |
+| New: 10 | Learning: 5 | Review: 20         |
+| Progress: [#####-----] 10/15 New           |
+|           [########--] 150/200 Review      |
++---------------------------------------------+
+```
 
+## Acceptance Criteria
+- The Decks page displays the New, Learning, and Review counts for each deck.
+- The total number of cards in the deck is displayed as a chip.
+- The "Study Now" button is clearly visible and aligned with the card breakdown.
+- The card counts dynamically update when the deck's state changes.
+- The layout is responsive and works in both light and dark modes.
+## Out of Scope
+- Changes to the "Study Now" session logic.
+-  Adding new deck management features.
 
+# Phase 5.2 Implementation Plan: Deck-Specific Study Overview on Decks Page
 
-#### Phase 4.1 Implementation Plan: Deck-Specific Study Overview on Decks Page
-Overview
-Add New/Learning/Review card counts and total cards chip to each deck on the Decks page, matching the structure shown on the dashboard.
+### Summary
+This phase focuses on implementing a deck-specific study overview on the Decks page. The goal is to provide users with a clear and actionable summary of their study progress and upcoming tasks for each deck.
 
-Implementation Tasks
-Task 1: Backend API Enhancement
-File: decks.py
-Estimated Time: 1 hour
+### Key Features
+- **Deck Progress Summary**: Display the number of cards in each state (New, Learning, Review, Suspended).
+- **Daily Limits**: Show daily limits for New and Review cards, along with progress towards those limits.
+- **Actionable Insights**: Highlight decks with overdue cards or decks nearing their daily limits.
+- **Quick Actions**: Provide buttons to start a study session directly from the overview.
 
-1.1 Add Deck Stats Endpoint
-1.2 Add Schema Definition
-File: schemas.py
+### UI Components
+1. **Deck List**:
+   - Each deck is displayed as a card or row.
+   - Includes deck name, card counts (New, Learning, Review, Suspended), and progress bars for daily limits.
 
-Task 2: Frontend Type Definitions
-File: types.ts
-Estimated Time: 15 minutes
+2. **Progress Bars**:
+   - Visual indicators for daily New and Review limits.
+   - Color-coded to show progress (e.g., green for under limit, red for over limit).
 
-Task 3: Frontend API Client Enhancement
-File: client.ts
-Estimated Time: 15 minutes
+3. **Quick Actions**:
+   - "Start Session" button for each deck.
+   - Optional: "Edit Deck" and "View Cards" buttons.
 
-Task 4: Create Deck Stats Component
-File: web/src/components/DeckStatsDisplay.tsx
-Estimated Time: 1 hour
+### Backend Requirements
+- **API Endpoints**:
+   - `GET /api/v1/decks/{deckId}/overview`: Returns card counts and daily progress for a specific deck.
+   - `GET /api/v1/decks/overview`: Returns aggregated data for all decks.
 
-Task 5: Update DeckCard Component
-File: web/src/components/DeckCard.tsx
-Estimated Time: 45 minutes
+- **Data Model Updates**:
+   - Ensure daily counters (e.g., `introduced_new`, `reviews_done`) are accessible for each deck.
 
-Task 6: Update Decks Page
-File: web/src/pages/DecksPage.tsx
-Estimated Time: 30 minutes
+### Acceptance Criteria
+- Decks page displays a summary card for each deck with accurate card counts and progress bars.
+- Users can start a study session for any deck directly from the overview.
+- API endpoints return correct data for deck-specific and aggregated overviews.
 
-Task 7: Backend Tests
-File: test_api_decks.py
-Estimated Time: 45 minutes
+### Example UI Layout
+```plaintext
++---------------------------------------------+
+| Deck Name          [Start Session Button]   |
+| New: 10 | Learning: 5 | Review: 20         |
+| Progress: [#####-----] 10/15 New           |
+|           [########--] 150/200 Review      |
++---------------------------------------------+
+```
 
-Task 8: Frontend Tests
-File: web/src/components/__tests__/DeckStatsDisplay.test.tsx
-Estimated Time: 30 minutes
+### Acceptance Criteria
 
-Error Handling Strategy
-Backend
-404 Error: When deck doesn't exist or doesn't belong to user
-Database Errors: Log and return 500 with generic message
-Input Validation: Pydantic handles deck_id validation
-Frontend
-API Errors: Show error message instead of stats
-Loading States: Skeleton loading animation
-Empty State: Show "No cards" when total is 0
-Network Errors: TanStack Query handles retry logic
-Performance Considerations
-Backend
-Query optimization: Single query with GROUP BY for card counts
-Database indexes: Existing indexes on deck_id and state should be sufficient
-Caching: Not needed initially, stats change infrequently
-Frontend
-TanStack Query caching: 5-minute stale time
-Only fetch stats when deck card is visible (default behavior)
-Skeleton loading prevents layout shift
-Testing Strategy
-Unit Tests
-Backend: Test stats calculation logic with different card states
-Frontend: Test component rendering with various data states
-Integration Tests
-Backend: Test full endpoint with database
-Frontend: Test API integration with mocked responses
-E2E Tests (Optional)
-Navigate to decks page
-Verify stats display for each deck
-Click "Study Now" and verify navigation
-Accessibility
-ARIA labels for study buttons
-Color indicators with text labels (not color-only)
-Proper heading hierarchy
-Keyboard navigation support
-Timeline Estimate
-Backend: 1.5 hours
-Frontend: 2.5 hours
-Testing: 1.5 hours
-Total: ~5-6 hours
-Files Modified
-decks.py (new endpoint)
-schemas.py (new schema)
-types.ts (new interface)
-client.ts (new API method)
-web/src/components/DeckStatsDisplay.tsx (new component)
-web/src/components/DeckCard.tsx (updated)
-web/src/pages/DecksPage.tsx (updated)
-Test files (new)
+1. The Decks page displays the New, Learning, and Review counts for each deck.
+2. The total number of cards in the deck is displayed as a chip.
+3. The "Study Now" button is clearly visible and aligned with the card breakdown.
+4. The card counts dynamically update when the deck's state changes.
+5. The layout is responsive and works in both light and dark modes.
+
+### Out of Scope
+
+- Changes to the "Study Now" session logic.
+- Adding new deck management features.
