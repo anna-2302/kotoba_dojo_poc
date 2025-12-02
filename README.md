@@ -28,6 +28,9 @@ The app has been made with Claude Sonnet 4.5.
 - ✅ **Keyboard Shortcuts**: Full keyboard navigation (Space, 1/2/3, Esc, R)
 - ✅ **Responsive Design**: Mobile-friendly interface with accessibility support
 
+## 📺 Video
+https://github.com/user-attachments/assets/0b6dca73-1b10-428a-ba0e-bab7cc1504db
+
 ## 📷 Screenshots
 #### Home
 <img width="1836" height="3048" alt="Home page" src="https://github.com/user-attachments/assets/81a556c0-0ff8-4b15-a6dc-8e162a7ec326" />
