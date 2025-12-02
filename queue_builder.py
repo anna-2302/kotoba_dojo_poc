@@ -2,9 +2,6 @@
 Queue Builder Service
 Implements REQ-6: Daily Queue and Limits from PRD.
 
-Phase 4 Enhancement: Structured sessions with three sections (New -> Learning -> Review)
-using round-robin allocation across decks for fairness.
-
 Builds structured review sessions based on:
 - New cards (up to new_per_day limit, randomized within deck)
 - Learning cards (unlimited, due cards only) 
