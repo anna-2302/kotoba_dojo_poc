@@ -184,13 +184,17 @@ export function EnhancedReviewPage() {
   }, [currentCard, isFlipped, sessionData, currentSection]);
 
   const handleNextCard = useCallback(() => {
-    setCurrentCardIndex(prev => prev + 1);
+    // Reset flip state FIRST to prevent showing next card's back
     setIsFlipped(false);
-    
-    // Check if session is complete
-    if (currentCardIndex + 1 >= allCards.length) {
-      setSessionComplete(true);
-    }
+    // Use setTimeout to ensure state update before moving to next card
+    setTimeout(() => {
+      setCurrentCardIndex(prev => prev + 1);
+      
+      // Check if session is complete
+      if (currentCardIndex + 1 >= allCards.length) {
+        setSessionComplete(true);
+      }
+    }, 0);
   }, [currentCardIndex, allCards.length]);
 
   const handleFinishSession = useCallback(() => {
@@ -322,6 +326,7 @@ export function EnhancedReviewPage() {
           {currentCard && (
             <>
               <ReviewCard
+                key={currentCard.id}
                 front={currentCard.front}
                 back={currentCard.back}
                 isFlipped={isFlipped}
@@ -338,12 +343,15 @@ export function EnhancedReviewPage() {
                 </span>
               </div>
               
-              {isFlipped && (
-                <RatingButtons
-                  onRate={handleRate}
-                  disabled={rateEnhancedMutation.isPending}
-                />
-              )}
+              {/* Rating buttons container with fixed height to prevent layout shift */}
+              <div className="mt-8" style={{ minHeight: '80px' }}>
+                {isFlipped && (
+                  <RatingButtons
+                    onRate={handleRate}
+                    disabled={rateEnhancedMutation.isPending}
+                  />
+                )}
+              </div>
             </>
           )}
           
