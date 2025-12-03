@@ -5,14 +5,15 @@ interface RatingButtonsProps {
 
 export function RatingButtons({ onRate, disabled = false }: RatingButtonsProps) {
   return (
-    <div className="flex gap-4 justify-center mt-8">
+    <div className="flex gap-4 justify-center mt-8 rating-buttons-container">
       <button
         onClick={() => onRate('again')}
         disabled={disabled}
-        className="px-6 py-3 font-medium rounded-lg transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-6 py-3 font-medium rounded-lg focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed rating-button"
         style={{
           backgroundColor: disabled ? 'var(--kd-disabled)' : 'var(--kd-danger)',
           color: 'var(--kd-text-inverse)',
+          animationDelay: '0.05s',
         }}
         onMouseEnter={(e) => !disabled && (e.currentTarget.style.opacity = '0.9')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
@@ -31,10 +32,11 @@ export function RatingButtons({ onRate, disabled = false }: RatingButtonsProps) 
       <button
         onClick={() => onRate('good')}
         disabled={disabled}
-        className="px-6 py-3 font-medium rounded-lg transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-6 py-3 font-medium rounded-lg focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed rating-button"
         style={{
           backgroundColor: disabled ? 'var(--kd-disabled)' : 'var(--kd-primary)',
           color: 'var(--kd-text-inverse)',
+          animationDelay: '0.1s',
         }}
         onMouseEnter={(e) => !disabled && (e.currentTarget.style.opacity = '0.9')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
@@ -53,10 +55,11 @@ export function RatingButtons({ onRate, disabled = false }: RatingButtonsProps) 
       <button
         onClick={() => onRate('easy')}
         disabled={disabled}
-        className="px-6 py-3 font-medium rounded-lg transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-6 py-3 font-medium rounded-lg focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed rating-button"
         style={{
           backgroundColor: disabled ? 'var(--kd-disabled)' : 'var(--kd-success)',
           color: 'var(--kd-text-inverse)',
+          animationDelay: '0.15s',
         }}
         onMouseEnter={(e) => !disabled && (e.currentTarget.style.opacity = '0.9')}
         onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}

@@ -51,6 +51,19 @@ export function SessionControls({
 
   return (
     <div className="w-full max-w-4xl mx-auto mt-8">
+      {/* Keyboard Shortcuts Reference - Moved to top */}
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center gap-6 px-4 py-2 rounded-lg text-xs" 
+             style={{ backgroundColor: 'var(--kd-surface-2)', color: 'var(--kd-text-muted)' }}>
+          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>Space</kbd> Flip</span>
+          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>1</kbd> Again</span>
+          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>2</kbd> Good</span>
+          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>3</kbd> Easy</span>
+          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>Esc</kbd> Finish</span>
+          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>I</kbd> Card Info</span>
+        </div>
+      </div>
+
       {/* Session Stats Bar */}
       {sessionStats && (
         <div className="mb-4 p-3 rounded-lg" style={{ backgroundColor: 'var(--kd-surface)' }}>
@@ -214,19 +227,6 @@ export function SessionControls({
             ⏸️ {isSuspending ? 'Suspending...' : 'Suspend Card'}
           </button>
         )}
-      </div>
-
-      {/* Keyboard Shortcuts Reference */}
-      <div className="text-center">
-        <div className="inline-flex items-center gap-6 px-4 py-2 rounded-lg text-xs" 
-             style={{ backgroundColor: 'var(--kd-surface-2)', color: 'var(--kd-text-muted)' }}>
-          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>Space</kbd> Flip</span>
-          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>1</kbd> Again</span>
-          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>2</kbd> Good</span>
-          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>3</kbd> Easy</span>
-          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>Esc</kbd> Finish</span>
-          <span><kbd className="px-1 py-0.5 rounded" style={{ backgroundColor: 'var(--kd-surface)' }}>I</kbd> Card Info</span>
-        </div>
       </div>
     </div>
   );

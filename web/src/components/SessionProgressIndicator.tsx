@@ -67,7 +67,7 @@ export function SessionProgressIndicator({
       </div>
       
       {/* Section breakdown */}
-      <div className="grid grid-cols-3 gap-4 text-sm">
+      <div className="grid grid-cols-3 gap-3 text-sm">
         {['new', 'learning', 'review'].map((section) => {
           const sectionKey = section as 'new' | 'learning' | 'review';
           const progress = getSectionProgress(sectionKey);
@@ -85,14 +85,14 @@ export function SessionProgressIndicator({
           return (
             <div
               key={section}
-              className="p-3 rounded-lg border-2 transition-all"
+              className="p-2 rounded-lg border-2 transition-all"
               style={{
                 backgroundColor: isActive ? 'var(--kd-primary-bg)' : 'var(--kd-surface)',
                 borderColor: isActive ? 'var(--kd-primary)' : 'transparent',
                 color: isActive ? 'var(--kd-primary)' : 'var(--kd-text-secondary)'
               }}
             >
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex justify-between items-center mb-1.5">
                 <span className="font-medium capitalize">
                   {isActive && '👉 '}{section}
                 </span>

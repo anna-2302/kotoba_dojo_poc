@@ -318,22 +318,6 @@ export function EnhancedReviewPage() {
             againRepeats={againRepeats.length}
           />
           
-          {/* Phase 4: Detailed session statistics (expandable) */}
-          <SessionStatsDetails
-            sections={sessionData.sections}
-            meta={sessionData.meta}
-            completedCards={completedCards}
-            againRepeats={againRepeats.length}
-            currentSection={currentSection}
-          />
-          
-          {/* Phase 4: Section transition indicator */}
-          <SectionTransition 
-            currentSection={currentSection}
-            cardPosition={currentCardIndex}
-            sectionMeta={sessionData.meta}
-          />
-          
           {/* Card display */}
           {currentCard && (
             <>
@@ -376,6 +360,15 @@ export function EnhancedReviewPage() {
               againRepeats: againRepeats.length,
               currentSection: currentSection
             }}
+          />
+          
+          {/* Phase 4: Detailed session statistics (expandable) - Moved to bottom */}
+          <SessionStatsDetails
+            sections={sessionData.sections}
+            meta={sessionData.meta}
+            completedCards={completedCards}
+            againRepeats={againRepeats.length}
+            currentSection={currentSection}
           />
         </div>
       </div>

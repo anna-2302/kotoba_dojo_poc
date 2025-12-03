@@ -1,4 +1,4 @@
-// Card component for displaying front/back content
+// Card component for displaying front/back content with 3D flip animation
 
 interface ReviewCardProps {
   front: string;
@@ -9,23 +9,32 @@ interface ReviewCardProps {
 
 export function ReviewCard({ front, back, isFlipped, onFlip }: ReviewCardProps) {
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full max-w-2xl mx-auto perspective-1000">
+      {/* Flip container with 3D transform */}
       <div
-        className="min-h-[300px] rounded-lg p-8 cursor-pointer transition-all"
+        className="relative min-h-[240px] cursor-pointer"
         onClick={onFlip}
         style={{
-          backgroundColor: 'var(--kd-surface)',
-          boxShadow: 'var(--kd-shadow-elevation-1)',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = 'var(--kd-shadow-elevation-2)';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = 'var(--kd-shadow-elevation-1)';
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
         }}
       >
-        <div className="flex flex-col items-center justify-center h-full">
-          {!isFlipped ? (
+        {/* Front face */}
+        <div
+          className="absolute inset-0 min-h-[240px] rounded-lg p-6 backface-hidden"
+          style={{
+            backgroundColor: 'var(--kd-surface)',
+            boxShadow: 'var(--kd-shadow-elevation-1)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(0deg)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div className="flex flex-col items-center justify-center w-full">
             <div className="text-center">
               <p className="text-sm mb-4" style={{ color: 'var(--kd-text-secondary)' }}>
                 Front
@@ -37,7 +46,24 @@ export function ReviewCard({ front, back, isFlipped, onFlip }: ReviewCardProps) 
                 Press Space to flip
               </p>
             </div>
-          ) : (
+          </div>
+        </div>
+
+        {/* Back face */}
+        <div
+          className="absolute inset-0 min-h-[240px] rounded-lg p-6 backface-hidden"
+          style={{
+            backgroundColor: 'var(--kd-surface)',
+            boxShadow: 'var(--kd-shadow-elevation-1)',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div className="flex flex-col items-center justify-center w-full">
             <div className="text-center w-full">
               <p className="text-sm mb-4" style={{ color: 'var(--kd-text-secondary)' }}>
                 Back
@@ -51,7 +77,7 @@ export function ReviewCard({ front, back, isFlipped, onFlip }: ReviewCardProps) 
                 </p>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
